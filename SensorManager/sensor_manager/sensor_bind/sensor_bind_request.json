@@ -1,0 +1,6 @@
+{
+    "Details":[ { "ip": "10.0.0.4","port": "8006","loc":"Ahmedabad","type":"camera","name":"C1","data_type":"float","is_sensor":"1"},
+                { "ip": "10.0.0.4","port": "8007","loc":"Ahmedabad","type":"camera","name":"C2","data_type":"float","is_sensor":"0"},
+                { "ip": "10.0.0.4","port": "8008","loc":"Ahmedabad","type":"camera","name":"C3","data_type":"float","is_sensor":"1"}]
+}
+ 
