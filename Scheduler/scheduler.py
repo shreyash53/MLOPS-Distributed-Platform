@@ -47,8 +47,14 @@ def scheduleapplication():
     try:
         all_details = request.get_json()
         app_instance_id = get_app_instance_id()
-        new_schedule = Schedules(app_instance_id=app_instance_id, app_name=all_details['app_name'], app_id=all_details['app_id'], starttime=parsedatetime(all_details['starttime']), repetition=all_details['repetition'], interval=json.dumps(
-            all_details['interval']), endtime=parsedatetime(all_details['endtime']), duration=parsedatetime(all_details['endtime']) - parsedatetime(all_details['starttime']), sensors=json.dumps(all_details['sensors']))
+        new_schedule = Schedules(_id=app_instance_id,
+                                 app_name=all_details['app_name'], app_id=all_details['app_id'],
+                                 starttime=parsedatetime(
+                                     all_details['starttime']),
+                                 repetition=all_details['repetition'],
+                                 interval=json.dumps(all_details['interval']),
+                                 endtime=parsedatetime(all_details['endtime']),
+                                 sensors=json.dumps(all_details['sensors']))
 
         new_schedule.save()
     except Exception as e:
