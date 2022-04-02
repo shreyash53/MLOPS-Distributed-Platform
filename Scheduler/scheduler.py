@@ -97,7 +97,7 @@ def send_to_deployment_service(type1, message):
     producer.close()
 
 
-class monitor_starting(threading.Thread):
+class StartService(threading.Thread):
     def __init__(self): 
         threading.Thread.__init__(self) 
     
@@ -111,7 +111,7 @@ class monitor_starting(threading.Thread):
             # send_to_deployment_service('start',appid)
 
 
-class monitor_ending(threading.Thread):
+class EndService(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
