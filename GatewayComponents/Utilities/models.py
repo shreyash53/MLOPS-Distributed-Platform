@@ -34,3 +34,18 @@ class aimodels(db.Document):
             "path":self.path,
             "contract":self.contract
         }
+
+class models(db.Document):
+    #appid = db.IntField(required=True)
+    modelName = db.StringField(required=True,unique=True)
+    #pickleName = db.StringField(required=True)
+    path = db.StringField(required=True)
+    contract = db.StringField(required=True)
+
+    def to_json(self):
+        return {
+            "modelName": self.modelName,
+            #"pickleName":self.pickleName,
+            "path":self.path,
+            "contract":self.contract
+        }
