@@ -53,14 +53,22 @@ def get_app_instance_id():
 
 @app.route('/schedule_application',methods=['POST'])
 def scheduleapplication():
-    all_details = request.get_json()
-    app_instance_id = get_app_instance_id()
-    new_schedule = Schedules(app_instance_id = app_instance_id
-                            ,app_name = all_details['app_name']
-                            ,app_id = all_details['app_id'])
+    try:
+        all_details = request.get_json()
+        app_instance_id = get_app_instance_id()
+        new_schedule = Schedules(app_instance_id = app_instance_id
+                                ,app_name = all_details['app_name']
+                                ,app_id = all_details['app_id']
+                                ,starttime = all_details['starttime']
+                                ,repetition = all_details['repetition']
+                                ,interval = json.dumps(all_details['interval'])
+                                ,endtime = all_details['endtime']
+                                ,sensors = json.dumps(all_details['sensors']))
 
-    db.Scheduling.insertOne(all_details)
-
+        new_schedule.save()
+    except Exception as e:
+        return e
+    return "OK"
 
 def get_cur_Time():
     cur_datetime = datetime.datetime.now()
@@ -109,19 +117,3 @@ class monitor_ending(threading.Thread):
 
     def run(self):
         pass
-
-
-
-        # send_to_deployment_service('stop',appid)
-
-
-
-
-
-
-
-
-
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
