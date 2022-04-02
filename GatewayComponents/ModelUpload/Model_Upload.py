@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 import json
 import shutil
-from AppUpload.validate import *
+from ModelUpload.validate import *
 from Utilities.models import aimodels
 from mongoengine.queryset.visitor import Q
 from pathlib import Path
@@ -15,50 +15,55 @@ from Utilities.azure_config import *
 
 PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
 mydir=Path.cwd()/'NewZip'
-# def isValid(tar,r_zip):
-#     #db.createCollection("models")
-#     var1=tar/"contract.json"
-#     if(file_present(tar,"contract.json")):
-#         if(file_present(tar,"run.sh")):
-#             if(validate_contract(var1)):
-#                 print("hello")
-#                 #if db.models.find( { "appName": r_zip } ).count() > 0:
-#                 if models.objects(appName=r_zip).count()>0:
-#                     return {"err_msg":"model already in database."}
-#                 else:
-#                     #new_app = models(app_id,r_zip,tar)
-#                     try:
-#                         new_app = models(
-#                         modelName = r_zip,
-#                         #pickleName = 
-#                         path = str(tar)
-#                         )
-#                         new_app.save()
-#                     except Exception as e:
-#                         return {"err_msg":e}
-
-#                     print(new_app)
-#                     #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
-#                     return {"succ_msg":"Valid Zip"}
-#             else:
-#                 return {"err_msg":"ERR:contract.json seems invalid."}
-#         else:
-#             return {"err_msg":"ERR:run.sh not present."}
-#     else:
-#         return {"err_msg":"ERR:contract.json not present."}
 
 def isValid(tar,r_zip):
-    file_data=""
-    with open(tar/'contract.json') as f:
-        file_data = json.load(f)
-    print(file_data)
-    new_app = aimodels(modelName = r_zip,
-                     path = AZURE_MODEL_PATH+"/"+r_zip,
-                     contract = json.dumps(file_data)
-                    )
-    new_app.save()
-    print("valid: line 53")
-    return {"succ_msg":"Valid Zip"}
+    var1=tar/"contract.json"
+    temp_file_present = file_present(tar,"contract.json")
+    if(temp_file_present['status']==1):
+        temp_file_present = file_present(tar,"model_demo_pickle.pkl")
+        if(temp_file_present['status']==1):
+            temp_val_contract = validate_contract(var1)
+            if(temp_val_contract['status'] == 1):
+                #if db.applications.find( { "appName": r_zip } ).count() > 0:
+                if aimodels.objects(modelName=r_zip).count()>0:
+                    return {"err_msg":"model already in database."}
+                else:
+                    #new_app = applications(app_id,r_zip,tar)
+                    try:
+                        file_data=""
+                        with open(tar/'contract.json') as f:
+                            file_data = json.load(f)
+                        print(file_data)
+                        new_app = aimodels(modelName = r_zip,
+                        path = AZURE_MODEL_PATH+"/"+r_zip,
+                        contract = json.dumps(file_data)
+                        )
+                        new_app.save()
+                    except Exception as e:
+                        return {"err_msg":e}
+
+                    print(new_app)
+                    #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
+                    return {"succ_msg":"Valid Zip"}
+            else:
+                return temp_val_contract
+        else:
+            return temp_file_present
+    else:
+        return temp_file_present
+
+# def isValid(tar,r_zip):
+#     file_data=""
+#     with open(tar/'contract.json') as f:
+#         file_data = json.load(f)
+#     print(file_data)
+#     new_app = aimodels(modelName = r_zip,
+#                      path = AZURE_MODEL_PATH+"/"+r_zip,
+#                      contract = json.dumps(file_data)
+#                     )
+#     new_app.save()
+#     print("valid: line 53")
+#     return {"succ_msg":"Valid Zip"}
 
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
