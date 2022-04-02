@@ -10,6 +10,7 @@ from AppUpload.validate import *
 from Utilities.models import applications
 from mongoengine.queryset.visitor import Q
 from pathlib import Path
+from Utilities.azure_config import *
 
 PATH = Path.cwd()/'Utilities/ApplicationCode' #Mandatory folder
 
@@ -67,10 +68,15 @@ def create_docker(input_file,tar):
     docker_file.close()
     return 1
 
-def create_zip(tar):
+def create_zip(r_zip,tar):
     os.remove(tar/'contract.json')
-    shutil.make_archive('zipfile_name', 'zip', tar)
-    #upload this zip to my folder.
+    my_file=shutil.make_archive(r_zip, 'zip', tar)
+    print(type(my_file))
+    create_dir(AZURE_APP_PATH,r_zip)
+    temp_path = AZURE_APP_PATH + "/" + r_zip
+    temp_file = r_zip + ".zip"
+    upload_file(temp_path,temp_file,r_zip,'application/zip')
+    os.remove(temp_file)
 
 def upload_app_file(request):
     err_msg=""
@@ -95,6 +101,6 @@ def upload_app_file(request):
     print(resp,"line 89")
     if 'succ_msg' in resp:
         if(create_docker(r_zip,tar)):
-            create_zip(tar)
+            create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
     return {"err_msg":"Invalid Zip"}
