@@ -9,9 +9,6 @@ from Utilities.dbconfig import *
 app = Flask(__name__)
 db=mongodb()
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Actor.db'
-#database_name = 'requestmanager_db'
-#DB_URI =  'mongodb+srv://kamal:kamal123@cluster0.lzygp.mongodb.net/{}?retryWrites=true&w=majority'.format(database_name)
 app.config['SECRET_KEY'] = 'root'
 
 def validate_token(t):
@@ -26,11 +23,14 @@ def token_required(f):
     def decorated(*args,**kwargs):
         token = None
 
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        
-        if  not token:
-            return jsonify({'message':'Token is missing'}), 401
+        try:
+            token = request.args.get('token')
+            print(token,"LIne 28")
+        except:
+            return jsonify({'message':'Token is missing 29'}), 401
+        # print(token)
+        # if  not token:
+        #     return jsonify({'message':'Token is missing 32'}), 401
 
         try:
             data = jwt.decode(token,app.config['SECRET_KEY'],algorithms=['HS256'])

@@ -2,7 +2,6 @@ import datetime
 import jwt
 from functools import wraps
 
-from matplotlib import use
 from RequestManager import db,app
 from Utilities.models import Actor
 from flask import jsonify,request
