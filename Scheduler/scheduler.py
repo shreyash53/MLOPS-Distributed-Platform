@@ -93,6 +93,7 @@ def send_to_deployment_service(type, services):
                 et=st+duration
                 uniq_id=service._id
                 db.Schedules.objects(_id=uniq_id).update(repetition=repeat,starttime=st,endtime=et)
+            # TODO: dropping the entry if repeat = 0
 
         producer.send(KAFKA_SCHEDULE_TOPIC, json.dumps(msg).encode('utf-8'))
     
