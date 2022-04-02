@@ -1,6 +1,8 @@
 from flask import Flask, request
 from dbconfig import *
+from dotenv import load_dotenv
 
+load_dotenv('.env')
 app = Flask(__name__)
 
 db = mongodb()
