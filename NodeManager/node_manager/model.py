@@ -10,3 +10,11 @@ class NodeDocument(Document):
     nodeSize = IntField()
     nodeKafkaTopicName = StringField()
 
+# class NodeUtilization(Document):
+#     node = ReferenceField(NodeDocument)
+#     cpu_utilization
+
+class RunningServices(Document):
+    serviceId = StringField()
+    seviceType = StringField(default='app') #app, model
+    node = ReferenceField(NodeDocument)

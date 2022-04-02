@@ -1,9 +1,12 @@
+from json import loads
 from time import sleep
-from .model import NodeDocument
-from kafka import KafkaConsumer, KafkaProducer
-from json import loads, dumps
-from utilities.constants import kafka_url, node_model, node_app
+
+from kafka import KafkaConsumer
 from mongoengine.queryset.visitor import Q
+from NodeManager.node_manager.deployment import deploy_app, deploy_models
+from utilities.constants import kafka_url
+
+from .model import NodeDocument
 
 
 def node_validated(node_data):
@@ -28,48 +31,6 @@ def add_all_nodes(nodes_data):
     return "Added Valid Nodes"
 
 
-def send_using_kafka(topic_name, data):
-    producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda x:
-                             dumps(x).encode('utf-8'))
-    producer.send(topic_name, data)
-    sleep(2)
-
-
-def find_appropriate_node(node_type):
-    nodes = NodeDocument.objects.filter(nodeType=node_type)
-    if not nodes:
-        print('Kindly add some nodes of type', node_type)
-        return
-    node = nodes.first()
-    return node
-
-
-def deploy_model(model_to_deploy):
-    try:
-        node = find_appropriate_node(node_model)
-        if not node:
-            return
-        send_using_kafka(node.nodeKafkaTopicName, model_to_deploy)
-        print('data sent to node: ', node.nodeName)
-    except Exception as e:
-        print('exception in node_manager.deploy_model', e)
-
-
-def deploy_models(models_to_deploy):
-    for model_ in models_to_deploy:
-        deploy_model(model_)
-
-
-def deploy_app(app_to_deploy):
-    try:
-        node = find_appropriate_node(node_app)
-        if not node:
-            return
-        send_using_kafka(node.nodeKafkaTopicName, app_to_deploy)
-    except Exception as e:
-        print('exception in node_manager.deploy_app', e)
-
-
 def handle_deployment():
     try:
         consumer_data = KafkaConsumer(
@@ -82,7 +43,12 @@ def handle_deployment():
         )
 
         print(consumer_data)
-        deploy_models(consumer_data['models'])
-        deploy_app(consumer_data['app'])
+        if consumer_data['requesttype'] == 'start':
+            deploy_models(consumer_data['models'])
+            deploy_app(consumer_data['app'])
+        else:
+            terminate_models(consumer_data['models'])
+            terminate_app(consumer_data['app'])
+
     except Exception as e:
         print('Error in node_manager.handle_deployment', e)
