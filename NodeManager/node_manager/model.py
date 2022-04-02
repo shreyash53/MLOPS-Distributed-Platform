@@ -8,5 +8,5 @@ class NodeDocument(Document):
     nodeUrl = URLField()
     nodeType = StringField(default="platform") #platform, node_app, node_model
     nodeSize = IntField()
-    nodeKafkaTopicName = StringField(required=True)
+    nodeKafkaTopicName = StringField()
 
