@@ -1,7 +1,6 @@
 from time import sleep
 from flask import Flask, request
 import json
-from mongoengine.document import Document
 from mongoengine.fields import *
 import threading
 import datetime
@@ -27,18 +26,6 @@ class Schedules(db.Document):
     endtime = db.DateTimeField(required=True)
     duration = db.DateTimeField(required=False)
     sensors = db.StringField(required=True)
-
-    def to_json(self):
-        return {
-            "app_instance_id": self.app_instance_id,
-            "app_name": self.app_name,
-            "app_id": self.app_id,
-            "starttime": self.starttime,
-            "repetition": self.repetition,
-            "interval": self.interval,
-            "endtime": self.endtime,
-            "sensors": self.sensors
-        }
 
 
 def get_app_instance_id():
