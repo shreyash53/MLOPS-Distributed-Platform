@@ -69,30 +69,43 @@ def parsedatetime(date_time_str):
 def send_to_deployment_service(type, services):
     producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
-    if services is None:
+    if services is None or []:
         producer.close()
         print("No services to start")
         return
     for service in services:
         msg = {
-            "app_instance_id": service['_id'],
-            "app_name": service['app_name'],
+            "app_instance_id": service._id,
+            "app_name": service.app_name,
             "request_type": type,
-            "app_id": service['app_id'],
-            "sensors": service['sensors']
+            "app_id": service.app_id,
+            "sensors": service.sensors
         }
+        if type=="stop":
+            repeat=service.repetition
+            if repeat>0:
+                repeat=repeat-1
+                st=service.starttime
+                et=service.endtime
+                duration=et-st
+                inter=service.interval
+                st=et+inter
+                et=st+duration
+                uniq_id=service._id
+                db.Schedules.objects(_id=uniq_id).update(repetition=repeat,starttime=st,endtime=et)
+
         producer.send(KAFKA_SCHEDULE_TOPIC, json.dumps(msg).encode('utf-8'))
     
     producer.close()
 
 
 def get_start_services_bw(starttime, endtime):
-    res = json.loads(Schedules.objects(starttime__lte=endtime, starttime__gt=starttime).to_json())
+    res = Schedules.objects(starttime__lte=endtime, starttime__gt=starttime)
     return res
 
 
 def get_end_services_bw(starttime, endtime):
-    res = json.loads(Schedules.objects(endtime__lte=endtime, endtime__gt=starttime).to_json())
+    res = Schedules.objects(endtime__lte=endtime, endtime__gt=starttime)
     return res
 
 
