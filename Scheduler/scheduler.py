@@ -5,9 +5,9 @@ from mongoengine.document import Document
 from mongoengine.fields import *
 import threading
 import datetime
-from kafka import KafkaConsumer
 from kafka import KafkaProducer
 
+from Utilities.constant import *
 from dbconfig import *
 from json import dumps
 
@@ -45,7 +45,7 @@ def get_app_instance_id():
     initstr=last_id[:4]+str(last_num)
     return initstr
 
-Scheduling
+
 @app.route('/schedule_application',methods=['POST'])
 def scheduleapplication():
     try:
@@ -69,14 +69,6 @@ def scheduleapplication():
 def parsedatetime(date_time_str):
     return datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
-def get_cur_Time():
-    cur_datetime = datetime.datetime.now()
-    IST_date_time = cur_datetime + datetime.timedelta(minutes = 330)
-    IST_date_time = str(IST_date_time)
-    date, time = IST_date_time.split(' ')
-    cur_time = (time.split('.'))[0]
-    hour, minute, second = cur_time.split(':')
-    return date, hour, minute
 
 
 # def getKafka_credentials():
