@@ -85,7 +85,16 @@ def create_zip(r_zip,tar):
     temp_path = AZURE_MODEL_PATH + "/" + r_zip
     temp_file = r_zip + ".zip"
     upload_file(temp_path,temp_file,r_zip,'application/zip')
-    #os.remove(temp_file)
+    os.remove(temp_file)
+    location1=Path.cwd()/"Utilities/ModelZip/"
+    location2=Path.cwd()/"Utilities/ModelCode/"
+    r_zip1=r_zip+".zip"
+    path1 = os.path.join(location1, r_zip)
+    path2 = os.path.join(location2, r_zip1)
+    print(path1)
+    print(path2)
+    shutil.rmtree(path1)
+    os.remove(path2) 
 
 def generate_model_api(store_path):
     template_file = open('Utilities/model_api.py', 'r')
