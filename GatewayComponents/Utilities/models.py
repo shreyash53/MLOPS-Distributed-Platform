@@ -13,12 +13,24 @@ class Actor(db.Document):
         }
 
 class applications(db.Document):
-    #appid = db.IntField(required=True)
     appName = db.StringField(required=True,unique=True)
     path = db.StringField(required=True)
+    contract= db.StringField(required=True)
 
     def to_json(self):
         return {
             "appName": self.appName,
-            "path":self.path
+            "path":self.path,
+            "contract":self.contract
+        }
+
+class aimodels(db.Document):
+    modelName = db.StringField(required=True,unique=True)
+    path = db.StringField(required=True),
+    contract = db.StringField(required=True)
+    def to_json(self):
+        return {
+            "appName": self.appName,
+            "path":self.path,
+            "contract":self.contract
         }
