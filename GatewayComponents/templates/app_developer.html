@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Developer Homepage</title>
+</head>
+
+<body>
+    {% if sensor_details %}
+    <p class="h1">Available Sensors Type</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Sensor Type</th>
+                <th scope="col">Sensor Data Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(sensor_details|length) %}
+            <tr>
+                <th scope="row">{{ i+1 }}</th>
+                <td>{{ sensor_details[i][0] }}</td>
+                <td>{{ sensor_details[i][1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <hr>
+    {% if model_details %}
+    <p class="h1">Available Models</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Model Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(model_details|length) %}
+            <tr>
+                <th scope="row">{{ i }}</th>
+                <td>{{ model_details[i] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <hr>
+    <form action="/app_developer/upload_app" method="POST" enctype="multipart/form-data">
+        <input type="file" name="app" />
+        <input type="submit" value="Upload Application" />
+    </form>
+    {% if err_msg %}
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: none;">{{ err_msg }}</div>
+    {% endif %}
+    {% if succ_msg %}
+    <div class="alert alert-success" role="alert" id="login_err_msg" style="display: none;">{{ succ_msg }}</div>
+    {% endif %}
+</body>
+
+</html>

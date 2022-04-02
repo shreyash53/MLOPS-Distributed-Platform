@@ -36,15 +36,42 @@ def token_required(f):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('signup.html')
+
+@app.route('/login_')
+def login_render():
+    return render_template('login.html')
 
 @app.route('/signup',methods=["POST"])
 def signup_req():
-    return jsonify(signup(request))
+    resp = signup({  'username':request.form['username']  ,  'password':request.form['password']  ,  'role':request.form['role']  })
+    if 'succ_msg' in resp:
+        return render_template('signup.html',succ_msg=resp['succ_msg'])
+    else:
+        return render_template('signup.html',err_msg=resp['err_msg'])
 
 @app.route('/login',methods=["POST"])
 def login_req():
     return jsonify(login(request))
+
+@app.route('/app_developer',methods=["POST"])
+# @token_required
+def app_developer_view():
+# def app_developer_view(current_user):
+    # if current_user.role != 'app_developer':
+    #     return 'Invalid Request(Role Mismatch)'
+    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
+    model_details = ['m1','m2','m3']
+    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
+
+@app.route('/platform_admin',methods=["POST"])
+@token_required
+def platform_admin_view(current_user):
+    if current_user.role != 'platform_admin':
+        return 'Invalid Request(Role Mismatch)'
+    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
+    model_details = ['m1','m2','m3']
+    return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details)
 
 @app.route('/protected',methods=['POST'])
 @token_required
@@ -57,7 +84,14 @@ def upload_app(current_user):
     if current_user.role != 'app_developer':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401   
     print(request.files.lists) 
-    return jsonify(upload_app_file(request))
+    resp = upload_app_file(request)
+    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
+    model_details = ['m1','m2','m3']
+    if 'err_msg' in resp:
+        return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
+    elif 'succ_msg' in resp:
+        return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details,succ_msg=resp['succ_msg'])
+    return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details)
 
 @app.route('/data_scientist/upload_model',methods=['POST'])
 @token_required
