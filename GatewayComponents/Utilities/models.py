@@ -24,6 +24,19 @@ class applications(db.Document):
             "contract":self.contract
         }
 
+<<<<<<< HEAD
+=======
+class aimodels(db.Document):
+    modelName = db.StringField(required=True,unique=True)
+    path = db.StringField(required=True),
+    contract = db.StringField(required=True)
+    def to_json(self):
+        return {
+            "appName": self.modelName,
+            "path":self.path,
+            "contract":self.contract
+        }
+>>>>>>> 2dd08d98f443017aad132677d936b9a44403270d
 
 class aimodels(db.Document):
     #appid = db.IntField(required=True)
