@@ -28,7 +28,14 @@ class Schedules(db.Document):
 
 
 def get_app_instance_id():
-    last_id = Schedules.objects.order_by('-app_instance_id').first()
+    last_id = Schedules.objects.order_by('-_id').first()
+    last_id = json.loads(last_id.to_json())
+
+    if last_id is None:
+        last_id = "AII_1"
+    else:
+        last_id = last_id['_id']
+
     last_num = int(last_id[4:])
     last_num = last_num+1
     initstr = last_id[:4]+str(last_num)
