@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        function POST_API(data, endpoint) {
+            var response = $.ajax({
+                type: "POST",
+                url: endpoint,
+                dataType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (resp) {
+                    return resp
+                }
+            });
+            return response
+        }
+
+        function GET_API(data, endpoint) {
+            $.ajax({
+                type: "POST",
+                url: endpoint,
+                dataType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify({ data }),
+                success: function (resp) {
+                    return resp
+                }
+            });
+        }
+
+        function GET_API(endpoint) {
+            $.ajax({
+                type: "POST",
+                url: endpoint,
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (resp) {
+                    return resp
+                }
+            });
+        }
+    </script>
+    <title>Platform Homepage-LogIn</title>
+</head>
+
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">SignUp </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/login_">Login <span class="sr-only">(current)</span> </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <!-- <form action="login()" method="POST" enctype="multipart/form-data"> -->
+    <input id="username" type="text" name="username" placeholder="username" required>
+    <input id="password" type="password" name="password" placeholder="password" required>
+    <select name="role" id="role" required>
+        <option value="app_developer">Application Developer</option>
+        <option value="data_scientist">Data Scientist</option>
+        <option value="end_user">End User</option>
+        <option value="platform_admin">Platform Admin</option>
+    </select>
+    <button type="submit" onclick="login()" value="LogIn">LogIn</button>
+    <!-- </form> -->
+
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: none;">
+    </div>
+    <script>
+        function login() {
+
+            console.log(document.getElementById("username").value);
+            console.log(document.getElementById("password").value);
+            console.log(document.getElementById("role").value);
+            req = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                role: document.getElementById("role").value
+            }
+            $.ajax({
+                type: "POST",
+                url: "/login",
+                dataType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify(req),
+                success: function (resp) {
+                    if ('err_msg' in resp) {
+                        document.getElementById('login_err_msg').innerHTML = resp['err_msg']
+                        document.getElementById('login_err_msg').style.display = 'block'
+                    }
+                    else {
+                        console.log(resp)
+                        sessionStorage.setItem("user_token", resp['token'])
+                        // console.log(sessionStorage.getItem("user_token"))
+                        // window.location.href = "/" + resp['role'];
+                        $.ajax({
+                            type: "POST",
+                            url: '/'+resp['role'],
+                            dataType: "json",
+                            data: JSON.stringify(),
+                            beforeSend: function(xhr){xhr.setRequestHeader('x-access-token', resp['token']);},
+                            contentType: 'application/json;charset=UTF-8',
+                                success: function (resp1) {
+                                    console.log(resp1);
+                                }
+                    });
+            // resp = POST_API({}, "/" + resp['role'])
+            // sessionStorage.getItem("user_token")
+            // sessionStorage.removeItem('itemName');
+            // sessionStorage.clear();
+        }
+                }
+            });
+
+
+        }
+    </script>
+
+
+</body>
+
+</html>

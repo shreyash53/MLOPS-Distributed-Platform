@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Platform Homepage-Signup</title>
+</head>
+<body>
+
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">SignUp <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/login_">Login</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+      <form action="/signup" method="POST" enctype="multipart/form-data">
+        <input type="text" name="username" placeholder="username">
+        <input type="password" name="password"placeholder="password">
+        <select name="role" id="role">
+          <option value="app_developer">Application Developer</option>
+          <option value="data_scientist">Data Scientist</option>
+          <option value="end_user">End User</option>
+          <option value="platform_admin">Platform Admin</option>
+        </select>
+        <input type="submit" value="SignUp">
+      </form>
+      {% if err_msg %}
+      <p>{{ err_msg }}</p>
+      {% endif %}
+
+      {% if succ_msg %}
+      <p>{{ succ_msg }}</p>
+      {% endif %}
+</body>
+</html>
