@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
+from ModelUpload.Model_Upload import *
 from Utilities.dbconfig import *
 app = Flask(__name__)
 db=mongodb()
@@ -64,7 +65,7 @@ def upload_app(current_user):
 def upload_model(current_user):
     if current_user.role != 'data_scientist':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+    return jsonify(upload_model_file(request))
 
 @app.route('/end_user/use_app',methods=['POST'])
 @token_required
