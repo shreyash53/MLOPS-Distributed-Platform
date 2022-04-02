@@ -58,7 +58,7 @@ def scheduleapplication():
 
         new_schedule.save()
     except Exception as e:
-        return e
+        return "Error : " + str(e)
     return "OK"
 
 
@@ -67,8 +67,12 @@ def parsedatetime(date_time_str):
 
 
 def send_to_deployment_service(type, services):
-    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS, value_serializer=lambda x:
-                             dumps(x).encode('utf-8'))
+    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
+
+    if services is None:
+        producer.close()
+        print("No services to start")
+        return
     for service in services:
         msg = {
             "app_instance_id": service['_id'],
@@ -83,13 +87,12 @@ def send_to_deployment_service(type, services):
 
 
 def get_start_services_bw(starttime, endtime):
-    res = Schedules.objects('starttime', kwargs={
-                            "$lte": endtime, "$gt": starttime}).to_json()
+    res = json.loads(Schedules.objects(starttime__lte=endtime, starttime__gt=starttime).to_json())
     return res
 
 
 def get_end_services_bw(starttime, endtime):
-    res = Schedules.objects('endtime', kwargs={"$lte": endtime, "$gt": starttime}).to_json()
+    res = json.loads(Schedules.objects(endtime__lte=endtime, endtime__gt=starttime).to_json())
     return res
 
 
