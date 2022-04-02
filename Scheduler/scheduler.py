@@ -63,7 +63,7 @@ def scheduleapplication():
 
 
 def parsedatetime(date_time_str):
-    return datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
+    return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
 
 def send_to_deployment_service(type, services):
@@ -71,7 +71,7 @@ def send_to_deployment_service(type, services):
                              dumps(x).encode('utf-8'))
     for service in services:
         msg = {
-            "app_instance_id": service['app_instance_id'],
+            "app_instance_id": service['_id'],
             "app_name": service['app_name'],
             "request_type": type,
             "app_id": service['app_id'],
@@ -109,5 +109,5 @@ class SchedulingService(threading.Thread):
             to_start = get_start_services_bw(slotbegin, slotend)
             to_end = get_end_services_bw(slotbegin, slotend)
 
-            send_to_deployment_service('start',to_start)
-            send_to_deployment_service('stop',to_end)
+            send_to_deployment_service('start', to_start)
+            send_to_deployment_service('stop', to_end)
