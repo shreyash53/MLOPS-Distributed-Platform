@@ -26,9 +26,13 @@ def isValid(tar,r_zip):
                 else:
                     #new_app = applications(app_id,r_zip,tar)
                     try:
+                        file_data=""
+                        with open(tar/'contract.json') as f:
+                            file_data = json.load(f)
                         new_app = applications(
                         appName = r_zip,
-                        path = str(tar)
+                        path = str(tar),
+                        contract = str(file_data)
                         )
                         new_app.save()
                     except Exception as e:

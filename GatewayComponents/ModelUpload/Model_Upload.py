@@ -7,7 +7,7 @@ import re
 import json
 import shutil
 from AppUpload.validate import *
-from Utilities.models import models
+from Utilities.models import aimodels
 from mongoengine.queryset.visitor import Q
 from pathlib import Path
 
@@ -46,12 +46,13 @@ mydir=Path.cwd()/'NewZip'
 #         return {"err_msg":"ERR:contract.json not present."}
 
 def isValid(tar,r_zip):
-    file_data
+    file_data=""
     with open(tar/'contract.json') as f:
         file_data = json.load(f)
-    new_app = models(modelName = r_zip,
+    print(file_data)
+    new_app = aimodels(modelName = r_zip,
                      path = str(tar),
-                     contract = file_data
+                     contract = json.dumps(file_data)
                     )
     new_app.save()
     print("valid: line 53")
