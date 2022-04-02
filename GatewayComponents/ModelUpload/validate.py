@@ -65,7 +65,7 @@ def validate_contract(contract):
     contract_file = open(contract)
     contract_data = json.load(contract_file)
 
-    key = ["model_name", "pickle_file_name", "procedures"]
+    key = ["model_name", "pickle_file_name", "procedures","dependencies"]
     contract_key = key_exist(contract_data, key)
     if contract_key['status'] == 1:
         contract_data =  data_exist(contract_data, key)
