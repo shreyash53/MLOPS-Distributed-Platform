@@ -81,8 +81,19 @@
     <button type="submit" onclick="login()" value="LogIn">LogIn</button>
     <!-- </form> -->
 
-    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: none;">
-    </div>
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: none;"></div>
+
+    {% if err_msg %}
+      <div class="alert alert-danger" role="alert" style="display: none;">{{ err_msg }}</div>
+      {% endif %}
+
+      {% if succ_msg %}
+      <div class="alert alert-success" role="alert" style="display: none;">{{ succ_msg }}</div>
+      {% endif %}
+
+    <!-- <form action="/app_developer" method="post" hidden>
+        <input type="submit" value="app_developer" id="app_developer_button">
+    </form> -->
     <script>
         function login() {
 
@@ -109,23 +120,31 @@
                         console.log(resp)
                         sessionStorage.setItem("user_token", resp['token'])
                         // console.log(sessionStorage.getItem("user_token"))
-                        // window.location.href = "/" + resp['role'];
-                        $.ajax({
-                            type: "POST",
-                            url: '/'+resp['role'],
-                            dataType: "json",
-                            data: JSON.stringify(),
-                            beforeSend: function(xhr){xhr.setRequestHeader('x-access-token', resp['token']);},
-                            contentType: 'application/json;charset=UTF-8',
-                                success: function (resp1) {
-                                    console.log(resp1);
-                                }
-                    });
-            // resp = POST_API({}, "/" + resp['role'])
-            // sessionStorage.getItem("user_token")
-            // sessionStorage.removeItem('itemName');
-            // sessionStorage.clear();
-        }
+
+
+                        // document.getElementById(resp['role']+"_button").click()
+                        window.location.href='/'+resp['role']+'?token='+resp['token']
+
+
+                    //    $.ajax({
+                     //       type: "GET",
+                     //       url: '/' + resp['role'],
+                       //     dataType: "json",
+                         //   data: JSON.stringify(),
+                           // beforeSend: function (xhr) { xhr.setRequestHeader('x-access-token', resp['token']); },
+                         //   contentType: 'application/json;charset=UTF-8',
+                         //   success: function (resp1) {
+                          //      console.log("App Developer POST API call")
+                          //      console.log(resp1);
+                          //  }
+                       // });
+
+
+                        // resp = POST_API({}, "/" + resp['role'])
+                        // sessionStorage.getItem("user_token")
+                        // sessionStorage.removeItem('itemName');
+                        // sessionStorage.clear();
+                    }
                 }
             });
 

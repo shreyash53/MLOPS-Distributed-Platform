@@ -23,11 +23,11 @@ def signup(req):
 
 def login(req):
     req = req.get_json()
-    print("REQUEST IN AUTHENTICATOR:",req)
+    # print("REQUEST IN AUTHENTICATOR:",req)
     username = req['username']
     password = req['password']
     role = req['role']
-    print(username,password,role)
+    # print(username,password,role)
     if Actor.objects(username = username).count() == 0:
         return {'err_msg':'User not found'}
     if Actor.objects(username = username , role = role).count() == 0:
