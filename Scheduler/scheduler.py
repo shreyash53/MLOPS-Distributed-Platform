@@ -100,7 +100,7 @@ def get_services_bw(starttime, endttime):
     res = Schedules.objects(kwargs={"$lte" : endttime, "$gt" : starttime})
     return res
 
-class StartService(threading.Thread):
+class SchedulingService(threading.Thread):
     def __init__(self): 
         threading.Thread.__init__(self) 
     
@@ -117,11 +117,3 @@ class StartService(threading.Thread):
 
 
             # send_to_deployment_service('start',appid)
-
-
-class EndService(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        pass
