@@ -2,7 +2,6 @@
 
 ## Files
 1. `notificationmanager.py` - Web API for sending and fetching notifs.
-2. `notificationlistener.py` - KafkaConsumer listening for the topic 'notifications'
 
 ## Endpoints exposed
 ### 1. /notify - ("POST")
