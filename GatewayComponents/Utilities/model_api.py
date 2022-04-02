@@ -10,14 +10,14 @@ app = Flask(__name__)
 
 @app.route('/get_result', methods=['POST'])
 def get_result():
-    mdict = request.json
+    mdict = request.json()
     array = pd.DataFrame(mdict)
 
     pickle_file = open('<pickle_file_path>', 'rb')
     model = pickle.load(pickle_file)
-    res = model.<preprocess_fun_name>(array)
-    res = model.<predict_fun_name>(array)
-    res = model.<postprocess_fun_name>(array)
+    res = model.<preprocess_fun_name>(<preprocessing_para_name>)
+    res = model.<predict_fun_name>(<predict_para_name>)
+    res = model.<postprocess_fun_name>(<postprocessing_para_name>)
     pickle_file.close()
     return str(res)
 

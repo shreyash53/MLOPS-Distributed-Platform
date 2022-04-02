@@ -34,8 +34,8 @@ def isValid(tar,r_zip):
                             file_data = json.load(f)
                         new_app = applications(
                         appName = r_zip,
-                        path = str(tar),
-                        contract = str(file_data)
+                        path = AZURE_APP_PATH+"/"+r_zip,
+                        contract = json.loads(file_data)
                         )
                         new_app.save()
                     except Exception as e:
@@ -77,6 +77,13 @@ def create_zip(r_zip,tar):
     temp_file = r_zip + ".zip"
     upload_file(temp_path,temp_file,r_zip,'application/zip')
     os.remove(temp_file)
+    # location1=Path.cwd()/"Utilities/ApplicationZip"
+    # location2=Path.cwd()/"Utilities/ApplicationCode"
+    # r_zip1=r_zip+".zip"
+    # path1 = os.path.join(location1, r_zip)
+    # path2 = os.path.join(location1, r_zip)
+    # os.remove(path1)
+    # os.remove(path2) 
 
 def upload_app_file(request):
     err_msg=""
