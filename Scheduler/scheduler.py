@@ -99,7 +99,6 @@ class SchedulingService(threading.Thread):
 
     def run(self):
         while(True):
-            sleep(60)
             # TODO : A late request from RM can cause events to be missed
 
             now = datetime.datetime.now()
@@ -111,6 +110,13 @@ class SchedulingService(threading.Thread):
 
             send_to_deployment_service('start', to_start)
             send_to_deployment_service('stop', to_end)
+
+            # print(slotbegin)
+            # print(slotend)
+            # print(to_start)
+            # print(to_end)
+            # print("Started")
+            sleep(600)
 
 
 
