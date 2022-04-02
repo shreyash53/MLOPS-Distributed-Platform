@@ -111,3 +111,8 @@ class SchedulingService(threading.Thread):
 
             send_to_deployment_service('start', to_start)
             send_to_deployment_service('stop', to_end)
+
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8001, debug=True)
