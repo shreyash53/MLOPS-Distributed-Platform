@@ -1,13 +1,11 @@
-from crypt import methods
 from flask import Flask, request, jsonify, make_response,render_template
-
 
 app = Flask(__name__)
 
 @app.route('/sensor_validate', methods=["POST"])
 def sensor_validate():
     sensor_data = request.get_json()
-    for i in sensor_data['details']:
+    for i in sensor_data["Details"]:
         if(i['sensortype']=='camera' or i['sensortype']=='microphone'):
             pass
         else:

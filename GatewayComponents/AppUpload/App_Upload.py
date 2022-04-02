@@ -16,10 +16,12 @@ PATH = Path.cwd()/'Utilities/ApplicationCode' #Mandatory folder
 def isValid(tar,r_zip):
     #db.createCollection("applications")
     var1=tar/"contract.json"
-    if(file_present(tar,"contract.json")):
-        if(file_present(tar,"run.sh")):
-            if(validate_contract(var1)):
-                print("hello")
+    temp_file_present = file_present(tar,"contract.json")
+    if(temp_file_present['status']==1):
+        temp_file_present = file_present(tar,"run.sh")
+        if(temp_file_present['status']==1):
+            temp_val_contract = validate_contract(var1)
+            if(temp_val_contract['status'] == 1):
                 #if db.applications.find( { "appName": r_zip } ).count() > 0:
                 if applications.objects(appName=r_zip).count()>0:
                     return {"err_msg":"application already in database."}
@@ -42,11 +44,11 @@ def isValid(tar,r_zip):
                     #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
                     return {"succ_msg":"Valid Zip"}
             else:
-                return {"err_msg":"ERR:contract.json seems invalid."}
+                return temp_val_contract
         else:
-            return {"err_msg":"ERR:run.sh not present."}
+            return temp_file_present
     else:
-        return {"err_msg":"ERR:contract.json not present."}
+        return temp_file_present
 
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:

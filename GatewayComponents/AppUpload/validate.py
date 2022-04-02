@@ -35,7 +35,8 @@ def key_exist(data,key):
                 sensor_data = {
                     "Details": data[i]
                 }
-                res = requests.post(URL,json=sensor_data).content()
+                res = requests.post(URL,json=sensor_data).json()
+                print(res,"line 39 validate")
                 if(res['status']==0):
                     return error(res['sensorid'],"Sensor Type Not Present")
             elif(i == "models"):
@@ -43,7 +44,7 @@ def key_exist(data,key):
                     model_temp = model_validate(j)
                     if model_temp['status'] == 0:
                         return model_temp
-                    if aimodels.object(modelName=data[i]['modelname']).count()==0:
+                    if aimodels.objects(modelName=j['modelname']).count()==0:
                         return error(data[i]['modelname'],"Not Present")
         else:   
             return error(i,"Not Found")
@@ -68,7 +69,7 @@ def data_exist(data, key):
 
 
 def sensors_validate(data):
-    key = ["sensorname", "sensorid", "sensortype", "sensordatatye"]
+    key = ["sensorname", "sensorid", "sensortype", "sensordatatype"]
     check_key = key_exist_2(data, key)
     if check_key['status'] == 1:
         check_data = data_exist(data, key)
@@ -81,7 +82,7 @@ def sensors_validate(data):
 
 
 def model_validate(data):
-    key = ["modelname", "modelid", "modelloc"]
+    key = ["modelname", "modelid"]
     check_key = key_exist_2(data, key)
     if check_key['status'] == 1:
         check_data = data_exist(data, key)
