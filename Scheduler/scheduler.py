@@ -17,14 +17,13 @@ db = mongodb()
 
 
 class Schedules(db.Document):
-    app_instance_id = db.StringField(primary=True)
+    _id = db.StringField(primary_key=True)
     app_name = db.StringField(required=True)
     app_id = db.StringField(required=True)
     starttime = db.DateTimeField(required=True)
     repetition = db.IntField(required=True)
     interval = db.StringField(required=True)
     endtime = db.DateTimeField(required=True)
-    duration = db.DateTimeField(required=False)
     sensors = db.StringField(required=True)
 
 
