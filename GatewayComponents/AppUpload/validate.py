@@ -4,7 +4,7 @@ from os import path
 import requests
 from Utilities.models import aimodels
 
-URL = 'http://127.0.0.1/sensor_validate'
+URL = 'http://127.0.0.1:9000/sensor_validate'
 
 def error(val, error_name):
     msg = "Key Error: {} {}!".format(val, error_name)
@@ -45,7 +45,6 @@ def key_exist(data,key):
                         return model_temp
                     if aimodels.object(modelName=data[i]['modelname']).count()==0:
                         return error(data[i]['modelname'],"Not Present")
-
         else:   
             return error(i,"Not Found")
     return succ("All Keys Present")
