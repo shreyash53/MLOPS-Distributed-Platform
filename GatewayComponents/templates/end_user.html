@@ -7,6 +7,14 @@
     <title>End User Homepage</title>
 </head>
 <body>
-    
+    <form action="">
+        <input list="apps" name="app">
+        <datalist id="apps">
+        {% for i in apps %}
+        <option value="{{ i }}">
+        {% endfor %}
+        </datalist>
+        <input type="submit">
+      </form>
 </body>
 </html>

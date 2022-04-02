@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import true
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
@@ -12,6 +13,13 @@ db=mongodb()
 #database_name = 'requestmanager_db'
 #DB_URI =  'mongodb+srv://kamal:kamal123@cluster0.lzygp.mongodb.net/{}?retryWrites=true&w=majority'.format(database_name)
 app.config['SECRET_KEY'] = 'root'
+
+def validate_token(t):
+    try:
+        data = jwt.decode(t,app.config['SECRET_KEY'],algorithms=['HS256'])
+        return True
+    except:
+        return False
 
 def token_required(f):
     @wraps(f)
@@ -55,24 +63,54 @@ def signup_req():
 def login_req():
     return jsonify(login(request))
 
-@app.route('/app_developer',methods=["POST"])
+@app.route('/app_developer',methods=["GET","POST"])
 # @token_required
 def app_developer_view():
 # def app_developer_view(current_user):
     # if current_user.role != 'app_developer':
     #     return 'Invalid Request(Role Mismatch)'
+    if 'token' in request.args:
+        if not validate_token(request.args.get("token")):
+            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
+    
     sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
     model_details = ['m1','m2','m3']
+    print(sensor_details,model_details)
     return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
 
-@app.route('/platform_admin',methods=["POST"])
-@token_required
-def platform_admin_view(current_user):
-    if current_user.role != 'platform_admin':
-        return 'Invalid Request(Role Mismatch)'
-    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
-    model_details = ['m1','m2','m3']
-    return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details)
+@app.route('/platform_admin',methods=["GET","POST"])
+# @token_required
+# def platform_admin_view(current_user):
+def platform_admin_view():
+    # if current_user.role != 'platform_admin':
+    #     return 'Invalid Request(Role Mismatch)'
+    if 'token' in request.args:
+        if not validate_token(request.args.get("token")):
+            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
+    return render_template('platform_admin.html')
+
+@app.route('/data_scientist',methods=["GET","POST"])
+# @token_required
+# def platform_admin_view(current_user):
+def data_scientist_view():
+    # if current_user.role != 'platform_admin':
+    #     return 'Invalid Request(Role Mismatch)'
+    if 'token' in request.args:
+        if not validate_token(request.args.get("token")):
+            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
+    return render_template('data_scientist.html')
+
+@app.route('/end_user',methods=["GET","POST"])
+# @token_required
+# def platform_admin_view(current_user):
+def end_user_view():
+    # if current_user.role != 'platform_admin':
+    #     return 'Invalid Request(Role Mismatch)'
+    if 'token' in request.args:
+        if not validate_token(request.args.get("token")):
+            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
+    apps = ['a1','a2','a3','a4','a5']
+    return render_template('end_user.html',apps=apps)
 
 @app.route('/protected',methods=['POST'])
 @token_required
