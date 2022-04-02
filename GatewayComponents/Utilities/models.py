@@ -30,7 +30,7 @@ class aimodels(db.Document):
     contract = db.StringField(required=True)
     def to_json(self):
         return {
-            "appName": self.appName,
+            "appName": self.modelName,
             "path":self.path,
             "contract":self.contract
         }
