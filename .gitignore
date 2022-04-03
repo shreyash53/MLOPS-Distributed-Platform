@@ -1,4 +1,6 @@
-
+shra
 *.pyc
-.gitignore
-.env
+*.env
+.dockerignore
+logging_dockerfile_code.txt
+*.ipynb
