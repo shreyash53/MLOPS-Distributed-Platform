@@ -212,10 +212,8 @@ def sensor_bind(current_user):
     if "error" in resp:
         return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors")
     elif "Success_Message" in resp:
+        pass
 
     
-
-
-
 if __name__ == '__main__':
     app.run(debug=True)
