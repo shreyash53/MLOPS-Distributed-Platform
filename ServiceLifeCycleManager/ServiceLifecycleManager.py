@@ -68,8 +68,8 @@ def dead_service():
 	print(data)
 	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
-
-	sv.updatedb({"service_name" : name }, {"state" : "dead"})
+	print(obj[0].state)
+	sv.updatedb({"instance_id" : name }, {"state" : "dead"})
 	
 	# restart
 	# if obj.service_type ==  "platform_service":

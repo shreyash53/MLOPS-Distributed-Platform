@@ -18,7 +18,7 @@ db = mongodb()
 
 
 class slcm(db.Document):
-    instance_id = db.IntField()
+    instance_id = db.StringField()
     service_type = db.StringField()
     service_name = db.StringField()
     state = db.StringField()
