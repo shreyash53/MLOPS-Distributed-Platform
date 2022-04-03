@@ -6,9 +6,8 @@ import threading
 import datetime
 from kafka import KafkaProducer
 
-from constant import *
+from utilities.constant import *
 from dbconfig import *
-from json import JSONDecodeError
 
 
 app = Flask(__name__)
