@@ -32,7 +32,7 @@ class aimodels(db.Document):
 
 def appdeploy():
     consumer = KafkaConsumer(
-    'scheduler12',
+    'schedule',
      bootstrap_servers=['localhost:9092'],
     auto_offset_reset='earliest', 
      enable_auto_commit=True,
@@ -46,16 +46,28 @@ def appdeploy():
     for message in consumer:
         message = message.value
         appName=message.get("app_name")
+        print()
+        print()
         print('{} added to {}'.format(appName, message))
         app= applications.objects(appName=appName).first()
+        print()
+        print()
+        print(app)
+        print("b n")
+        if(app==None):
+            continue
+        print("a n")
+        print()
+        print()
         print()
         print(app.to_json())
         app=app.to_json()
         loc=app.get('path')
-        appId=app.get('_id')
+        appId=message.get("app_id")
         contract=app.get('contract')
-        print(contract)
         contract=json.loads(contract)
+        print()
+        print()
         print()
         print(contract)
         appInstanceId=message.get('app_instance_id')
@@ -64,11 +76,18 @@ def appdeploy():
         app_details["appName"]=appName
         app_details["appLoc"]=loc
         app_details["appInstanceId"]=appInstanceId
+        print()
+        print()
         print(app_details)
         models = contract["models"]
+        sensors_list=contract["sensors"]
         models_list=[]
         print()
+        print()
         print(models)
+        print()
+        print()
+        print(sensors_list)
         for model in models:
             model_details={}
             modelId=model.get("modelid")
@@ -77,25 +96,44 @@ def appdeploy():
             print(modelname)
             model_app= aimodels.objects(modelName=modelname).first()
             model_app=model_app.to_json()
-            print(model_app)
+            # print(model_app)
             model_location=model_app.get("path")
             model_details["model_Id"]=modelId
             model_details["model_name"]=modelname
             model_details["model_location"]=model_location
             models_list.append(model_details)
+        print("Model list")
         print(models_list)
         sensors=message.get("sensors")
-        print(sensors)
-        data_sensor={
-            "sensor_list":sensors
-        }
+        sen_lis=[]
+        for each_sensor in sensors_list:
+            sen={}
+            print()
+            print()
+            print(each_sensor)
+            for each_bindings in sensors:
+                if each_sensor['sensorname']==each_bindings['sensor_name']:
+                    sen["sensor_app_id"]=each_sensor['sensorid']
+                    sen["sensor_name"]=each_sensor['sensorname']
+                    sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
+                    sen_lis.append(sen)
+
+        print()
+        print()
+        print("Final_sensor_list")            
+        print(sen_lis)
+        # data_sensor={
+        #     "sensor_list":sensors
+        # }
         data_app={
             "app":app_details,
             "models":models_list,
-            "request_type":message.get('request_type')
+            "request_type":message.get('request_type'),
+            "sensors":sen_lis
        }
-        producer.send('sensor_list', value=data_sensor)
-        sleep(5)
+        print(data_app)
+        # producer.send('sensor_list', value=data_sensor)
+        # sleep(5)
         producer.send('app_deploy', value=data_app)
         sleep(5)
     
