@@ -6,6 +6,7 @@ from kafka import KafkaProducer
 from kafka import KafkaConsumer
 from json import loads
 from dbconfig import *
+import os
 
 class applications(db.Document):
     appName = db.StringField(required=True,unique=True)
@@ -33,13 +34,13 @@ class aimodels(db.Document):
 def appdeploy():
     consumer = KafkaConsumer(
     'schedule',
-     bootstrap_servers=['localhost:9092'],
+     bootstrap_servers=[os.getenv('kafka_bootstrap')],
     auto_offset_reset='earliest', 
      enable_auto_commit=True,
      group_id='my-group',
      value_deserializer=lambda x: loads(x.decode('utf-8')))
     
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+    producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
                         value_serializer=lambda x: 
                         dumps(x).encode('utf-8'))
 
@@ -95,6 +96,8 @@ def appdeploy():
             print(modelId)
             print(modelname)
             model_app= aimodels.objects(modelName=modelname).first()
+            if(model_app==None):
+                continue
             model_app=model_app.to_json()
             # print(model_app)
             model_location=model_app.get("path")
