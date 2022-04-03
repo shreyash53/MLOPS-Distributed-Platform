@@ -1,0 +1,6 @@
+Flask==2.0.3
+kafka-python==2.0.2
+mongoengine==0.24.1
+python-dotenv==0.20.0
+requests==2.27.1
+dnspython==2.2.0
