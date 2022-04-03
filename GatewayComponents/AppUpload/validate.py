@@ -45,7 +45,7 @@ def key_exist(data,key):
                     if model_temp['status'] == 0:
                         return model_temp
                     if aimodels.objects(modelName=j['modelname']).count()==0:
-                        return error(data[i]['modelname'],"Not Present")
+                        return error(j['modelname'],"Not Present")
         else:   
             return error(i,"Not Found")
     return succ("All Keys Present")
@@ -115,7 +115,7 @@ def validate_contract(contract):
 
 
 def file_present(p, fileName):
-    p = p/fileName
+    p = p+"/"+fileName
     if path.exists(p) == False:
         err = error(fileName, "File Not Found")
         return err
