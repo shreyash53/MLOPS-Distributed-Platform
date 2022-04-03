@@ -19,7 +19,7 @@ import requests
 #     return randomlist
 
 def fun(topic_name,ip,port,time):
-        producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda x:
+        producer = KafkaProducer(bootstrap_servers=['20.219.107.251:9092'], value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
@@ -34,7 +34,7 @@ def fun(topic_name,ip,port,time):
 def fun2(topic_name, ip, port,time):
     consumer = KafkaConsumer(
         topic_name,
-        bootstrap_servers=['localhost:9092'],
+        bootstrap_servers=['20.219.107.251:9092'],
         # auto_offset_reset='earliest',
         enable_auto_commit=True,
         group_id='my-group',
