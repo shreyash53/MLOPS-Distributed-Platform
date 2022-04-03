@@ -101,23 +101,20 @@ def data_scientist_view():
     return render_template('data_scientist.html')
 
 @app.route('/end_user',methods=["GET","POST"])
-<<<<<<< HEAD
-# @token_required
-# def platform_admin_view(current_user):
-def end_user_view():
-=======
 @token_required
+# def platform_admin_view(current_user):
 def end_user_view(current_user):
-# def end_user_view():
->>>>>>> 7d9cef55f2da4b172843a700e1409d0e20a7eebd
     # if current_user.role != 'platform_admin':
     #     return 'Invalid Request(Role Mismatch)'
     if 'token' in request.args:
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     apps = ['a1','a2','a3','a4','a5']
+    apps = applications.objects().all()
+    if len(apps) != 0:
+        apps = [[i.id,i.appName] for i in apps]
     return render_template('end_user.html',apps=apps)
-
+    
 @app.route('/protected',methods=['POST'])
 @token_required
 def protected(current_user):
@@ -171,8 +168,6 @@ def add_node(current_user):
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
     return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
 
-<<<<<<< HEAD
-=======
 @app.route('/end_user/get_app_sensor',methods=['POST'])
 @token_required
 def get_sensor(current_user):
@@ -210,6 +205,5 @@ def sensor_bind(current_user):
 
 
 
->>>>>>> 7d9cef55f2da4b172843a700e1409d0e20a7eebd
 if __name__ == '__main__':
     app.run(debug=True)
