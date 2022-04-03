@@ -45,7 +45,7 @@ def key_exist(data,key):
                     if model_temp['status'] == 0:
                         return model_temp
                     if aimodels.objects(modelName=j['modelname']).count()==0:
-                        return error(data[i]['modelname'],"Not Present")
+                        return error(j['modelname'],"Not Present")
         else:   
             return error(i,"Not Found")
     return succ("All Keys Present")

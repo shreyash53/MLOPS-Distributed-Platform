@@ -35,7 +35,7 @@ def isValid(tar,r_zip):
                         new_app = applications(
                         appName = r_zip,
                         path = AZURE_APP_PATH+"/"+r_zip,
-                        contract = json.loads(file_data)
+                        contract = json.dumps(file_data)
                         )
                         new_app.save()
                     except Exception as e:

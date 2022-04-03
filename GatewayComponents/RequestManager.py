@@ -29,12 +29,12 @@ def token_required(f):
         except:
             return jsonify({'message':'Token is missing 29'}), 401
         # print(token)
-        # if  not token:
-        #     return jsonify({'message':'Token is missing 32'}), 401
+        if  not token:
+            return jsonify({'message':'Token is missing 32'}), 401
 
         try:
             data = jwt.decode(token,app.config['SECRET_KEY'],algorithms=['HS256'])
-            print( data['username'])
+            print( 'JWT verification',data['username'])
             current_user = Actor.objects(username = data['username']).first()
         except:
             return jsonify({'message':'Token is invalid!!'}), 401
