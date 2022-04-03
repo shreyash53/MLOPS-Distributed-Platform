@@ -33,11 +33,11 @@ class aimodels(db.Document):
 
 def appdeploy():
     consumer = KafkaConsumer(
-    'scheduler_service',
+    'topic_schedule',
      bootstrap_servers=[os.getenv('kafka_bootstrap')],
     auto_offset_reset='earliest', 
      enable_auto_commit=True,
-     group_id='my-group',
+     group_id='group_my',
      value_deserializer=lambda x: loads(x.decode('utf-8')))
     
     producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
@@ -49,7 +49,7 @@ def appdeploy():
         appName=message.get("app_name")
         # print()
         # print()
-        # print('{} added to {}'.format(appName, message))
+        print(message)
         app= applications.objects(appName=appName).first()
         # print()
         # print()
@@ -145,7 +145,8 @@ def appdeploy():
         # print(data_app)
         # producer.send('sensor_list', value=data_sensor)
         # sleep(5)
-        producer.send('app_deploy', value=data_app)
+        print(data_app)
+        producer.send('app_deploy1', value=data_app)
         sleep(5)
         print("data sent!!")
     
@@ -154,5 +155,3 @@ def appdeploy():
 if __name__ == '__main__':
     db = mongodb()
     appdeploy()
-
-    
