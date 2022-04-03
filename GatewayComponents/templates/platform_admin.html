@@ -35,13 +35,16 @@
 
   <script>
     function append_token() {
-      // var curr_api=document.getElementById("upload_form").getAttribute("action")
-      curr_api = $('#upload_form').attr('action');
+      curr_api = $('#sensor').attr('action');
       console.log(curr_api)
       console.log(sessionStorage.getItem("user_token"))
-      // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
-      $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
-  }
+      $('#sensor').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+
+      curr_api = $('#node').attr('action');
+      console.log(curr_api)
+      console.log(sessionStorage.getItem("user_token"))
+      $('#node').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+    }
   </script>
 
 </head>
@@ -49,7 +52,7 @@
 <body onload="append_token()">
 
   <div class="container center_div">
-    <form action="" id="sensor" method="post">
+    <form action="/platform_admin/upload_sensor" id="sensor" method="post" enctype="multipart/form-data">
 
 
       <div class="row">
@@ -59,37 +62,39 @@
               <h5 class="card-title">Add Sensor</h5>
               <p class="card-text">Enter Sensor Details.</p>
               <label class="form-label" for="customFile">Upload Sensor File</label>
-              <input type="file" name ="file" class="form-control" id="customFile" />
-              <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+              <input type="file" name="file" class="form-control" id="customFile" />
+              <input type="submit" value="Add Sensors">
             </div>
           </div>
         </div>
-      </form>
-      <form id="node",  method="post", action="">
-        <div class="col-sm-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Add Node</h5>
-              <p class="card-text">Enter Node Details.</p>
-              <label class="form-label" for="customFile">Upload Node File</label>
-              <input type="file" name="file" class="form-control" id="customFile" />
-              <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
-            </div>
+    </form>
+
+
+    <form id="node" , method="post" , action="/platform_admin/add_node" enctype="multipart/form-data">
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Add Node</h5>
+            <p class="card-text">Enter Node Details.</p>
+            <label class="form-label" for="customFile">Upload Node File</label>
+            <input type="file" name="file" class="form-control" id="customFile" />
+            <input type="submit" value="Add Node" />
           </div>
         </div>
       </div>
+  </div>
 
-      <br />
-      
-    </form>
+  <br />
 
-    {% if err_msg %}
-    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
-    {% endif %}
-    {% if succ_msg %}
-    <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
-    {% endif %}
-    
+  </form>
+
+  {% if err_msg %}
+  <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
+  {% endif %}
+  {% if succ_msg %}
+  <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
+  {% endif %}
+
   </div>
 
 </body>

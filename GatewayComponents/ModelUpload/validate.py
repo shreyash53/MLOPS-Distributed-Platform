@@ -11,7 +11,7 @@ def error(val, error_name):
     '''
     msg = "Key Error: {} {}!".format(val, error_name)
     temp = {
-        "msg": msg,
+        "err_msg": msg,
         "status": 0
     }
     print(temp)
@@ -23,7 +23,7 @@ def succ(msg):
     msg: message to return on success
     '''
     temp = {
-        "msg": msg,
+        "succ_msg": msg,
         "status": 1
     }
     print(temp)

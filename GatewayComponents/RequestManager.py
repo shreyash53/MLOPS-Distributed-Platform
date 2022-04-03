@@ -99,8 +99,7 @@ def platform_admin_view():
 
 @app.route('/data_scientist',methods=["GET","POST"])
 @token_required
-# def platform_admin_view(current_user):
-def data_scientist_view():
+def data_scientist_view(current_user):
     # if current_user.role != 'platform_admin':
     #     return 'Invalid Request(Role Mismatch)'
     if 'token' in request.args:
@@ -111,7 +110,7 @@ def data_scientist_view():
 
 @app.route('/platform_admin')
 @token_required
-def platform_admin():
+def platform_admin(current_user):
     if 'token' in request.args:
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
@@ -131,7 +130,7 @@ def end_user_view(current_user):
     apps = ['a1','a2','a3','a4','a5']
     apps = applications.objects().all()
     if len(apps) != 0:
-        apps = [[i.id,i.appName] for i in apps]
+        apps = [[i._id,i.appName] for i in apps]
     return render_template('end_user.html',apps=apps)
     
 @app.route('/protected',methods=['POST'])
@@ -191,7 +190,8 @@ def upload_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = request.post("localhost:9003/Sensor_Bind",json=f)
+    res = requests.post("http://0.0.0.0:9003/Sensor_Bind",json=f).json()
+    print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
 
@@ -206,7 +206,7 @@ def add_node(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = request.post("localhost:6000/node/add",json=f)
+    res = requests.post("http://0.0.0.0:6000/node/add",json=f).json()
     return res
 
 @app.route('/end_user/get_app_sensor',methods=['POST'])
@@ -263,7 +263,7 @@ def sensor_bind(current_user):
         application = applications.objects(appName=appName).first()
         to_scheduler = {
             "app_name":appName,
-            "app_id":application.id,
+            "app_id":application._id,
             "starttime":request.form['starttime'],
             "repetition": request.form['repetition'],
             "interval":{
@@ -284,10 +284,12 @@ def sensor_bind(current_user):
             sensor_list.append(t)
         
         to_scheduler["sensors"] = sensor_list
-        url = "0.0.0.0:8001/schedule_application"
-        res = requests.post(url,json=to_scheduler)
-
-        return render_template('sensor_form.html',succ_msg="Sensor binding ids returned",sensors=to_send,app_name=appName)
+        url = "http://0.0.0.0:8001/schedule_application"
+        res = requests.post(url,json=to_scheduler).json()
+        if 'err_msg' in res:
+            return  render_template('sensor_form.html',succ_msg=res['err_msg'],sensors=to_send,app_name=appName)
+        res['succ_msg']="SSensor binding ids returned and Application Scheduled"
+        return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName)
 
 
 

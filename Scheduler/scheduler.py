@@ -11,6 +11,7 @@ from dbconfig import *
 from json import JSONDecodeError
 
 
+
 app = Flask(__name__)
 
 db = mongodb()
@@ -45,29 +46,39 @@ def get_app_instance_id():
 
 @app.route('/schedule_application', methods=['POST'])
 def scheduleapplication():
-    try:
-        all_details = request.get_json()
-        app_instance_id = get_app_instance_id()
-        first_start = parsedatetime(all_details['starttime'])
-        first_stop = parsedatetime(all_details['endtime'])
-        # TODO: We can reduce some fields here using database reference
-        new_schedule = Schedules(_id=app_instance_id,
-                                 app_name=all_details['app_name'], 
-                                 app_id=all_details['app_id'],
-                                 next_start=first_start,
-                                 next_stop=first_stop,
-                                 uptime= (first_stop - first_start).total_seconds(),
-                                 downtime=get_sec_in_json(all_details['interval']),
-                                 repetition=all_details['repetition'],
-                                 sensors=json.dumps(all_details['sensors']))
+    # try:
+    all_details = request.get_json()
+    print("line 50 scheduler", all_details)
+    app_instance_id = get_app_instance_id()
+    first_start = parsedatetime(all_details['starttime'])
+    first_stop = parsedatetime(all_details['endtime'])
+    # TODO: We can reduce some fields here using database reference
+    print("#######################################")
+    
+    print(type(all_details['app_id']))
+    print(get_sec_in_json(all_details['interval']))
+    print("\n#######################################")
+    print((first_stop - first_start).total_seconds())
+    new_schedule = Schedules(_id=app_instance_id,
+                                app_name=all_details['app_name'], 
+                                app_id= all_details['app_id'],
+                                next_start=first_start,
+                               next_stop=first_stop,
+                                uptime= int((first_stop - first_start).total_seconds()),
+                                downtime=2,
+                                repetition=int(all_details['repetition']),
+                                # uptime= 2,
+                                # downtime=2,
+                                # repetition=2,
+                                sensors=json.dumps(all_details['sensors']))
 
-        new_schedule.save()
-    except Exception as e:
-        msg= "err_msg : " + str(e)
-        rep ={
-            "err_msg":msg
-        }
-        return rep
+    new_schedule.save()
+    # except Exception as e: 
+    #     msg= "err_msg : " + str(e)
+    #     rep ={
+    #         "err_msg":msg
+    #     }
+        # return rep
     msg= "Scheduled!"
     rep={
         "succ_msg":msg
@@ -170,4 +181,4 @@ class SchedulingService(threading.Thread):
 if __name__ == "__main__":
     sched = SchedulingService()
     sched.start()
-    app.run(host="0.0.0.0", port=8001, debug=False)
+    app.run(host="0.0.0.0", port=8001, debug=True)

@@ -4,3 +4,6 @@ shra
 .dockerignore
 logging_dockerfile_code.txt
 *.ipynb
+*.json
+*.pickle
+*.zip

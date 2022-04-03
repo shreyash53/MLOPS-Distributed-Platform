@@ -14,13 +14,14 @@ class Actor(db.Document):
         }
 
 class applications(db.Document):
+    _id = db.StringField(primary_key=True)
     appName = db.StringField(required=True,unique=True)
     path = db.StringField(required=True)
     contract= db.StringField(required=True)
 
     def to_json(self):
         return {
-            "_id": str(self.pk),
+            "_id": self._id,
             "appName": self.appName,
             "path":self.path,
             "contract":self.contract

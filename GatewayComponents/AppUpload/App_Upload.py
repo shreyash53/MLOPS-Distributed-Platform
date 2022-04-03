@@ -18,6 +18,20 @@ PATH1 = os.path.dirname(__file__)+"/../"
 p1="Utilities/ApplicationCode"
 PATH=os.path.join(PATH1,p1)
 
+def get_app_instance_id():
+    last_id = applications.objects.order_by('-_id').first()
+
+    if last_id is None:
+        last_id = "AI_0"
+    else:
+        last_id = json.loads(last_id.to_json())
+        last_id = last_id['_id']
+
+    last_num = int(last_id[3:])
+    last_num = last_num+1
+    initstr = last_id[:3]+str(last_num)
+    return initstr
+
 def isValid(tar,r_zip):
     #db.createCollection("applications")
     var1=tar+"/"+"contract.json"
@@ -36,7 +50,7 @@ def isValid(tar,r_zip):
                         file_data=""
                         with open(tar+"/"+'contract.json') as f:
                             file_data = json.load(f)
-                        new_app = applications(
+                        new_app = applications(_id=get_app_instance_id(),
                         appName = r_zip,
                         path = AZURE_APP_PATH+"/"+r_zip,
                         contract = json.dumps(file_data)
