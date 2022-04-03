@@ -1,4 +1,4 @@
-from NodeManager.node_manager.model import RunningServices
+from node_manager.model import RunningServices
 from mongoengine.queryset.visitor import Q
 from .deployment import send_using_kafka, build_request_data
 

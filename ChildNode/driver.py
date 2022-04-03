@@ -1,5 +1,16 @@
+from threading import Thread
+from child_node.controller import consumer_thread
 from child_node_app import app
 from utilities.constants import static_ip, static_port
 
+class KafkaConsumer(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self):
+        consumer_thread()
+
 if __name__ == '__main__':
-    app.run(debug=True, host=static_ip, port=static_port)
+    kk = KafkaConsumer()
+    kk.start()
+    app.run(debug=False, host=static_ip, port=static_port)

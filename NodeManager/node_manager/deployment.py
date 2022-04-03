@@ -3,7 +3,7 @@
 from json import dumps
 from time import sleep
 
-from NodeManager.node_manager.model import NodeDocument
+from node_manager.model import NodeDocument
 from utilities.constants import kafka_url, node_app, node_model
 from kafka import KafkaProducer
 
