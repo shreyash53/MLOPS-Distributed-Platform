@@ -63,10 +63,14 @@ def scheduleapplication():
 
         new_schedule.save()
     except Exception as e:
-        msg= "Error : " + str(e)
+        msg= "err_msg : " + str(e)
+        rep ={
+            "err_msg":msg
+        }
+        return rep
     msg= "Scheduled!"
     rep={
-        "message":msg
+        "succ_msg":msg
     }
     return rep
 

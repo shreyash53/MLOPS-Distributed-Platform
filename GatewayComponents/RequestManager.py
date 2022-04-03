@@ -206,7 +206,7 @@ def add_node(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = request.post("localhost:9003/Sensor_Bind",json=f)
+    res = request.post("localhost:6000/node/add",json=f)
     return res
 
 @app.route('/end_user/get_app_sensor',methods=['POST'])
