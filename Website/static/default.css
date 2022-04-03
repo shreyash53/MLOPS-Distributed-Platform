@@ -1,0 +1,12 @@
+.main-form {
+    height : auto;
+    width : 70%;
+    margin :auto;
+    text-align: center;
+}
+
+td {
+    text-align: center;
+    margin: auto;
+    width: fit-content;
+}
