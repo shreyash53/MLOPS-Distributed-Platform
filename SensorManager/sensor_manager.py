@@ -1,15 +1,15 @@
 from fileinput import filename
 from flask import Flask,request
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from sensor_bind.sensor_binder import *
 from flask import jsonify, make_response, render_template
 from mongoengine.connection import connect
 import requests
 from pathlib import Path
 from werkzeug.utils import secure_filename
-import os
-import json
 from dbconfig import *
+# import os
+# import json
 
 app = Flask(__name__)
 db = mongodb()
@@ -21,7 +21,7 @@ db = mongodb()
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:%s@localhost/SensorDB'%password
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = "/home/pulkit/IAS NEW/sensor_manager/"
+# app.config['UPLOAD_FOLDER'] = "/home/pulkit/IAS NEW/sensor_manager/"
 
 # s = "mysql+pymysql://{}:{}@{}/db".format(username, password, server)
 # print(s)
@@ -32,9 +32,9 @@ app.config['UPLOAD_FOLDER'] = "/home/pulkit/IAS NEW/sensor_manager/"
 # db.init_app(app)
 
 
-@app.route('/', methods=["GET", "POST"])
-def form():
-    return render_template('form.html')
+# @app.route('/', methods=["GET", "POST"])
+# def form():
+#     return render_template('form.html')
 
 # @app.route("/Sensor_Register", methods=["GET","POST"])
 # def Sensor_Reg():
@@ -77,7 +77,9 @@ def Sensor_Bind():
     request_data = request.json
     # print(request_data)
     ret_value = reg_bind_sensor(request_data)
-    return ret_value
+    data={}
+    data["Message"]=ret_value
+    return data
 
 @app.route("/Check_From_Runner", methods=["POST", "GET"])
 def Check_Run():
@@ -100,13 +102,44 @@ def Run_All():
         else:
             sensor_add(val)
             
-@app.route("/Get_Data", methods=["POST", "GET"])
+# @app.route("/Get_Data", methods=["POST", "GET"])
+# def Get_Data():
+#     request_data = request.json
+
+
+@app.route("/Get_Data", methods=["GET"])
 def Get_Data():
+    a=Check_Vals()
+    D={}
+    D["details"]=a
+    return D
+
+
+@app.route("/Check_From_AppDev", methods=["POST","GET"])
+def Check_Dev():
     request_data = request.json
+    i,lis = Check_From_Dev(request_data)
+    if i:
+        dic={}
+        dic["Sensor_id"]=lis
+        return dic
+    else:
+        dic={}
+        dic["Success_Message"]="All Sensors are present"
+        return dic
 
-
-
-
+@app.route("/Check_From_AppRunner", methods=["POST","GET"])
+def Check_Run2():
+    request_data = request.json
+    i,lis1,lis2 = Check_From_Runner(request_data)
+    if i:
+        dic={}
+        dic["error"]=lis1
+        return dic
+    else:
+        dic={}
+        dic["Success_Message"]=lis2
+        return dic
 # with app.app_context():
 #     db.create_all()
 
