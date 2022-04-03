@@ -6,7 +6,7 @@ import threading
 import datetime
 from kafka import KafkaProducer
 
-from Utilities.constant import *
+from constant import *
 from dbconfig import *
 from json import JSONDecodeError
 
