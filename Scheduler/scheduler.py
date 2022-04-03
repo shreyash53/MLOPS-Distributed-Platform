@@ -64,7 +64,7 @@ def scheduleapplication():
         new_schedule.save()
     except Exception as e:
         return "Error : " + str(e)
-    return "OK"
+    return "Scheduled!"
 
 
 def parsedatetime(date_time_str):
@@ -142,7 +142,8 @@ class SchedulingService(threading.Thread):
     def run(self):
         while(True):
             # TODO : A late request from RM can cause events to be missed
-
+            # TODO: We assume that at ANY point, start and stop times are 
+            #       ATLEAST further apart than scheduling window. (2min for now)
             now = datetime.datetime.now()
             slotbegin = now - datetime.timedelta(minutes=1)
             slotend = now + datetime.timedelta(minutes=1)
@@ -150,19 +151,15 @@ class SchedulingService(threading.Thread):
             to_start = get_start_services_bw(slotbegin, slotend)
             to_end = get_end_services_bw(slotbegin, slotend)
 
+            print(f"Scheduling window from {slotbegin} to {slotend}")
             send_to_deployment_service('start', to_start)
             send_to_deployment_service('stop', to_end)
 
-            # print(slotbegin)
-            # print(slotend)
-            # print(to_start)
-            # print(to_end)
-            # print("Started")
-            sleep(600)
+            sleep(30)
 
 
 
 if __name__ == "__main__":
     sched = SchedulingService()
     sched.start()
-    app.run(host="0.0.0.0", port=8001, debug=True)
+    app.run(host="0.0.0.0", port=8001, debug=False)
