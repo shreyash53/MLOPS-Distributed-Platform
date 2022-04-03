@@ -10,7 +10,6 @@ cluster = os.getenv('MONGODB_CLUSTER')
 PORT = os.getenv('PORT')
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mduser,mdpass , cluster,database_name)
 
-
 def mongodb():
     db.connect(host=DB_URI)
     return db

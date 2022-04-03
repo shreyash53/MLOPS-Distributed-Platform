@@ -1,18 +1,24 @@
 
 from pydoc_data import topics
 import sys
+from flask import request
+import kafka
 from kafka import KafkaProducer
 from kafka import KafkaConsumer
 from time import sleep
 import time
 from datetime import datetime
 import threading
-import kafka
-from requests import get
+from requests import get,post
 import json
+import dotenv
+import os
 
+dotenv.load_dotenv()
 
-kafka_ip = 'localhost'
+PORT_SLCM = os.getenv("SLCMIP")
+
+kafka_ip = '20.219.107.251'
 kafka_port = '9092'
 
 registered_services = {}
@@ -20,6 +26,11 @@ registered_services = {}
 def deregister(message):
     global registered_services
     print("deregister",message)
+    data = {
+        "instance_id" : message
+    }
+    print(data)
+    post('http://{}/service_dead'.format(PORT_SLCM),json=data)
     del registered_services[message]
 
 def log_reader():
@@ -32,7 +43,7 @@ def log_reader():
         print(msg)
         if msg['type']=='flush':
             for k in list(registered_services.keys()):
-                if time.time()-registered_services[k]>=30:
+                if time.time()-registered_services[k]>=15:
                     print("{} stopped working".format(k))
                     deregister(k)
         if msg['type']=='heartbeat':

@@ -13,7 +13,7 @@ PORT = os.getenv("PORT")
 def consume():
 	consumer = kafka.KafkaConsumer(
     'register',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['20.219.107.251:9092'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',
@@ -65,8 +65,8 @@ def service_lookup():
 @app.route("/service_dead", methods = ["POST"])
 def dead_service():
 	data = request.json
-	name = data.instance_id
-	
+	print(data)
+	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
 
 	sv.updatedb({"service_name" : name }, {"state" : "dead"})
