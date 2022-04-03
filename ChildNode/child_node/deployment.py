@@ -9,7 +9,8 @@ import zipfile
 from json import dumps
 
 from kafka import KafkaProducer
-from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME
+from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_URL
+
 file_stub = '{}/{}'
 
 PORT_SERVICE = 11000
@@ -97,17 +98,36 @@ def register_service_with_slcm(service_type, data):
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 
+def get_env_data(data):
+    num_models = len(data['model'])
+    num_sensors = len(data['sensor'])
+    result = {
+        "num_models" : num_models,
+        "num_sensors" : num_sensors
+    }
+    for data in data['model']:
+        result['M_{}'.format(data['model_id'])] = data['model_id']
+
+    for data in data['sensor']:
+        result['S_{}'.format(data['sensor_app_id'])] = data['sensor_binding_id']
+    
+    result['url'] = CHILD_NODE_URL
+    return result
+
 def deployment_handler(service_type, data):
-    file_loc, service_address = download_files(service_type, data)
+    file_loc, service_address = download_files(service_type, data['app'])
     extract_file(service_address)
     make_dockerignore(file_loc)
-    tag_name = get_service_name(service_type, data)
+    tag_name = get_service_name(service_type, data['app'])
     docker_image = docker.build(file_loc, tags=tag_name)
-    container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 8008)])
+    if service_type == 'app':
+        container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 8008)], envs=get_env_data(data))
+    else:
+        container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 8008)])
     if not container:
         print('not able to run container')
         return 
     #store docker details
-    register_service_in_node(service_type, data, file_loc, tag_name, str(container), str(PORT_SERVICE))
-    register_service_with_slcm(service_type, data)
+    register_service_in_node(service_type, data['app'], file_loc, tag_name, str(container), str(PORT_SERVICE))
+    register_service_with_slcm(service_type, data['app'])
 

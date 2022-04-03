@@ -35,7 +35,7 @@ def consumer_logic(consumer_data):
     print(consumer_data)
     if consumer_data['requesttype'] == 'start':
         deploy_models(consumer_data['models'])
-        deploy_app(consumer_data['app'])
+        deploy_app(consumer_data['app'], consumer_data)
     else:
         terminate_all_models(consumer_data['models'])
         terminate_app(consumer_data['app'])
