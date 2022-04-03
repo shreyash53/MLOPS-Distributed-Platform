@@ -21,14 +21,13 @@ import requests
 def fun(topic_name,ip,port,time):
         producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
-        # print("AAAAAAAAAAAAAAAAA")
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
             val = requests.post(url).content
             jsonResponse = json.loads(val.decode('utf-8'))
-            print("To Topic:")
-            print(topic_name)
-            print(jsonResponse)
+            # print("To Topic:")
+            # print(topic_name)
+            # print(jsonResponse)
             producer.send(topic_name, value=jsonResponse)
             sleep(time)
 
@@ -36,7 +35,7 @@ def fun2(topic_name, ip, port,time):
     consumer = KafkaConsumer(
         topic_name,
         bootstrap_servers=['localhost:9092'],
-        auto_offset_reset='earliest',
+        # auto_offset_reset='earliest',
         enable_auto_commit=True,
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
