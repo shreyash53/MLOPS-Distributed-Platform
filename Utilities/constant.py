@@ -1,2 +1,0 @@
-BOOTSTRAP_SERVERS = 'localhost:9092'
-KAFKA_SCHEDULE_TOPIC = 'schedule'
