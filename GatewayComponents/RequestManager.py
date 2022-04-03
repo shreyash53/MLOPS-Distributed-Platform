@@ -114,6 +114,7 @@ def platform_admin():
 
 @app.route('/end_user',methods=["GET","POST"])
 @token_required
+# def platform_admin_view(current_user):
 def end_user_view(current_user):
 # def end_user_view():
     # if current_user.role != 'platform_admin':
@@ -126,7 +127,7 @@ def end_user_view(current_user):
     if len(apps) != 0:
         apps = [[i.id,i.appName] for i in apps]
     return render_template('end_user.html',apps=apps)
-
+    
 @app.route('/protected',methods=['POST'])
 @token_required
 def protected(current_user):
@@ -248,6 +249,7 @@ def sensor_bind(current_user):
         return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors",sensors=to_send,app_name=appName)
     elif "Success_Message" in resp:
         #need to call scheduler
+        
         return render_template('sensor_form.html',succ_msg="Sensor binding ids returned",sensors=to_send,app_name=appName)
 
 

@@ -16,10 +16,11 @@ from Utilities.azure_config import *
 # mydir=Path.cwd()/'NewZip'
 PATH1 = os.path.dirname(__file__)+"/../"
 p1="Utilities/ApplicationCode"
-PATH=os.path.join(PATH1,p1)
+#PATH=os.path.join(PATH1,p1)
+PATH=PATH1+p1
 
 def isValid(tar,r_zip):
-    var1=tar/"contract.json"
+    var1=tar+"/"+"contract.json"
     temp_file_present = file_present(tar,"contract.json")
     if(temp_file_present['status']==1):
         temp_file_present = file_present(tar,"model_demo_pickle.pkl")
@@ -70,6 +71,7 @@ def isValid(tar,r_zip):
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
         Path_out = PATH1+'Utilities/ModelZip'
+        print(Path_out)
         zip_ref.extractall(Path_out)
         print("printed..line 60")
     return
@@ -97,15 +99,15 @@ def create_zip(r_zip,tar):
     location2="Utilities/ModelCode/"
     r_zip1=r_zip+".zip"
     print(PATH)
-    path1=PATH1+location1
-    path2=PATH1+location2
-    print(path1)
-    path1 = os.path.join(path1, r_zip)
-    path2 = os.path.join(path2, r_zip1)
-    print(path1)
-    print(path2)
-    shutil.rmtree(path1)
-    os.remove(path2) 
+    # path1=PATH1+location1
+    # path2=PATH1+location2
+    # print(path1)
+    # path1 = os.path.join(path1, r_zip)
+    # path2 = os.path.join(path2, r_zip1)
+    # print(path1)
+    # print(path2)
+    # shutil.rmtree(path1)
+    #os.remove(path2) 
 
 def generate_model_api(store_path):
     template_file = open('Utilities/model_api.py', 'r')
@@ -228,6 +230,7 @@ def upload_model_file(request):
     if 'succ_msg' in resp:
         generate_model_api(tar)
         if(create_docker(r_zip,tar)):
+            print("done create model")
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:model data is added sucessfully."}
     else:

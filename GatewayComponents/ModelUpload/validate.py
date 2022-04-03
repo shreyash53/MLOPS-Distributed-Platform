@@ -114,7 +114,7 @@ def file_present(p, fileName):
     fileName: file to check
     '''
 
-    p = p/fileName
+    p = p+"/"+fileName
     if path.exists(p) == False:
         err = error(fileName, "File Not Found")
         return err

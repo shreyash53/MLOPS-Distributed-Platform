@@ -58,6 +58,7 @@ def isValid(tar,r_zip):
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
         Path_out = PATH1+'Utilities/ApplicationZip'
+        print(Path_out)
         zip_ref.extractall(Path_out)
         print("yes..line 50")
     return
@@ -121,7 +122,6 @@ def upload_app_file(request):
         if(create_docker(r_zip,tar)):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
-            print("all done")
     else:
         return resp
 #        return {"err_msg":"Invalid Zip"}
