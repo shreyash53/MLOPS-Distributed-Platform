@@ -1,6 +1,5 @@
 #from RequestManager import db,app
 from flask import jsonify,request, render_template
-from numpy import equal
 from requests import NullHandler 
 import zipfile
 from pathlib import Path

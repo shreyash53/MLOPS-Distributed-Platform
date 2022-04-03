@@ -5,3 +5,4 @@ python-dotenv
 mongoengine
 flask
 dnspython
+flask_sqlalchemy
