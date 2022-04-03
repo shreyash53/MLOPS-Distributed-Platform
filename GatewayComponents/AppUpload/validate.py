@@ -4,7 +4,7 @@ from os import path
 import requests
 from Utilities.models import aimodels
 
-URL = 'http://127.0.0.1:9000/sensor_validate'
+URL = 'http://0.0.0.0:9003/sensor_validate'
 
 def error(val, error_name):
     '''

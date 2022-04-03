@@ -9,7 +9,7 @@ from Utilities.dbconfig import *
 app = Flask(__name__)
 db=mongodb()
 
-SENSOR_MGR_IP = 'localhost'
+SENSOR_MGR_IP = 'http://0.0.0.0'
 SENSOR_MGR_PORT = 9003
 app.config['SECRET_KEY'] = 'root'
 
@@ -92,7 +92,7 @@ def platform_admin_view():
     return render_template('platform_admin.html')
 
 @app.route('/data_scientist',methods=["GET","POST"])
-# @token_required
+@token_required
 # def platform_admin_view(current_user):
 def data_scientist_view():
     # if current_user.role != 'platform_admin':
@@ -101,23 +101,30 @@ def data_scientist_view():
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     return render_template('data_scientist.html')
+    
+
+@app.route('/platform_admin')
+@token_required
+def platform_admin():
+    if 'token' in request.args:
+        if not validate_token(request.args.get("token")):
+            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
+    return render_template('data_scientist.html')
+
 
 @app.route('/end_user',methods=["GET","POST"])
-<<<<<<< HEAD
-# @token_required
-# def platform_admin_view(current_user):
-def end_user_view():
-=======
 @token_required
 def end_user_view(current_user):
 # def end_user_view():
->>>>>>> 7d9cef55f2da4b172843a700e1409d0e20a7eebd
     # if current_user.role != 'platform_admin':
     #     return 'Invalid Request(Role Mismatch)'
     if 'token' in request.args:
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     apps = ['a1','a2','a3','a4','a5']
+    apps = applications.objects().all()
+    if len(apps) != 0:
+        apps = [[i.id,i.appName] for i in apps]
     return render_template('end_user.html',apps=apps)
 
 @app.route('/protected',methods=['POST'])
@@ -168,18 +175,32 @@ def use_app(current_user):
 @token_required
 def upload_sensor(current_user):
     if current_user.role != 'platform_admin':
-        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401 
+
+    if 'file' not in request.files:
+    #if request.files:
+        print("no file")
+        return 'No file found.'
+    f = request.files['file']
+    f = json.load(f)
+    res = request.post("localhost:9003/Sensor_Bind",json=f)
+    return res
+    # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
 
 @app.route('/platform_admin/add_node',methods=['POST'])
 @token_required
 def add_node(current_user):
     if current_user.role != 'platform_admin':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+    
+    if 'file' not in request.files:
+        print("no file")
+        return 'No file found.'
+    f = request.files['file']
+    f = json.load(f)
+    res = request.post("localhost:9003/Sensor_Bind",json=f)
+    return res
 
-<<<<<<< HEAD
-=======
 @app.route('/end_user/get_app_sensor',methods=['POST'])
 @token_required
 def get_sensor(current_user):
@@ -202,6 +223,16 @@ def get_sensor(current_user):
 def sensor_bind(current_user):
     appName = requests.form['app_name']
     count = request.form['sensor_count']
+    temp = applications.objects(appName=appName).first()
+    temp = temp['contract']
+    temp = json.loads(temp)
+    to_send = []
+    for i in temp['sensors']:
+        temp = {
+            "sensortype":i['sensortype'],
+            "sensordatatype": i['sensordatatype']
+        }
+        to_send.append(temp)
     temp = []
     req_json={"Details":list()}
     for i in range (count):
@@ -214,14 +245,13 @@ def sensor_bind(current_user):
     # API call
     resp = request.post(SENSOR_MGR_IP,':',str(SENSOR_MGR_PORT),'/Check_From_AppRunner')
     if "error" in resp:
-        return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors")
+        return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors",sensors=to_send,app_name=appName)
     elif "Success_Message" in resp:
-        pass
+        #need to call scheduler
+        return render_template('sensor_form.html',succ_msg="Sensor binding ids returned",sensors=to_send,app_name=appName)
 
-<<<<<<< HEAD
-    
-=======
->>>>>>> 7d9cef55f2da4b172843a700e1409d0e20a7eebd
->>>>>>> 08d14eca7e29b7821bdb0743f1ed53b8eb1c5616
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

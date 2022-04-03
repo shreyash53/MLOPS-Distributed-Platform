@@ -30,12 +30,13 @@
         <input type="file" class="form-control" id="model" name="model" />
         <input type="submit" value="Upload Model" />
     </form>
+    {% if err_msg %}
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
+    {% endif %}
+    {% if succ_msg %}
+    <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
+    {% endif %}
 </body>
-{% if err_msg %}
-<div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
-{% endif %}
-{% if succ_msg %}
-<div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
-{% endif %}
+
 
 </html>
