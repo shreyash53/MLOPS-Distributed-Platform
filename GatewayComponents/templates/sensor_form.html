@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <title>Fill Sensor Form</title>
+</head>
+
+<script>
+    function append_token() {
+        // var curr_api=document.getElementById("upload_form").getAttribute("action")
+        curr_api = $('#upload_form').attr('action');
+        console.log(curr_api)
+        console.log(sessionStorage.getItem("user_token"))
+        // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
+        $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+    }
+</script>
+
+<body onload="append_token()">
+    <form action="/end_user/sensor_bind" id="upload_form" method="post" enctype="multipart/form-data">
+        {% if app_name %}
+        <input type="text" value="{{ app_name }}" name="app_name" hidden>
+        <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
+        {% endif %}
+        {% if sensors%}
+            {% for i in range(sensors|length) %}
+                <p class="h1">Sensor {{i+1}}<p>
+                <br>
+                <label>DataType:{{  sensors[i]['sensordatatype'] }}</label>
+                <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
+                <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
+                <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}" placeholder="sensor_dypre_{{i+1}}" hidden>
+                <hr>
+            {% endfor %}
+        {% endif %}
+
+        <hr>
+        <label for="starttime">Start Date and Time:</label>
+        <input type="text" id="starttime" name="starttime" placeholder="DD/MM/YY HH:MM:SS">
+        <br>
+        <br>
+        <label for="endtime">End Date and Time:</label>
+        <input type="text" id="endtime" name="endtime" placeholder="DD/MM/YY HH:MM:SS">
+        <label for="repetition">Repetition:</label>
+        <input type="text" id="repetition" name="repetition">
+        <p class="h1">Interval</p>
+        <label for="Day">Day:</label>
+        <input type="text" id="Day" name="Day">
+        <label for="Hour">Hour:</label>
+        <input type="text" id="Hour" name="Hour">
+        <label for="Minute">Minute:</label>
+        <input type="text" id="Minute" name="Minute">
+        <label for="Second">Second:</label>
+        <input type="text" id="Second" name="Second">
+        
+        <br>
+        <br>
+        <input type="submit" value="Submit Form">
+
+        {% if err_msg %}
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
+    {% endif %}
+    {% if succ_msg %}
+    <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
+    {% endif %}
+    </form>
+</body>
+</html>

@@ -63,8 +63,16 @@ def scheduleapplication():
 
         new_schedule.save()
     except Exception as e:
-        return "Error : " + str(e)
-    return "Scheduled!"
+        msg= "err_msg : " + str(e)
+        rep ={
+            "err_msg":msg
+        }
+        return rep
+    msg= "Scheduled!"
+    rep={
+        "succ_msg":msg
+    }
+    return rep
 
 
 def parsedatetime(date_time_str):
