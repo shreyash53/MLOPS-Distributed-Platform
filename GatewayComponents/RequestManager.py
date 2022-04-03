@@ -9,9 +9,6 @@ from Utilities.dbconfig import *
 app = Flask(__name__)
 db=mongodb()
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Actor.db'
-#database_name = 'requestmanager_db'
-#DB_URI =  'mongodb+srv://kamal:kamal123@cluster0.lzygp.mongodb.net/{}?retryWrites=true&w=majority'.format(database_name)
 app.config['SECRET_KEY'] = 'root'
 
 def validate_token(t):
@@ -26,15 +23,18 @@ def token_required(f):
     def decorated(*args,**kwargs):
         token = None
 
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        
+        try:
+            token = request.args.get('token')
+            print(token,"LIne 28")
+        except:
+            return jsonify({'message':'Token is missing 29'}), 401
+        # print(token)
         if  not token:
-            return jsonify({'message':'Token is missing'}), 401
+            return jsonify({'message':'Token is missing 32'}), 401
 
         try:
             data = jwt.decode(token,app.config['SECRET_KEY'],algorithms=['HS256'])
-            print( data['username'])
+            print( 'JWT verification',data['username'])
             current_user = Actor.objects(username = data['username']).first()
         except:
             return jsonify({'message':'Token is invalid!!'}), 401
@@ -127,17 +127,22 @@ def upload_app(current_user):
     sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
     model_details = ['m1','m2','m3']
     if 'err_msg' in resp:
-        return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
+        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
     elif 'succ_msg' in resp:
-        return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details,succ_msg=resp['succ_msg'])
-    return render_template('platform_admin.html',sensor_details=sensor_details,model_details=model_details)
+        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,succ_msg=resp['succ_msg'])
+    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
 
 @app.route('/data_scientist/upload_model',methods=['POST'])
 @token_required
 def upload_model(current_user):
     if current_user.role != 'data_scientist':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    return jsonify(upload_model_file(request))
+    resp =upload_model_file(request)
+    if 'err_msg' in resp:
+        return render_template('data_scientist.html',err_msg=resp['err_msg'])
+    elif 'succ_msg' in resp:
+        return render_template('data_scientist.html',succ_msg=resp['succ_msg'])
+    return render_template('data_scientist.html')
 
 @app.route('/end_user/use_app',methods=['POST'])
 @token_required

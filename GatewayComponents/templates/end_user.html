@@ -7,13 +7,23 @@
     <title>End User Homepage</title>
 </head>
 <body>
-    <form action="">
+    <h1>Schedule Applications</h1>
+    <form id="end_user_form" action="/end_user" method="POST" enctype="multipart/form-data">
+        <label for = "apps">Application Name: </label>
         <input list="apps" name="app">
         <datalist id="apps">
         {% for i in apps %}
         <option value="{{ i }}">
         {% endfor %}
         </datalist>
+        <br>
+        <br>
+        <label for="starttime">Start Date and Time:</label>
+        <input type="datetime-local" id="starttime" name="starttime">
+        <br>
+        <br>
+        <label for="endtime">End Date and Time:</label>
+        <input type="datetime-local" id="endtime" name="endtime">
         <input type="submit">
       </form>
 </body>

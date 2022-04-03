@@ -2,7 +2,6 @@ import datetime
 import jwt
 from functools import wraps
 
-from matplotlib import use
 from RequestManager import db,app
 from Utilities.models import Actor
 from flask import jsonify,request
@@ -34,7 +33,7 @@ def login(req):
         return {'err_msg':'User with this role not found'}
     if Actor.objects(username = username,password = password , role = role).count() == 0:
         return {'err_msg':'Incorrect password'}
-    token = encode_auth_token(username,role).decode('utf-8')
+    token = encode_auth_token(username,role)#.decode('utf-8')
     
     return {'token':token,'succ_msg':'Authentication Successfull','username':username,'role':role}
 
