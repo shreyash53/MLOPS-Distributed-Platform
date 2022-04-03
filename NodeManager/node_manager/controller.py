@@ -45,15 +45,15 @@ def consumer_thread():
         consumer = KafkaConsumer(
             'app_deploy',
             bootstrap_servers=[kafka_url],
-            auto_offset_reset='earliest',
+            # auto_offset_reset='earliest',
             enable_auto_commit=True,
             group_id='my-group',
             value_deserializer=lambda x: loads(x.decode('utf-8'))
         )
-
+        # print()
         for data in consumer:
             consumer_logic(data)
 
 
     except Exception as e:
-        print('Error in node_manager.handle_deployment', e)
+        print('Error in node_manager.consumer_thread', e)

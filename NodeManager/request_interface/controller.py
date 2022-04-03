@@ -24,7 +24,6 @@ def get_model_data(modelId, data):
 
 
 def get_sensor_data(sensor_build_id):
-
     try:
         sensor_topic = 's_{}'.format(sensor_build_id)
         consumer = KafkaConsumer(
@@ -38,7 +37,6 @@ def get_sensor_data(sensor_build_id):
 
         for data in consumer:
             return data
-
 
     except Exception as e:
         print('Error in request_interface.get_sensor_data', e)

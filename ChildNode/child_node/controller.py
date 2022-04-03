@@ -37,4 +37,4 @@ def consumer_thread():
         #     terminate_app(consumer_data['app'])
 
     except Exception as e:
-        print('Error in node_manager.handle_deployment', e)
+        print('Error in node_manager.consumer_thread', e)
