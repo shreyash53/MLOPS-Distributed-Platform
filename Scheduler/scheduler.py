@@ -8,7 +8,7 @@ from kafka import KafkaProducer
 
 from Utilities.constant import *
 from dbconfig import *
-from json import dumps
+from json import JSONDecodeError
 
 
 app = Flask(__name__)
@@ -30,11 +30,11 @@ class Schedules(db.Document):
 
 def get_app_instance_id():
     last_id = Schedules.objects.order_by('-_id').first()
-    last_id = json.loads(last_id.to_json())
 
     if last_id is None:
-        last_id = "AII_1"
+        last_id = "AII_0"
     else:
+        last_id = json.loads(last_id.to_json())
         last_id = last_id['_id']
 
     last_num = int(last_id[4:])
