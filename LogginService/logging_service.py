@@ -1,6 +1,4 @@
-from crypt import methods
-import readline
-from flask import Flask, request, render_template
+from flask import Flask, request
 from dbconfig import *
 import threading
 from kafka import KafkaConsumer
@@ -18,20 +16,23 @@ class ReadLogs(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        db = mongodb()
+        print("reading started")
         topic_name = 'logs'
-        kafka_server_ip = 'localhost:9092'
+        kafka_server_ip = 'localhost:9093'
         group_id = 'logging'
         bootstrap_server = [kafka_server_ip]
+        print("check 1")
         consumer = KafkaConsumer(
             topic_name,
             bootstrap_servers=bootstrap_server,
-            auto_offset_reset='earliest',
+            # auto_offset_reset='earliest',
             enable_auto_commit=True,
             group_id=group_id,
             value_deserializer=lambda x: loads(x.decode('utf-8')))
-
+        print("connected to kafka")
         for log in consumer:
+            print(log.value)
+            print("==========================")
             try:
                 log = log.value
                 if log['type'] != 'heartbeat':
@@ -40,6 +41,12 @@ class ReadLogs(threading.Thread):
             except Exception as e:
                 print(e)
 
+# {
+#     'type':'not_heartbeat',
+#     'service_name':'node_Manager',
+#     'msg':'this is msg',
+#     'time':'11:51'
+# }
 
 @app.route("/get_logs", methods=['POST'])
 def home():
@@ -49,6 +56,8 @@ def home():
 
 
 if __name__ == "__main__":
+    print("inside")
     th = ReadLogs()
     th.start()
-    app.run(host=HOST,port=PORT, debug=True)
+    print("adfasf")
+    app.run(host=HOST,port=PORT, debug=False)
