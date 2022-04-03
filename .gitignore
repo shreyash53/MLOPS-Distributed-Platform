@@ -4,3 +4,4 @@ shra
 .dockerignore
 logging_dockerfile_code.txt
 *.ipynb
+__pycache__
