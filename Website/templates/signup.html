@@ -1,0 +1,67 @@
+<html>
+
+<head>
+    <title> Signup!</title>
+    <link rel="stylesheet" href="../static/default.css">
+</head>
+
+<body>
+    <h1>
+        Join our platform
+    </h1>
+    <p> It's Free! 👍</p>
+        <form class="main-form" method="post" enctype="multipart/form-data">
+            <table border="black" width="100%">
+                <tr>
+                    <td>
+                        <label for="user">Username</label>
+                    </td>
+                    <td colspan="2">
+                        <input type="text" id="user" name="username" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="pass">Password</label>
+                    </td>
+                    <td colspan="2">
+                        <input type="password" id="pass" name="password" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="re-pass">Retype Password</label>
+                    </td>
+                    <td colspan="2">
+                        <input type="password" id="re-pass" name="confirm-pass" />
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="2">
+                        <label>Select your role</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="app-dev" name="role" />
+                        <label for="app-dev">Application Developer</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="data-scientist" name="role" />
+                        <label for="data-scientist">Data Scientist</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="radio" id="admin" name="role" />
+                        <label for="admin">Platform Admin</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="runner" name="role" />
+                        <label for="runner">Application Runner</label>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" value="Sign Up"/>
+        </form>
+</body>
+
+</html>

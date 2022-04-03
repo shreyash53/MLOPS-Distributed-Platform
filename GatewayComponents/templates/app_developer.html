@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Developer Homepage</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+    function append_token(){
+        // var curr_api=document.getElementById("upload_form").getAttribute("action")
+        curr_api = $('#upload_form').attr('action');
+        console.log(curr_api)
+        console.log(sessionStorage.getItem("user_token"))
+        // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
+        $('#upload_form').attr('action', curr_api+"?token="+sessionStorage.getItem("user_token"));
+    }
+    // append_token()
+    // function changeurl(){
+    //     curr_api = $('#upload_form').attr('action')
+    //     document.getElementById('upload_form').action = curr_api+"?token="+sessionStorage.getItem("user_token")
+    // }
+</script>
+<body onload="append_token()">
+    {% if sensor_details %}
+    <p class="h1">Available Sensors Type</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Sensor Type</th>
+                <th scope="col">Sensor Data Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(sensor_details|length) %}
+            <tr>
+                <th scope="row">{{ i+1 }}</th>
+                <td>{{ sensor_details[i][0] }}</td>
+                <td>{{ sensor_details[i][1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <hr>
+    {% if model_details %}
+    <p class="h1">Available Models</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Model Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(model_details|length) %}
+            <tr>
+                <th scope="row">{{ i }}</th>
+                <td>{{ model_details[i] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <hr>
+    <form id="upload_form" action="/app_developer/upload_app" method="POST" enctype="multipart/form-data">
+        <input type="file" name="app" />
+        <input type="submit" value="Upload Application" />
+    </form>
+    {% if err_msg %}
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
+    {% endif %}
+    {% if succ_msg %}
+    <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
+    {% endif %}
+</body>
+
+</html>

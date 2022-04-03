@@ -1,0 +1,8 @@
+azure-storage-file
+azure-storage-common
+PyJWT
+python-dotenv
+mongoengine
+flask
+dnspython
+flask_sqlalchemy

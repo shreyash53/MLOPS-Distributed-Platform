@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <title>Fill Sensor Form</title>
+</head>
+<body>
+    <form action="" method="post">
+        {% if app_name %}
+        <input type="text" value="{{ app_name }}" name="app_name" hidden>
+        <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
+        {% endif %}
+        {% if sensors%}
+            {% for i in range(sensors|length) %}
+                <p class="h1">Sensor {{i+1}}<p>
+                <br>
+                <label>DataType:{{  sensors[i]['sensordatatype'] }}</label>
+                <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
+                <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
+                <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}" placeholder="sensor_dypre_{{i+1}}" hidden>
+                <hr>
+            {% endfor %}
+        {% endif %}
+        <hr>
+        <!-- <label for="starttime">Start Date and Time:</label>
+        <input type="datetime-local" id="starttime" name="starttime">
+        <br>
+        <br>
+        <label for="endtime">End Date and Time:</label>
+        <input type="datetime-local" id="endtime" name="endtime"> -->
+        <label for="repetition">End Date and Time:</label>
+        <input type="datetime-local" id="repetition" name="repetition">
+
+        <br>
+        <br>
+        <input type="submit" value="Submit Form">
+    </form>
+</body>
+</html>
