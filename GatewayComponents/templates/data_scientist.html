@@ -18,14 +18,11 @@
         // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
-    append_token()
-    // function changeurl() {
-    //     curr_api = $('#upload_form').attr('action')
-    //     document.getElementById('upload_form').action = curr_api + "?token=" + sessionStorage.getItem("user_token")
-    // }
+    // append_token()
+
 </script>
 
-<body>
+<body onload="append_token()">
     <form id="upload_form" action="/data_scientist/upload_model" method="POST" enctype="multipart/form-data">
         <label class="form-label" for="customFile">Upload Model</label>
         <input type="file" class="form-control" id="model" name="model" />

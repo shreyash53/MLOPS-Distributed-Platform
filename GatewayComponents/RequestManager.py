@@ -101,7 +101,7 @@ def data_scientist_view():
     return render_template('data_scientist.html')
 
 @app.route('/end_user',methods=["GET","POST"])
-# @token_required
+@token_required
 # def platform_admin_view(current_user):
 def end_user_view():
     # if current_user.role != 'platform_admin':
@@ -110,6 +110,9 @@ def end_user_view():
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     apps = ['a1','a2','a3','a4','a5']
+    apps = applications.objects().all()
+    if len(apps) != 0:
+        apps = [[i.id,i.appName] for i in apps]
     return render_template('end_user.html',apps=apps)
 
 @app.route('/protected',methods=['POST'])
@@ -143,12 +146,13 @@ def upload_model(current_user):
     elif 'succ_msg' in resp:
         return render_template('data_scientist.html',succ_msg=resp['succ_msg'])
     return render_template('data_scientist.html')
-
+    
 @app.route('/end_user/use_app',methods=['POST'])
 @token_required
 def use_app(current_user):
     if current_user.role != 'end_user':
-        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401
+    # print(request[''])
     return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
 
 @app.route('/platform_admin/upload_sensor',methods=['POST'])
@@ -164,6 +168,42 @@ def add_node(current_user):
     if current_user.role != 'platform_admin':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
     return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+
+@app.route('/get_app_sensor')
+@token_required
+def get_sensor():
+    appName = request.forms['apps']
+    temp = applications.objects(appName=appName).first()
+    temp = temp['contracts']
+    temp = json.loads(temp)
+    to_send = []
+    for i in temp['sensors']:
+        temp = {
+            "sensortype":i['sensortype'],
+            "sensordatatype": i['sensordatatype']
+        }
+        to_send.append(temp)
+    return render_template("sensor_form.html",app_name = appName,sensors=to_send)
+
+@app.route('/sensor_bind')
+@token_required
+def sensor_bind():
+    appName = requests.forms['app_name']
+    count = request.forms['sensor_count']
+    temp = []
+    req_json={"Details":list()}
+    for i in range (count):
+        temp_dict={
+            "Sensor_Type":request.forms['sensor_type_'+str(i)],
+            "Sensor_loc":request.forms['sensor_loc_'+str(i)],
+            "Sensor_DType":request.forms['sensor_dtype_'+str(i)]
+        }
+        req_json['Details'].append(temp_dict)
+    # API call
+    
+    
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

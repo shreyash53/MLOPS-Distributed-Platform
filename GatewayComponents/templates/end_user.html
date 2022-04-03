@@ -1,21 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>End User Homepage</title>
 </head>
-<body>
+
+<script>
+    function append_token() {
+        curr_api = $('#end_user_form').attr('action');
+        console.log(curr_api)
+        console.log(sessionStorage.getItem("user_token"))
+        $('#end_user_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+    }
+    // append_token()
+    //    function get_sensor_form(){
+    //    var sensor_form_element = document.getElementById('sensor_form').style
+    //    sensor_form_element.display = 'block'
+    //    // get appName
+    //    var e = document.getElementById("apps");
+    //    var appName = e.value;
+    //    $.ajax({
+    //            type: "POST",
+    //            url: "/get_app_sensor",
+    //            dataType: "json",
+    //            contentType: 'application/json',
+    //            data: JSON.stringify({key:appName}),
+    //            success: function (resp) {
+    //                for (var i = 0; i < resp; i++){
+    //                    sensor_form_element.appendChild(document.createElement("p"))
+    //                    sensor_form_element.appendChild(document.createElement("input"))
+    //                    sensor_form_element.appendChild(document.createElement("input"))
+    //                }
+    //            }
+    //        });
+    //      }
+    
+
+</script>
+
+<body onload="append_token()">
     <h1>Schedule Applications</h1>
-    <form id="end_user_form" action="/end_user" method="POST" enctype="multipart/form-data">
-        <label for = "apps">Application Name: </label>
-        <input list="apps" name="app">
-        <datalist id="apps">
-        {% for i in apps %}
-        <option value="{{ i }}">
-        {% endfor %}
-        </datalist>
+    <form id="end_user_form" action="/end_user/use_app" method="POST" enctype="multipart/form-data">
+        <label for="apps">Application Name: </label>
+        <!-- <input list="apps" name="app"> -->
+        <select id="apps">
+            {% for i in apps %}
+            <option value="{{ i[0] }}">{{i[1]}}</option>
+                {% endfor %}
+        </select>
+        <!-- <button id="app_select" onclick()="get_sensor_form()"></button> -->
+
+        <!-- <div style="display: none;" id="sensor_form">
+            
+        </div>
+
+
         <br>
         <br>
         <label for="starttime">Start Date and Time:</label>
@@ -23,8 +65,9 @@
         <br>
         <br>
         <label for="endtime">End Date and Time:</label>
-        <input type="datetime-local" id="endtime" name="endtime">
-        <input type="submit">
-      </form>
+        <input type="datetime-local" id="endtime" name="endtime"> -->
+        <input type="submit" value="Select Application">
+    </form>
 </body>
+
 </html>

@@ -7,6 +7,7 @@ class Actor(db.Document):
 
     def to_json(self):
         return {
+            "_id": str(self.pk),
             "username":self.username,
             "password": self.password,
             "author":self.role
@@ -19,6 +20,7 @@ class applications(db.Document):
 
     def to_json(self):
         return {
+            "_id": str(self.pk),
             "appName": self.appName,
             "path":self.path,
             "contract":self.contract
@@ -33,6 +35,7 @@ class aimodels(db.Document):
 
     def to_json(self):
         return {
+            "_id": str(self.pk),
             "modelName": self.modelName,
             #"pickleName":self.pickleName,
             "path":self.path,
