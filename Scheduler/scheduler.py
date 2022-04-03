@@ -20,10 +20,11 @@ class Schedules(db.Document):
     _id = db.StringField(primary_key=True)
     app_name = db.StringField(required=True)
     app_id = db.StringField(required=True)
-    starttime = db.DateTimeField(required=True)
+    next_start = db.DateTimeField(required=True)
+    next_stop = db.DateTimeField(required=True)
+    uptime = db.IntField(required=True)
+    downtime = db.IntField(required=True)
     repetition = db.IntField(required=True)
-    interval = db.StringField(required=True)
-    endtime = db.DateTimeField(required=True)
     sensors = db.StringField(required=True)
 
 
@@ -47,13 +48,17 @@ def scheduleapplication():
     try:
         all_details = request.get_json()
         app_instance_id = get_app_instance_id()
+        first_start = parsedatetime(all_details['starttime'])
+        first_stop = parsedatetime(all_details['endtime'])
+        # TODO: We can reduce some fields here using database reference
         new_schedule = Schedules(_id=app_instance_id,
-                                 app_name=all_details['app_name'], app_id=all_details['app_id'],
-                                 starttime=parsedatetime(
-                                     all_details['starttime']),
+                                 app_name=all_details['app_name'], 
+                                 app_id=all_details['app_id'],
+                                 next_start=first_start,
+                                 next_stop=first_stop,
+                                 uptime= (first_stop - first_start).total_seconds(),
+                                 downtime=get_sec_in_json(all_details['interval']),
                                  repetition=all_details['repetition'],
-                                 interval=json.dumps(all_details['interval']),
-                                 endtime=parsedatetime(all_details['endtime']),
                                  sensors=json.dumps(all_details['sensors']))
 
         new_schedule.save()
@@ -65,6 +70,13 @@ def scheduleapplication():
 def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
+def get_sec_in_json(j : dict) -> int:
+    days = j.get('days', 0)
+    hours = j.get('hours', 0)
+    minutes = j.get('minutes', 0)
+    seconds = j.get('seconds', 0)
+    sec = seconds + (60 * (minutes + (60 * (hours + (24 * days)))))
+    return sec
 
 def send_to_deployment_service(type, services):
     producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
@@ -81,19 +93,27 @@ def send_to_deployment_service(type, services):
             "app_id": service.app_id,
             "sensors": service.sensors
         }
-        if type=="stop":
-            repeat=service.repetition
-            if repeat>0:
-                repeat=repeat-1
-                st=service.starttime
-                et=service.endtime
-                duration=et-st
-                inter=service.interval
-                st=et+inter
-                et=st+duration
-                uniq_id=service._id
-                db.Schedules.objects(_id=uniq_id).update(repetition=repeat,starttime=st,endtime=et)
-            # TODO: dropping the entry if repeat = 0
+
+        old_start = service.next_start
+        old_stop = service.next_stop
+        uptime = service.uptime
+        downtime = service.downtime
+        repetition = service.repetition
+
+        if action=="start":
+            new_start = old_start + datetime.timedelta(seconds=uptime + downtime)
+            repetition -= 1
+
+            service.update(next_start=new_start, repetition=repetition)
+
+        if action=="stop":
+            if repetition > 0:
+                new_stop = old_stop + datetime.timedelta(seconds=uptime + downtime)
+                
+                service.update(next_stop=new_stop)
+            
+            else:
+                service.delete()
 
         producer.send(KAFKA_SCHEDULE_TOPIC, json.dumps(msg).encode('utf-8'))
     
@@ -101,12 +121,12 @@ def send_to_deployment_service(type, services):
 
 
 def get_start_services_bw(starttime, endtime):
-    res = Schedules.objects(starttime__lte=endtime, starttime__gt=starttime)
+    res = Schedules.objects(next_start__lte=endtime, next_start__gt=starttime)
     return res
 
 
 def get_end_services_bw(starttime, endtime):
-    res = Schedules.objects(endtime__lte=endtime, endtime__gt=starttime)
+    res = Schedules.objects(next_stop__lte=endtime, next_stop__gt=starttime)
     return res
 
 
