@@ -12,11 +12,15 @@ from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
 
-PATH = Path.cwd()/'Utilities/ApplicationCode' #Mandatory folder
+#PATH = os.path.dirname(__file__)/'Utilities/ApplicationCode' #Mandatory folder
+
+PATH1 = os.path.dirname(__file__)+"/../"
+p1="Utilities/ApplicationCode"
+PATH=os.path.join(PATH1,p1)
 
 def isValid(tar,r_zip):
     #db.createCollection("applications")
-    var1=tar/"contract.json"
+    var1=tar+"/"+"contract.json"
     temp_file_present = file_present(tar,"contract.json")
     if(temp_file_present['status']==1):
         temp_file_present = file_present(tar,"run.sh")
@@ -30,7 +34,7 @@ def isValid(tar,r_zip):
                     #new_app = applications(app_id,r_zip,tar)
                     try:
                         file_data=""
-                        with open(tar/'contract.json') as f:
+                        with open(tar+"/"+'contract.json') as f:
                             file_data = json.load(f)
                         new_app = applications(
                         appName = r_zip,
@@ -53,15 +57,15 @@ def isValid(tar,r_zip):
 
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
-        Path_out = Path.cwd()/'Utilities/ApplicationZip'
+        Path_out = PATH1+'Utilities/ApplicationZip'
         zip_ref.extractall(Path_out)
         print("yes..line 50")
     return
 
 def create_docker(input_file,tar):
-    docker_file = open(Path.cwd()/'Utilities/Dockerfile', 'r')
+    docker_file = open(PATH1+'Utilities/Dockerfile', 'r')
     docker_template = docker_file.read()
-    new_docker_file = open(tar/'Dockerfile','w')
+    new_docker_file = open(tar+"/"+'Dockerfile','w')
     docker_template = re.sub(r'<app_name>',input_file, docker_template)
     new_docker_file.write(docker_template)
     new_docker_file.close()
@@ -69,7 +73,7 @@ def create_docker(input_file,tar):
     return 1
 
 def create_zip(r_zip,tar):
-    os.remove(tar/'contract.json')
+    os.remove(tar+"/"+'contract.json')
     my_file=shutil.make_archive(r_zip, 'zip', tar)
     print(type(my_file))
     create_dir(AZURE_APP_PATH,r_zip)
@@ -77,11 +81,15 @@ def create_zip(r_zip,tar):
     temp_file = r_zip + ".zip"
     upload_file(temp_path,temp_file,r_zip,'application/zip')
     os.remove(temp_file)
-    location1=Path.cwd()/"Utilities/ApplicationZip/"
-    location2=Path.cwd()/"Utilities/ApplicationCode/"
+    location1="Utilities/ApplicationZip/"
+    location2="Utilities/ApplicationCode/"
     r_zip1=r_zip+".zip"
-    path1 = os.path.join(location1, r_zip)
-    path2 = os.path.join(location2, r_zip1)
+    print(PATH)
+    path1=PATH1+location1
+    path2=PATH1+location2
+    print(path1)
+    path1 = os.path.join(path1, r_zip)
+    path2 = os.path.join(path2, r_zip1)
     print(path1)
     print(path2)
     shutil.rmtree(path1)
@@ -97,20 +105,21 @@ def upload_app_file(request):
         print("no file")
         return 'No file found.'
     f = request.files['app']
-
-    f.save(PATH /f.filename)
-    input_file=PATH /f.filename
+    print(PATH)
+    f.save(PATH +"/"+f.filename)
+    input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:
         return {"err_msg":"ERR:only zip files allowed."}
-    tar=Path.cwd()/"Utilities/ApplicationZip" /r_zip
+    tar=PATH1+"Utilities/ApplicationZip" +"/"+r_zip
     resp=isValid(tar,r_zip)
     print(resp,"line 89")
     if 'succ_msg' in resp:
         if(create_docker(r_zip,tar)):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
+            print("all done")
     return {"err_msg":"Invalid Zip"}
