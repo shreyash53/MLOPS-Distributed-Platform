@@ -102,8 +102,8 @@ def data_scientist_view():
 
 @app.route('/end_user',methods=["GET","POST"])
 @token_required
-# def platform_admin_view(current_user):
-def end_user_view():
+def end_user_view(current_user):
+# def end_user_view():
     # if current_user.role != 'platform_admin':
     #     return 'Invalid Request(Role Mismatch)'
     if 'token' in request.args:
@@ -169,10 +169,11 @@ def add_node(current_user):
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
     return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
 
-@app.route('/get_app_sensor')
+@app.route('/end_user/get_app_sensor',methods=['POST'])
 @token_required
-def get_sensor():
-    appName = request.forms['apps']
+def get_sensor(current_user):
+    appName = request.form.get('apps')
+    print("\n\nAPPNAME",appName)
     temp = applications.objects(appName=appName).first()
     temp = temp['contracts']
     temp = json.loads(temp)
@@ -185,18 +186,18 @@ def get_sensor():
         to_send.append(temp)
     return render_template("sensor_form.html",app_name = appName,sensors=to_send)
 
-@app.route('/sensor_bind')
+@app.route('/end_user/sensor_bind',methods=['POST'])
 @token_required
-def sensor_bind():
-    appName = requests.forms['app_name']
-    count = request.forms['sensor_count']
+def sensor_bind(current_user):
+    appName = requests.form['app_name']
+    count = request.form['sensor_count']
     temp = []
     req_json={"Details":list()}
     for i in range (count):
         temp_dict={
-            "Sensor_Type":request.forms['sensor_type_'+str(i)],
-            "Sensor_loc":request.forms['sensor_loc_'+str(i)],
-            "Sensor_DType":request.forms['sensor_dtype_'+str(i)]
+            "Sensor_Type":request.form['sensor_type_'+str(i)],
+            "Sensor_loc":request.form['sensor_loc_'+str(i)],
+            "Sensor_DType":request.form['sensor_dtype_'+str(i)]
         }
         req_json['Details'].append(temp_dict)
     # API call

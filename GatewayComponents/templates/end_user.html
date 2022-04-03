@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <title>End User Homepage</title>
 </head>
 
@@ -43,10 +44,10 @@
 
 <body onload="append_token()">
     <h1>Schedule Applications</h1>
-    <form id="end_user_form" action="/end_user/use_app" method="POST" enctype="multipart/form-data">
+    <form id="end_user_form" action="/end_user/get_app_sensor" method="POST" enctype="multipart/form-data">
         <label for="apps">Application Name: </label>
         <!-- <input list="apps" name="app"> -->
-        <select id="apps">
+        <select id="apps" name="apps">
             {% for i in apps %}
             <option value="{{ i[0] }}">{{i[1]}}</option>
                 {% endfor %}
