@@ -37,4 +37,4 @@ def termination_handler(service_type, data):
         service_.delete()
         
     except Exception as e:
-
+        print('error occurred during childnode.termination_handler', e)
