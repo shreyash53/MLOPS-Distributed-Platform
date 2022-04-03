@@ -7,6 +7,14 @@ from Utilities.models import aimodels
 URL = 'http://127.0.0.1:9000/sensor_validate'
 
 def error(val, error_name):
+    '''
+    Function to return error
+
+    Params:
+    val: key in which error is there
+    error_name: name of the error
+    '''
+
     msg = "Key Error: {} {}!".format(val, error_name)
     temp = {
         "msg": msg,
@@ -17,6 +25,7 @@ def error(val, error_name):
 
 
 def succ(msg):
+    
     temp = {
         "msg": msg,
         "status": 1

@@ -18,10 +18,10 @@
         $('#upload_form').attr('action', curr_api+"?token="+sessionStorage.getItem("user_token"));
     }
     append_token()
-    function changeurl(){
-        curr_api = $('#upload_form').attr('action')
-        document.getElementById('upload_form').action = curr_api+"?token="+sessionStorage.getItem("user_token")
-    }
+    // function changeurl(){
+    //     curr_api = $('#upload_form').attr('action')
+    //     document.getElementById('upload_form').action = curr_api+"?token="+sessionStorage.getItem("user_token")
+    // }
 </script>
 <body onload="append_token()">
     {% if sensor_details %}
@@ -71,10 +71,10 @@
         <input type="submit" value="Upload Application" />
     </form>
     {% if err_msg %}
-    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: none;">{{ err_msg }}</div>
+    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
     {% endif %}
     {% if succ_msg %}
-    <div class="alert alert-success" role="alert" id="login_err_msg" style="display: none;">{{ succ_msg }}</div>
+    <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
     {% endif %}
 </body>
 
