@@ -9,6 +9,8 @@ from Utilities.dbconfig import *
 app = Flask(__name__)
 db=mongodb()
 
+SENSOR_MGR_IP = 'localhost'
+SENSOR_MGR_PORT = 9003
 app.config['SECRET_KEY'] = 'root'
 
 def validate_token(t):
@@ -127,8 +129,13 @@ def upload_app(current_user):
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401   
     print(request.files.lists) 
     resp = upload_app_file(request)
-    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
-    model_details = ['m1','m2','m3']
+    # sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
+    sensor_details = request.get(SENSOR_MGR_IP,':',str(SENSOR_MGR_PORT),'/Get_Data')
+    sensor_details = sensor_details['details']
+    # sensor_details = [ [i[0],i[1]] for i in sensor_details ]
+    # model_details = ['m1','m2','m3']
+    model_details = aimodels.objects().all()
+    model_details = [i.modelName for i in model_details]
     if 'err_msg' in resp:
         return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
     elif 'succ_msg' in resp:
@@ -175,7 +182,7 @@ def get_sensor(current_user):
     appName = request.form.get('apps')
     print("\n\nAPPNAME",appName)
     temp = applications.objects(appName=appName).first()
-    temp = temp['contracts']
+    temp = temp['contract']
     temp = json.loads(temp)
     to_send = []
     for i in temp['sensors']:
@@ -201,7 +208,11 @@ def sensor_bind(current_user):
         }
         req_json['Details'].append(temp_dict)
     # API call
-    
+    resp = request.post(SENSOR_MGR_IP,':',str(SENSOR_MGR_PORT),'/Check_From_AppRunner')
+    if "error" in resp:
+        return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors")
+    elif "Success_Message" in resp:
+
     
 
 
