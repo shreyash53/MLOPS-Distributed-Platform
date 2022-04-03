@@ -108,12 +108,12 @@ def Check_From_Dev(Request_Data):
     error=[]
     flag=0
     for sensor in Request_Data["Details"]:
-        a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
-            sensor_data_type=sensor['Sensor_Data_Type'])).first()
+        a=SensorBindModel.objects.filter(Q(sensor_type=sensor["sensortype"]) & Q(
+            sensor_data_type=sensor['sensordatatype'])).first()
         if not a:
-            error.append(sensor['Sensor_id'])
+            error.append(sensor['sensorid'])
             flag=1
-    return flag,error
+        return flag,error
 
 def Check_From_Runner(Request_Data):
     error=[]
@@ -123,12 +123,17 @@ def Check_From_Runner(Request_Data):
     for sensor in Request_Data["Details"]:
         a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
             sensor_loc=sensor['Sensor_loc'])).first()
+        # print(a.sensor_loc,"line 126")
         if not a:
             error.append(i)
             flag=1
         else:
-            sid.append(a.sensor_bind_id)
+            dic={}
+            dic['sensor_bind_id']=a.sensor_bind_id
+            dic['sensor_name']=a.sensor_name
+            sid.append(dic)
         i+=1
+    # print(flag," ",error," ",sid)
     return flag,error,sid
 
 

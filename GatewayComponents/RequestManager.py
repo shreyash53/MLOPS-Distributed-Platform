@@ -1,3 +1,4 @@
+from urllib import response
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import true
@@ -75,8 +76,13 @@ def app_developer_view():
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     
-    sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
-    model_details = ['m1','m2','m3']
+    # sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
+    # model_details = ['m1','m2','m3']
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+    sensor_details = requests.get(url=url).json()
+    sensor_details = sensor_details['details']
+    model_details = aimodels.objects().all()
+    model_details = [i.modelName for i in model_details]
     print(sensor_details,model_details)
     return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
 
@@ -141,7 +147,8 @@ def upload_app(current_user):
     print(request.files.lists) 
     resp = upload_app_file(request)
     # sensor_details = [('T1','DT1'),('T2','DT2'),('T1','DT2')]
-    sensor_details = request.get(SENSOR_MGR_IP,':',str(SENSOR_MGR_PORT),'/Get_Data')
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+    sensor_details = requests.get(url=url).json()
     sensor_details = sensor_details['details']
     # sensor_details = [ [i[0],i[1]] for i in sensor_details ]
     # model_details = ['m1','m2','m3']
@@ -222,8 +229,8 @@ def get_sensor(current_user):
 @app.route('/end_user/sensor_bind',methods=['POST'])
 @token_required
 def sensor_bind(current_user):
-    appName = requests.form['app_name']
-    count = request.form['sensor_count']
+    appName = request.form['app_name']
+    count = applications.objects(appName=appName).count()
     temp = applications.objects(appName=appName).first()
     temp = temp['contract']
     temp = json.loads(temp)
@@ -235,21 +242,51 @@ def sensor_bind(current_user):
         }
         to_send.append(temp)
     temp = []
-    req_json={"Details":list()}
-    for i in range (count):
+    req_json=list()
+    for i in range (1,int(count)+1):
         temp_dict={
             "Sensor_Type":request.form['sensor_type_'+str(i)],
             "Sensor_loc":request.form['sensor_loc_'+str(i)],
             "Sensor_DType":request.form['sensor_dtype_'+str(i)]
         }
-        req_json['Details'].append(temp_dict)
+        req_json.append(temp_dict)
+    temp_json={"Details":req_json}
     # API call
-    resp = request.post(SENSOR_MGR_IP,':',str(SENSOR_MGR_PORT),'/Check_From_AppRunner')
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Check_From_AppRunner'
+    resp = requests.post(url,json=temp_json).json()
+    # resp = resp.decode('utf-8')
+    print(resp)
     if "error" in resp:
         return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors",sensors=to_send,app_name=appName)
     elif "Success_Message" in resp:
-        #need to call scheduler
+        print("Got from Sensor Manager")
+        application = applications.objects(appName=appName).first()
+        to_scheduler = {
+            "app_name":appName,
+            "app_id":application.id,
+            "starttime":request.form['starttime'],
+            "repetition": request.form['repetition'],
+            "interval":{
+                "days": request.form['Day'],
+                "hours": request.form['Hour'],
+                "minutes": request.form['Minute'],
+                "seconds": request.form['Second']
+            },
+            "endtime": request.form['endtime']
+        }
+
+        sensor_list=[]
+        for i in resp["Success_Message"]:
+            t = {
+                "sensor_name":i["sensor_name"],
+                "sensor_binding_id": i['sensor_bind_id']
+            }
+            sensor_list.append(t)
         
+        to_scheduler["sensors"] = sensor_list
+        url = "0.0.0.0:8001/schedule_application"
+        res = requests.post(url,json=to_scheduler)
+
         return render_template('sensor_form.html',succ_msg="Sensor binding ids returned",sensors=to_send,app_name=appName)
 
 

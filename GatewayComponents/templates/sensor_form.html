@@ -20,7 +20,7 @@
 </script>
 
 <body onload="append_token()">
-    <form action="/end_user/sensor_bind" method="post">
+    <form action="/end_user/sensor_bind" id="upload_form" method="post" enctype="multipart/form-data">
         {% if app_name %}
         <input type="text" value="{{ app_name }}" name="app_name" hidden>
         <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
@@ -53,8 +53,8 @@
         <input type="text" id="Hour" name="Hour">
         <label for="Minute">Minute:</label>
         <input type="text" id="Minute" name="Minute">
-        <label for="second">second:</label>
-        <input type="text" id="second" name="second">
+        <label for="Second">Second:</label>
+        <input type="text" id="Second" name="Second">
         
         <br>
         <br>
