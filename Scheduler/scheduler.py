@@ -78,18 +78,23 @@ def get_sec_in_json(j : dict) -> int:
     sec = seconds + (60 * (minutes + (60 * (hours + (24 * days)))))
     return sec
 
-def send_to_deployment_service(type, services):
+
+def send_to_deployment_service(action, services):
     producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
-    if services is None or []:
+    if action not in ['start', 'stop']:
         producer.close()
-        print("No services to start")
+        print("Invalid action :", action)
+        return
+    if services.count() == 0:
+        producer.close()
+        print("No services to",action)
         return
     for service in services:
         msg = {
             "app_instance_id": service._id,
             "app_name": service.app_name,
-            "request_type": type,
+            "request_type": action,
             "app_id": service.app_id,
             "sensors": service.sensors
         }
