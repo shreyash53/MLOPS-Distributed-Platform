@@ -127,7 +127,10 @@ def Check_From_Runner(Request_Data):
             error.append(i)
             flag=1
         else:
-            sid.append(a.sensor_bind_id)
+            dic={}
+            dic['sensor_bind_id']=a.sensor_bind_id
+            dic['sensor_name']=a.sensor_name
+            sid.append(dic)
         i+=1
     return flag,error,sid
 
