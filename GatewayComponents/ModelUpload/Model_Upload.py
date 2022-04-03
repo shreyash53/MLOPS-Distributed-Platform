@@ -12,8 +12,11 @@ from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
 
-PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
-mydir=Path.cwd()/'NewZip'
+# PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
+# mydir=Path.cwd()/'NewZip'
+PATH1 = os.path.dirname(__file__)+"/../"
+p1="Utilities/ApplicationCode"
+PATH=os.path.join(PATH1,p1)
 
 def isValid(tar,r_zip):
     var1=tar/"contract.json"
@@ -30,7 +33,7 @@ def isValid(tar,r_zip):
                     #new_app = applications(app_id,r_zip,tar)
                     try:
                         file_data=""
-                        with open(tar/'contract.json') as f:
+                        with open(tar+"/"+'contract.json') as f:
                             file_data = json.load(f)
                         print(file_data)
                         new_app = aimodels(modelName = r_zip,
@@ -66,15 +69,15 @@ def isValid(tar,r_zip):
 
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
-        Path_out = Path.cwd()/'Utilities/ModelZip'
+        Path_out = PATH1+'Utilities/ModelZip'
         zip_ref.extractall(Path_out)
         print("printed..line 60")
     return
 
 def create_docker(input_file,tar):
-    docker_file = open(Path.cwd()/'Utilities/Dockerfile', 'r')
+    docker_file = open(PATH1+'Utilities/Dockerfile', 'r')
     docker_template = docker_file.read()
-    new_docker_file = open(tar/'Dockerfile','w')
+    new_docker_file = open(tar+"/"+'Dockerfile','w')
     docker_template = re.sub(r'<app_name>',"model_api", docker_template)
     new_docker_file.write(docker_template)
     new_docker_file.close()
@@ -90,11 +93,15 @@ def create_zip(r_zip,tar):
     temp_file = r_zip + ".zip"
     upload_file(temp_path,temp_file,r_zip,'application/zip')
     os.remove(temp_file)
-    location1=Path.cwd()/"Utilities/ModelZip/"
-    location2=Path.cwd()/"Utilities/ModelCode/"
+    location1="Utilities/ModelZip/"
+    location2="Utilities/ModelCode/"
     r_zip1=r_zip+".zip"
-    path1 = os.path.join(location1, r_zip)
-    path2 = os.path.join(location2, r_zip1)
+    print(PATH)
+    path1=PATH1+location1
+    path2=PATH1+location2
+    print(path1)
+    path1 = os.path.join(path1, r_zip)
+    path2 = os.path.join(path2, r_zip1)
     print(path1)
     print(path2)
     shutil.rmtree(path1)
@@ -207,15 +214,15 @@ def upload_model_file(request):
         return 'No file found.'
     f = request.files['model']
 
-    f.save(PATH /f.filename)
-    input_file=PATH /f.filename
+    f.save(PATH+"/"+f.filename)
+    input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:
         return {"err_msg":"ERR:only zip files allowed."}
-    tar=Path.cwd()/"Utilities/ModelZip" /r_zip
+    tar=PATH1+"Utilities/ModelZip" +"/"+r_zip
     resp=isValid(tar,r_zip)
     print(resp,"line 89")
     if 'succ_msg' in resp:
@@ -223,4 +230,5 @@ def upload_model_file(request):
         if(create_docker(r_zip,tar)):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:model data is added sucessfully."}
-    return {"err_msg":"Invalid Zip"}
+    else:
+        return resp

@@ -122,4 +122,6 @@ def upload_app_file(request):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
             print("all done")
-    return {"err_msg":"Invalid Zip"}
+    else:
+        return resp
+#        return {"err_msg":"Invalid Zip"}
