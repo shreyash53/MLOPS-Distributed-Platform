@@ -1,1 +1,6 @@
 shra
+*.pyc
+*.env
+.dockerignore
+logging_dockerfile_code.txt
+*.ipynb
