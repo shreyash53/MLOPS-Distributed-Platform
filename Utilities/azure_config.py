@@ -46,7 +46,7 @@ def download_dir(azurePath, azureFileName, filePath):
     '''
     azurePath: Folder path where you want to upload file
     azureFileName: Name of the file you want to keep
-    filePath: filePath(including file) which you want to upload
+    filePath: filePath(including file) where you want to download
     '''
     file_service.get_file_to_path(fileshareName, azurePath, azureFileName, filePath)
 

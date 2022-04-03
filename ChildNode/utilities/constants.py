@@ -8,3 +8,8 @@ kafka_url = "{0}:{1}".format(kafka_ip, kafka_port)
 # node_app = 'node_app'
 POST = ['POST']
 GET = ['GET']
+
+APP_DIR = '/home/data/app'
+MODEL_DIR = '/home/data/model'
+
+SLCM_TOPIC_NAME = 'register'
