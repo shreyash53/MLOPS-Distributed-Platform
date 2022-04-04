@@ -1,2 +1,2 @@
 BOOTSTRAP_SERVERS = '20.219.107.251:9092'
-KAFKA_SCHEDULE_TOPIC = 'scheduler_service'
+KAFKA_SCHEDULE_TOPIC = 'topic_schedule'
