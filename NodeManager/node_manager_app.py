@@ -7,7 +7,7 @@ from node_manager.routes import blueprint as node_manager_blueprint
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '10101010101010'
- 
+
 connect(db=database_name, username=DB_USER_NAME, password=DB_PASSwORD, host=DB_URI)
 
 app.register_blueprint(request_interface_blueprint)

@@ -14,7 +14,7 @@ def unregister_service_with_slcm(service_type, data):
         "instance_id" : get_service_id(service_type, data),
         "service_name" : get_service_name(service_type, data),
         "service_type" : service_type,
-        "request_type" : "stop"
+        "request_type" : "stopped"
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 

@@ -20,7 +20,7 @@ def get_model_data(modelId, data):
         return "No data"
     
     url = build_url(model_)
-    return post('{}/data'.format(url), json=data).json()
+    return post('{}/get_result'.format(url), json=data).json()
 
 
 def get_sensor_data(sensor_build_id):

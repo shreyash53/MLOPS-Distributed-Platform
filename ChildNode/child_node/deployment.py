@@ -9,7 +9,8 @@ import zipfile
 from json import dumps
 
 from kafka import KafkaProducer
-from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_URL
+from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
+import traceback
 
 file_stub = '{}/{}'
 
@@ -23,10 +24,12 @@ def send_using_kafka(topic_name, data):
 
 
 def make_and_move_in_directory(service_type, service_name):
+    print('file stub', file_stub)
     if service_type == 'app':
         file_loc = file_stub.format(APP_DIR, service_name)
     else:
         file_loc = file_stub.format(MODEL_DIR, service_name)
+    print('file_loc - inside', file_loc)
     try:
         os.listdir(file_loc)
     except Exception as e:
@@ -55,21 +58,33 @@ def get_service_location(service_type, service_details):
 
 
 def download_files(service_type, service_details):
-    service_name = get_service_name(service_type, service_details)
-    service_location = get_service_location(service_type, service_details)
-    file_loc = make_and_move_in_directory(
-        service_type, service_details[service_name])
-    file_name = os.path.basename(service_location)
-    service_address = file_loc + service_name + '.zip'
-    download_dir(service_location, file_name, service_address)
-    return file_loc, service_address
-
+    try:
+        print('now downloading file....')
+        service_name = get_service_name(service_type, service_details)
+        print('service_name', service_name)
+        service_location = get_service_location(service_type, service_details)
+        print('service_location', service_location)
+        file_loc = make_and_move_in_directory(
+            service_type, service_name)
+        print('file_loc', file_loc)
+        file_name = os.path.basename(service_location)
+        print('file_name', file_name)
+        service_address = file_loc + '.zip'
+        print('service_address', service_address)
+        download_dir(service_location, file_name, service_address)
+    
+        return file_loc, service_address
+    except Exception as e:
+        print('error while downloading files', e)
 
 def extract_file(file_loc):
-    with zipfile.ZipFile(file_loc, "r") as zip_ref:
-        Path_out = os.path.dirname(file_loc)
-        zip_ref.extractall(Path_out)
-        # print("yes..line 50")
+    try:
+        with zipfile.ZipFile(file_loc, "r") as zip_ref:
+            Path_out = os.path.dirname(file_loc)
+            zip_ref.extractall(Path_out)
+            # print("yes..line 50")
+    except Exception as e:
+        print('error while extracting files', e)
 
 
 def make_dockerignore(file_loc):
@@ -77,57 +92,85 @@ def make_dockerignore(file_loc):
         file.write('*.zip')
 
 def register_service_in_node(service_type, data, file_loc, tag_name, container_id, port):
-    service_ = ServicesRunning(
-        serviceId = get_service_id(service_type, data),
-        serviceName = get_service_name(service_type, data),
-        serviceType = service_type,
-        serviceDockerTagName = tag_name,
-        serviceDockerContainerName = container_id,
-        serviceDockerFileLocation = file_loc,
-        serviceNodeId = NODE_ID,
-        serviceDockerPort = port
-    )
-    service_.save()
+    print(data)
+    try:
+        service_ = ServicesRunning(
+            serviceId = get_service_id(service_type, data),
+            serviceName = get_service_name(service_type, data),
+            serviceType = service_type,
+            serviceDockerTagName = tag_name,
+            serviceDockerContainerName = container_id,
+            serviceDockerFileLocation = file_loc,
+            serviceNodeId = NODE_ID,
+            serviceDockerPort = port
+        )
+        service_.save()
+    except Exception as e:
+        print(traceback.format_exc())
+        print('error while registering service in node', e)
+
 
 def register_service_with_slcm(service_type, data):
     request_ = {
         "instance_id" : get_service_id(service_type, data),
         "service_name" : get_service_name(service_type, data),
         "service_type" : service_type,
-        "request_type" : "start"
+        "request_type" : "running"
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 
 def get_env_data(data):
-    num_models = len(data['model'])
-    num_sensors = len(data['sensor'])
-    result = {
-        "num_models" : num_models,
-        "num_sensors" : num_sensors
-    }
-    for data in data['model']:
-        result['M_{}'.format(data['model_id'])] = data['model_id']
+    try:
+        num_models = len(data['models_data'])
+        num_sensors = len(data['sensor_data'])
+        result = {
+            "num_models" : num_models,
+            "num_sensors" : num_sensors
+        }
+        for data_ in data['models_data']:
+            result['M_{}'.format(data_['model_id'])] = data_['model_id']
 
-    for data in data['sensor']:
-        result['S_{}'.format(data['sensor_app_id'])] = data['sensor_binding_id']
-    
-    result['url'] = CHILD_NODE_URL
-    return result
+        for data in data['sensor_data']:
+            result['S_{}'.format(data['sensor_app_id'])] = data['sensor_binding_id']
+        
+        result['url'] = CHILD_NODE_URL
+        print('all env variables')
+        print(result)
+        return result
+    except Exception as e:
+        print(data)
+        print(traceback.format_exc())
+        print('error while getting env data', e)
+
 
 def deployment_handler(service_type, data):
-    file_loc, service_address = download_files(service_type, data['app'])
-    extract_file(service_address)
-    make_dockerignore(file_loc)
-    tag_name = get_service_name(service_type, data['app'])
-    docker_image = docker.build(file_loc, tags=tag_name)
-    if service_type == 'app':
-        container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 8008)], envs=get_env_data(data))
-    else:
-        container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 8008)])
-    if not container:
-        print('not able to run container')
-        return 
-    #store docker details
-    register_service_in_node(service_type, data['app'], file_loc, tag_name, str(container), str(PORT_SERVICE))
-    register_service_with_slcm(service_type, data['app'])
+    try:
+
+        if service_type == 'app':
+            data_ = data['app_data']
+            dir_ = APP_DIR
+        else:
+            data_ = data
+            dir_ = MODEL_DIR
+        flag = download_files(service_type, data_)
+        if not flag:
+            return
+        file_loc, service_address = flag
+
+        extract_file(service_address)
+        make_dockerignore(dir_)
+        tag_name = get_service_name(service_type, data_)
+        docker_image = docker.build(dir_, tags=tag_name)
+        if service_type == 'app':
+            container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 80)], envs=get_env_data(data))
+        else:
+            container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 80)])
+        if not container:
+            print('not able to run container')
+            return 
+        #store docker details
+        register_service_in_node(service_type, data_, file_loc, tag_name, str(container), str(PORT_SERVICE))
+        register_service_with_slcm(service_type, data_)
+    except Exception as e:
+        print('error while deployment handling', e)
 

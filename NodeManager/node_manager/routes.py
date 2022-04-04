@@ -9,3 +9,4 @@ def addNode():
     nodes_data = request.get_json()
     return add_all_nodes(nodes_data)
 
+# @blueprint.route('/plus', methods=POST)

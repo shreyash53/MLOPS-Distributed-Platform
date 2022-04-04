@@ -10,15 +10,14 @@ from .model import NodeDocument
 
 
 def node_validated(node_data):
-    if (node_data['nodePort'] and node_data['nodeIp'] and (not NodeDocument.objects.filter(Q(nodePort=node_data['nodePort']) & Q(nodeIP=node_data['nodeIp'])))) \
+    if (node_data['nodePortNo'] and node_data['nodeIpAddress'] and (not NodeDocument.objects.filter(Q(nodePortNo=node_data['nodePortNo']) & Q(nodeIpAddress=node_data['nodeIpAddress'])))) \
         or (node_data['nodeUrl'] and (not NodeDocument.objects.filter(Q(nodeUrl=node_data['NodeUrl'])))):
         return True
     return False
 
-
 def add_node(node_data):
     try:
-        if not node_validated(node_data):
+        if node_validated(node_data):
             node_ = NodeDocument(**node_data)
             node_.save()
     except Exception as e:
@@ -26,14 +25,17 @@ def add_node(node_data):
 
 
 def add_all_nodes(nodes_data):
+    # print(nodes_data)
+    # print(type(nodes_data))
     for node_data in nodes_data:
         add_node(node_data)
     return "Added Valid Nodes"
 
 
 def consumer_logic(consumer_data):
-    print(consumer_data)
-    if consumer_data['requesttype'] == 'start':
+    consumer_data = consumer_data.value
+    print('data: ', consumer_data)
+    if consumer_data['request_type'] == 'start':
         deploy_models(consumer_data['models'])
         deploy_app(consumer_data['app'], consumer_data)
     else:
@@ -43,14 +45,14 @@ def consumer_logic(consumer_data):
 def consumer_thread():
     try:
         consumer = KafkaConsumer(
-            'app_deploy',
+            'app_deploy1',
             bootstrap_servers=[kafka_url],
-            # auto_offset_reset='earliest',
+            auto_offset_reset='earliest',
             enable_auto_commit=True,
             group_id='my-group',
             value_deserializer=lambda x: loads(x.decode('utf-8'))
         )
-        # print()
+        print('inside nodemanager consumer thread')
         for data in consumer:
             consumer_logic(data)
 
