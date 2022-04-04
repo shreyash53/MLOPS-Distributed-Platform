@@ -36,7 +36,7 @@ def get_sensor_data(sensor_build_id):
         )
 
         for data in consumer:
-            return data
+            return data.value
 
     except Exception as e:
         print('Error in request_interface.get_sensor_data', e)

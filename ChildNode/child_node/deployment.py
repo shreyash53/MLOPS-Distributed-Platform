@@ -14,7 +14,8 @@ import traceback
 
 file_stub = '{}/{}'
 
-PORT_SERVICE = 11000
+APP_PORT_SERVICE = 11000
+MODEL_PORT_SERVICE = 12000
 
 def send_using_kafka(topic_name, data):
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda x:
@@ -34,7 +35,7 @@ def make_and_move_in_directory(service_type, service_name):
         os.listdir(file_loc)
     except Exception as e:
         os.makedirs(file_loc)
-    return file_loc
+    return file_loc + '/'
 
 
 def get_service_name(service_type, service_details):
@@ -69,7 +70,7 @@ def download_files(service_type, service_details):
         print('file_loc', file_loc)
         file_name = os.path.basename(service_location)
         print('file_name', file_name)
-        service_address = file_loc + '.zip'
+        service_address = file_loc + service_name + '.zip'
         print('service_address', service_address)
         download_dir(service_location, file_name, service_address)
     
@@ -110,12 +111,14 @@ def register_service_in_node(service_type, data, file_loc, tag_name, container_i
         print('error while registering service in node', e)
 
 
-def register_service_with_slcm(service_type, data):
+def register_service_with_slcm(service_type, data, service_ip, service_port):
     request_ = {
         "instance_id" : get_service_id(service_type, data),
         "service_name" : get_service_name(service_type, data),
         "service_type" : service_type,
-        "request_type" : "running"
+        "request_type" : "register",
+        "service_ip" : service_ip,
+        "service_port": service_port
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 
@@ -144,6 +147,7 @@ def get_env_data(data):
 
 
 def deployment_handler(service_type, data):
+    global MODEL_PORT_SERVICE, APP_PORT_SERVICE
     try:
 
         if service_type == 'app':
@@ -158,19 +162,26 @@ def deployment_handler(service_type, data):
         file_loc, service_address = flag
 
         extract_file(service_address)
-        make_dockerignore(dir_)
+        make_dockerignore(file_loc)
         tag_name = get_service_name(service_type, data_)
-        docker_image = docker.build(dir_, tags=tag_name)
+        docker_image = docker.build(file_loc, tags=tag_name)
         if service_type == 'app':
-            container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 80)], envs=get_env_data(data))
+            container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data))
         else:
-            container = docker.run(tag_name, detach=True, publish=[(PORT_SERVICE, 80)])
+            container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, 5000)])
+        
         if not container:
             print('not able to run container')
             return 
         #store docker details
-        register_service_in_node(service_type, data_, file_loc, tag_name, str(container), str(PORT_SERVICE))
-        register_service_with_slcm(service_type, data_)
+        if service_type == 'app':
+            port = APP_PORT_SERVICE
+            APP_PORT_SERVICE += 1
+        else:
+            port = MODEL_PORT_SERVICE
+            MODEL_PORT_SERVICE += 1
+        register_service_in_node(service_type, data_, file_loc, tag_name, str(container), str(port))
+        register_service_with_slcm(service_type, data_, 'localhost', port)
     except Exception as e:
         print('error while deployment handling', e)
 

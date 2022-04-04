@@ -12,4 +12,4 @@ class KafkaConsumer(Thread):
 if __name__ == '__main__':
     kk = KafkaConsumer()
     kk.start()
-    app.run(debug=True, host=static_ip, port=static_port)
+    app.run(debug=False, host=static_ip, port=static_port)
