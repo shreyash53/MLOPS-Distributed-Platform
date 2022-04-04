@@ -1,1 +1,3 @@
-shra
+.env
+*.pyc
+*.gitignore

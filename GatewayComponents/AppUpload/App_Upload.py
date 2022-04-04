@@ -24,7 +24,7 @@ def get_app_instance_id():
     if last_id is None:
         last_id = "AI_0"
     else:
-        last_id = json.loads(last_id.to_json())
+        # last_id = json.dumps(last_id.to_json())
         last_id = last_id['_id']
 
     last_num = int(last_id[3:])
@@ -33,39 +33,40 @@ def get_app_instance_id():
     return initstr
 
 def isValid(tar,r_zip):
-    #db.createCollection("applications")
+    #db.createCollection("appliations")
     var1=tar+"/"+"contract.json"
     temp_file_present = file_present(tar,"contract.json")
     if(temp_file_present['status']==1):
-        temp_file_present = file_present(tar,"run.sh")
-        if(temp_file_present['status']==1):
-            temp_val_contract = validate_contract(var1)
-            if(temp_val_contract['status'] == 1):
-                #if db.applications.find( { "appName": r_zip } ).count() > 0:
-                if applications.objects(appName=r_zip).count()>0:
-                    return {"err_msg":"application already in database."}
-                else:
-                    #new_app = applications(app_id,r_zip,tar)
-                    try:
-                        file_data=""
-                        with open(tar+"/"+'contract.json') as f:
-                            file_data = json.load(f)
-                        new_app = applications(_id=get_app_instance_id(),
-                        appName = r_zip,
-                        path = AZURE_APP_PATH+"/"+r_zip,
-                        contract = json.dumps(file_data)
-                        )
-                        new_app.save()
-                    except Exception as e:
-                        return {"err_msg":e}
-
-                    print(new_app)
-                    #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
-                    return {"succ_msg":"Valid Zip"}
+        temp_val_contract = validate_contract(var1)
+        if(temp_val_contract['status'] == 1):
+            if applications.objects(appName=r_zip).count()>0:
+                return {"err_msg":"application already in database."}
             else:
-                return temp_val_contract
+                #new_app = applications(app_id,r_zip,tar)
+                try:
+                    file_data=""
+                    with open(tar+"/"+'contract.json') as f:
+                        file_data = json.load(f)
+                    if file_data:
+                        print("\n\n\FIle Read...................\n\n\n", type(file_data))
+                    new_app = applications(
+                    _id=get_app_instance_id(),
+                    appName = r_zip,
+                    path = AZURE_APP_PATH+"/"+r_zip,
+                    contract = json.dumps(file_data),
+                    )
+                    
+                    new_app.save()
+                except Exception as e:
+                    print("||||||||\n\n\n |||||||||||||")
+                    return {"err_msg":e}
+                print(new_app)
+                #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
+                return {"succ_msg":"Valid Zip"}
         else:
-            return temp_file_present
+            return temp_val_contract
+        # else:
+        #     return temp_file_present
     else:
         return temp_file_present
 

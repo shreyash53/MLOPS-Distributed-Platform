@@ -15,15 +15,19 @@ from Utilities.azure_config import *
 # PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
 # mydir=Path.cwd()/'NewZip'
 PATH1 = os.path.dirname(__file__)+"/../"
-p1="Utilities/ApplicationCode"
-#PATH=os.path.join(PATH1,p1)
-PATH=PATH1+p1
+# j=len(PATH1)
+# while PATH1[j-1]!='/':
+#     j=j-1
+# PATH1 = PATH1[0,j]
+p1="Utilities/ModelCode"
+PATH=os.path.join(PATH1,p1)
+#PATH=PATH1+p1
 
 def isValid(tar,r_zip):
     var1=tar+"/"+"contract.json"
     temp_file_present = file_present(tar,"contract.json")
     if(temp_file_present['status']==1):
-        temp_file_present = file_present(tar,"model_demo_pickle.pkl")
+        temp_file_present = file_present(tar,"model.pkl")
         if(temp_file_present['status']==1):
             temp_val_contract = validate_contract(var1)
             if(temp_val_contract['status'] == 1):
@@ -49,11 +53,11 @@ def isValid(tar,r_zip):
                     #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
                     return {"succ_msg":"Valid Zip"}
             else:
-                return temp_val_contract
+                return temp_val_contract["msg"]
         else:
-            return temp_file_present
+            return temp_file_present["msg"]
     else:
-        return temp_file_present
+        return temp_file_present["msg"]
 
 # def isValid(tar,r_zip):
 #     file_data=""
@@ -99,15 +103,16 @@ def create_zip(r_zip,tar):
     location2="Utilities/ModelCode/"
     r_zip1=r_zip+".zip"
     print(PATH)
-    # path1=PATH1+location1
-    # path2=PATH1+location2
-    # print(path1)
-    # path1 = os.path.join(path1, r_zip)
-    # path2 = os.path.join(path2, r_zip1)
-    # print(path1)
-    # print(path2)
-    # shutil.rmtree(path1)
-    #os.remove(path2) 
+    path1=PATH1+location1
+    path2=PATH1+location2
+    print(path1)
+    path1 = os.path.join(path1, r_zip)
+    path2 = os.path.join(path2, r_zip1)
+    print(path1)
+    print(path2)
+    shutil.rmtree(path1)
+    os.remove(path2)
+    return
 
 def generate_model_api(store_path):
     template_file = open('Utilities/model_api.py', 'r')
@@ -127,7 +132,9 @@ def generate_model_api(store_path):
 
     for vals in contract['dependencies']:
         tokens['other_dependencies'] += '\n' + vals
-
+    tokens['preprocess_fun_parameters'] = ""
+    tokens['postprocess_fun_parameters'] = ""
+    tokens['predict_fun_parameters'] = ""
     tokens['pickle_file_path'] = contract['pickle_file_name']
     for val in contract["procedures"]:
         if val['name'] == "preprocessing":
@@ -210,10 +217,10 @@ def upload_model_file(request):
     err_msg=""
     success_msg=""
     #print(PATH)
-    if 'model' not in request.files:
+    if request.files['model'].filename == '':
     #if request.files:
         print("no file")
-        return 'No file found.'
+        return {"err_msg":"ERR:No file uploaded"}
     f = request.files['model']
 
     f.save(PATH+"/"+f.filename)
@@ -234,4 +241,4 @@ def upload_model_file(request):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:model data is added sucessfully."}
     else:
-        return resp
+        return {"err_msg":resp}
