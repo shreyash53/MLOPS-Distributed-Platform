@@ -23,12 +23,17 @@ def fun(topic_name,ip,port,time):
                              dumps(x).encode('utf-8'))
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
-            val = requests.post(url).content
-            jsonResponse = json.loads(val.decode('utf-8'))
+            try:
+                val = requests.post(url).content
+                jsonResponse = json.loads(val.decode('utf-8'))
+                dic = {}
+                dic['data'] = jsonResponse
+                producer.send(topic_name, value=dic)
+            except:
+                pass
             # print("To Topic:")
             # print(topic_name)
             # print(jsonResponse)
-            producer.send(topic_name, value=jsonResponse)
             sleep(time)
 
 def fun2(topic_name, ip, port,time):
