@@ -89,7 +89,7 @@ def extract_file(file_loc):
 
 
 def make_dockerignore(file_loc):
-    with open(file_loc + '/.gitignore', 'w') as file:
+    with open(file_loc + '/.dockerignore', 'w') as file:
         file.write('*.zip')
 
 def register_service_in_node(service_type, data, file_loc, tag_name, container_id, port):
@@ -167,8 +167,10 @@ def deployment_handler(service_type, data):
         docker_image = docker.build(file_loc, tags=tag_name)
         if service_type == 'app':
             container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data))
+            # container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data), networks='host')
         else:
             container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, 5000)])
+            # container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, 5000)], networks='host')
         
         if not container:
             print('not able to run container')

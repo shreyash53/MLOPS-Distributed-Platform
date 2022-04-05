@@ -3,7 +3,7 @@ from utilities.constants import GET, POST
 from flask import request, Blueprint
 from .controller import get_model_data, get_sensor_data
 
-blueprint = Blueprint('Request', __name__, url_prefix='/request')
+blueprint = Blueprint('Request', __name__, url_prefix='/api')
 
 @blueprint.route('/model/<modelId>', methods=POST)
 def model_data(modelId):
