@@ -1,6 +1,7 @@
 from flask import Flask, request
 import service_utilities as sv
 import kafka
+from json import loads,dumps
 from json import loads
 import threading
 import dotenv
@@ -9,11 +10,10 @@ dotenv.load_dotenv()
 
 app = Flask(__name__)
 
-PORT = os.getenv("PORT")
 def consume():
 	consumer = kafka.KafkaConsumer(
     'register',
-    bootstrap_servers=['20.219.107.251:9092'],
+    bootstrap_servers=[sv.kafka_bootstrap],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
     group_id='my-group',
@@ -22,6 +22,8 @@ def consume():
 	for message in consumer:
 		data = message.value
 		instance = data["instance_id"]
+		sv.fetch()
+
 		if data["request_type"] == "register":
 			data["state"] = "running"
 			sv.savetodb(data)
@@ -53,13 +55,24 @@ def service_stop():
 @app.route("/service_lookup", methods=["POST"])
 def service_lookup():
 	request_data = request.get_json()
-	ser=request_data["service_name"]
-	obj = sv.fetchdb({"service_name" :ser })[0]
-	print(obj.to_json(),"dsfsddsfdsfsd")
+	ser=request_data["service_id"]
+	try:
+		sertype = request_data["service_type"]
+	except:
+		pass
+	try:
+		slug = request_data["slug"]
+	except:
+		slug = ""
+
+	obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })[0]
 	if(obj!=None and obj["state"] == "running"):
-		return {"ip": obj["ip"] ,"port" : obj["port"] , "instance_id" : obj["instance_id"]}
+		url ="http://"+obj["ip"]+":"+obj["port"]+slug
+		return {"msg" : "Runnning" , "url": url ,"kafka" : None ,"node" : obj.nodeid, "instance_id" : obj["instance_id"]},200
+	elif(obj!=None and obj["state"] == "stopped"):
+		return {"msg" : "NotRunning"},400
 	else:
-		return "service not found"
+		return {"msg" : "NotFound"},400
 
 #monitor will hit this api when it does not get a heartbeat from a service
 @app.route("/service_dead", methods = ["POST"])
@@ -69,8 +82,14 @@ def dead_service():
 	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
 	print(obj[0].state)
-	sv.updatedb({"instance_id" : name }, {"state" : "dead"})
+
+	if(obj.state == "running"):
+		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
+		produce = kafka.KafkaProducer(bootstrap_servers=sv.bootstrap_servers,
+                          value_serializer=lambda v: dumps(v).encode('utf-8'))
+		produce.send('service_dead', obj[0])
+
 	# restart
 	# if obj.service_type ==  "platform_service":
 		
@@ -85,8 +104,9 @@ def get_services(stype):
 		for x in data:
 			lst.append([x.service_id,x.service_type,x.service_name])
 		return  lst
-	elif stype == "killed":
-		data = sv.fetchdb({"state" : "scheduled"})
+	elif stype == "stopped":
+		data = sv.fetchdb({"state" : "stopped"})
+
 		lst = []
 		for x in data:
 			lst.append([x.service_id,x.service_type,x.service_name])
@@ -94,10 +114,15 @@ def get_services(stype):
 	else:
 		return "invalid type"
 
+@app.route("/")
+def fun():
+	return "slcm"
+
 
 
 
 if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
-	app.run(port=PORT, debug=True, )
+	app.run(port=sv.PORT,host = sv.HOST )
+

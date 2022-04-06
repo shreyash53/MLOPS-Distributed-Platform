@@ -7,7 +7,10 @@ database_name = 'SLCM_DB'
 mduser = os.getenv('MONGODB_USER')
 mdpass = os.getenv('MONGODB_PASS') 
 cluster = os.getenv('MONGODB_CLUSTER')
+kafka_bootstrap = os.getenv('kafka_bootstrap')
 PORT = os.getenv('PORT')
+HOST = os.getenv('HOST')
+
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mduser,mdpass , cluster,database_name)
 
 def mongodb():
@@ -24,6 +27,8 @@ class slcm(db.Document):
     state = db.StringField()
     ip = db.StringField()
     port = db.StringField()
+    nodeid = db.StringField()
+
     def to_json(self):
         return {
             "instance_id":self.instance_id,
@@ -31,7 +36,8 @@ class slcm(db.Document):
             "service_name" : self.service_name,
             "state":self.state,
             "ip" : self.ip,
-            "port":self.port
+            "port":self.port,
+            "nodeid":self.nodeid
         }
 
 def savetodb(kwargs):
