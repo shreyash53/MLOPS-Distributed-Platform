@@ -7,12 +7,29 @@ from Authenticate import *
 from AppUpload.App_Upload import *
 from ModelUpload.Model_Upload import *
 from Utilities.dbconfig import *
+
 app = Flask(__name__)
 db=mongodb()
 
 SENSOR_MGR_IP = 'http://0.0.0.0'
 SENSOR_MGR_PORT = 9003
 app.config['SECRET_KEY'] = 'root'
+
+from flask import Blueprint
+from werkzeug.routing import BaseConverter
+
+class RegexConverter(BaseConverter):
+    def __init__(self, url_map, *items):
+        super(RegexConverter, self).__init__(url_map)
+        self.regex = items[0]
+
+app.url_map.converters['regex'] = RegexConverter
+
+@app.route('/app/<uid>/<regex("[a-zA-Z0-9.\/_%?-]*"):slug>')
+def example(uid, slug):
+    return "uid: %s, slug: %s" % (uid, slug)
+
+
 
 def validate_token(t):
     try:
@@ -107,15 +124,6 @@ def data_scientist_view(current_user):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
     return render_template('data_scientist.html')
     
-
-@app.route('/platform_admin')
-@token_required
-def platform_admin(current_user):
-    if 'token' in request.args:
-        if not validate_token(request.args.get("token")):
-            return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
-    return render_template('data_scientist.html')
-
 
 @app.route('/end_user',methods=["GET","POST"])
 @token_required
@@ -294,5 +302,8 @@ def sensor_bind(current_user):
 
 
 
+
+
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
