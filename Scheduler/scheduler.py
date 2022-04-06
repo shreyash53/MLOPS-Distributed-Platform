@@ -53,8 +53,8 @@ def scheduleapplication():
         new_schedule.save()
     except Exception as e:
         return "Error : " + str(e)
-    return "Scheduled!"
-
+    return {"AII":app_instance_id}
+"""manage"""
 
 def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
