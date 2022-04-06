@@ -47,17 +47,18 @@ def scheduleapplication():
                                  next_start=first_start,
                                  next_stop=first_stop,
                                  uptime= (first_stop - first_start).total_seconds(),
-                                 downtime=2 #get_sec_in_json(all_details['interval']),
+                                 downtime=get_sec_in_json(all_details['interval']),
                                  repetition=all_details['repetition'],
                                  sensors=json.dumps(all_details['sensors']))
 
         new_schedule.save()
     except Exception as e:
-          msg= "err_msg : " + str(e)
-          rep ={
-              "err_msg":msg
-          }
-          return rep
+        msg= "err_msg : " + str(e)
+        rep ={
+            "err_msg":msg
+        }
+        return rep
+    
     msg= "Scheduled!"
     rep={
         "succ_msg":msg,
