@@ -8,6 +8,7 @@ from kafka import KafkaProducer
 
 from utilities.constant import *
 from dbconfig import *
+from json import JSONDecodeError
 
 
 app = Flask(__name__)
@@ -46,15 +47,24 @@ def scheduleapplication():
                                  next_start=first_start,
                                  next_stop=first_stop,
                                  uptime= (first_stop - first_start).total_seconds(),
-                                 downtime=get_sec_in_json(all_details['interval']),
+                                 downtime=2 #get_sec_in_json(all_details['interval']),
                                  repetition=all_details['repetition'],
                                  sensors=json.dumps(all_details['sensors']))
 
         new_schedule.save()
     except Exception as e:
-        return "Error : " + str(e)
-    return {"AII":app_instance_id}
-"""manage"""
+          msg= "err_msg : " + str(e)
+          rep ={
+              "err_msg":msg
+          }
+          return rep
+    msg= "Scheduled!"
+    rep={
+        "succ_msg":msg,
+        "AII":app_instance_id
+    }
+    return rep
+
 
 def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')

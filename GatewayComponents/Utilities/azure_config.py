@@ -3,6 +3,7 @@ from azure.storage.file import ContentSettings
 import os
 import dotenv
 from Utilities.constant import *
+# from constant import *
 dotenv.load_dotenv() 
 
 fileshareName = os.environ.get('AZURE_FILESHARE')
@@ -50,3 +51,6 @@ def download_dir(azurePath, azureFileName, filePath):
     filePath: filePath(including file) which you want to upload
     '''
     file_service.get_file_to_path(fileshareName, azurePath, azureFileName, filePath)
+
+# temp = AZURE_MODEL_PATH+'/model1'
+# download_dir(temp,'model1','/home/ingenuity/Desktop/model1.zip')

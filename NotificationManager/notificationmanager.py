@@ -6,7 +6,9 @@ from kafka import KafkaConsumer
 import json
 import requests
 
+
 from constant import BOOTSTRAP_SERVERS
+
 
 load_dotenv('.env')
 app = Flask(__name__)
@@ -66,6 +68,7 @@ def send_notification():
 
 URL="http://0.0.0.0:8000"
 
+
 def listen_for_notifs():
     listener = KafkaConsumer('notifications', bootstrap_servers=BOOTSTRAP_SERVERS)
     for msg in listener:
@@ -84,3 +87,4 @@ if __name__ == "__main__":
     listener = Thread(target=listen_for_notifs)
     listener.start()
     app.run(host='0.0.0.0', port=8000, debug=False)
+

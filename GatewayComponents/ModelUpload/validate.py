@@ -11,7 +11,7 @@ def error(val, error_name):
     '''
     msg = "Key Error: {} {}!".format(val, error_name)
     temp = {
-        "msg": msg,
+        "err_msg": msg,
         "status": 0
     }
     print(temp)
@@ -23,7 +23,7 @@ def succ(msg):
     msg: message to return on success
     '''
     temp = {
-        "msg": msg,
+        "succ_msg": msg,
         "status": 1
     }
     print(temp)
@@ -77,7 +77,7 @@ def procedures_validate(data):
     '''
     function to validate all the function related keys
     '''
-    key = ["name", "parameters", "return_type"]
+    key = ["parameters", "return_type"]
     check_key = key_exist_2(data, key)
     if check_key['status'] == 1:
         check_data = data_exist(data, ["name"])

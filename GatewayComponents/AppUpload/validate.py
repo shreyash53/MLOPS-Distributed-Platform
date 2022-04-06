@@ -4,7 +4,7 @@ from os import path
 import requests
 from Utilities.models import aimodels
 
-URL = 'http://127.0.0.1:9000/sensor_validate'
+URL = 'http://0.0.0.0:9003/sensor_validate'
 
 def error(val, error_name):
     '''
@@ -17,7 +17,7 @@ def error(val, error_name):
 
     msg = "Key Error: {} {}!".format(val, error_name)
     temp = {
-        "msg": msg,
+        "err_msg": msg,
         "status": 0
     }
     print(temp)
@@ -27,7 +27,7 @@ def error(val, error_name):
 def succ(msg):
     
     temp = {
-        "msg": msg,
+        "succ_msg": msg,
         "status": 1
     }
     print(temp)
@@ -45,7 +45,7 @@ def key_exist(data,key):
                     "Details": data[i]
                 }
                 res = requests.post(URL,json=sensor_data).json()
-                print(res,"line 39 validate")
+                print(res,"line 48 validate")
                 if(res['status']==0):
                     return error(res['sensorid'],"Sensor Type Not Present")
             elif(i == "models"):

@@ -1,7 +1,7 @@
 {
-    "Details":[ { "ip": "12.0.0.4","port": "8006","loc":"Ahmedabad","type":"camera","name":"C1","data_type":"float","is_sensor":"1","time_in_sec":"5"},
-                { "ip": "12.0.0.4","port": "8007","loc":"Japan","type":"camera","name":"C2","data_type":"float","is_sensor":"1","time_in_sec":"2"},
-                { "ip": "12.0.0.4","port": "8008","loc":"Congo","type":"Sound","name":"S1","data_type":"float","is_sensor":"1","time_in_sec":"3"}]
+    "Details":[ { "ip": "12.0.0.4","port": "8109","loc":"Ahmedabad","type":"camera","name":"C1","data_type":"float","is_sensor":"1","time_in_sec":"5"},
+                { "ip": "12.0.0.4","port": "8211","loc":"Japan","type":"camera","name":"C2","data_type":"image","is_sensor":"1","time_in_sec":"2"},
+                { "ip": "12.0.0.4","port": "8408","loc":"Congo","type":"Sound","name":"S1","data_type":"float","is_sensor":"1","time_in_sec":"3"}]
 }
 
 
