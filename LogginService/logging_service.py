@@ -4,10 +4,14 @@ import threading
 from kafka import KafkaConsumer
 from json import loads
 
+import os
+import dotenv
+dotenv.load_dotenv()
+
 
 app = Flask(__name__)
-HOST = '0.0.0.0'
-PORT = '8008'
+HOST = os.getenv('HOST')
+PORT = os.getenv('PORT')
 
 db = mongodb()
 
@@ -16,23 +20,17 @@ class ReadLogs(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        print("reading started")
-        topic_name = 'logs'
-        kafka_server_ip = 'localhost:9093'
-        group_id = 'logging'
-        bootstrap_server = [kafka_server_ip]
-        print("check 1")
+        bootstrap_server = [BOOTSTRAP_SERVER_IP]
         consumer = KafkaConsumer(
-            topic_name,
+            KAFKA_LOG_TOPIC,
             bootstrap_servers=bootstrap_server,
             # auto_offset_reset='earliest',
             enable_auto_commit=True,
-            group_id=group_id,
+            group_id=GROUP_ID,
             value_deserializer=lambda x: loads(x.decode('utf-8')))
-        print("connected to kafka")
+
         for log in consumer:
             print(log.value)
-            print("==========================")
             try:
                 log = log.value
                 if log['type'] != 'heartbeat':
@@ -56,8 +54,6 @@ def home():
 
 
 if __name__ == "__main__":
-    print("inside")
     th = ReadLogs()
     th.start()
-    print("adfasf")
     app.run(host=HOST,port=PORT, debug=False)

@@ -1,6 +1,7 @@
-KAFKA_SCHEDULE_TOPIC = 'topic_schedule'
-SERVICE_NAME="Scheduler"
-DATABASE_NAME = 'scheduler_db'
+KAFKA_LOG_TOPIC = 'logs'
+SERVICE_NAME="Logging"
+DATABASE_NAME = 'logging_db'
+GROUP_ID = 'logging'
 
 BOOTSTRAP_SERVER_IP = '20.219.107.251:9092'
 AZURE_FILESHARE='fileshare'
