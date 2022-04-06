@@ -77,7 +77,7 @@ def procedures_validate(data):
     '''
     function to validate all the function related keys
     '''
-    key = ["name", "parameters", "return_type"]
+    key = ["parameters", "return_type"]
     check_key = key_exist_2(data, key)
     if check_key['status'] == 1:
         check_data = data_exist(data, ["name"])

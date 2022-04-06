@@ -29,7 +29,7 @@ def isValid(tar,r_zip):
     if(temp_file_present['status']==1):
         temp_file_present = file_present(tar,"model.pkl")
         if(temp_file_present['status']==1):
-            temp_val_contract = validate_contract(var1)
+            temp_val_contract ={'status':1,"succ_msg":"Good"} #validate_contract(var1)
             if(temp_val_contract['status'] == 1):
                 #if db.applications.find( { "appName": r_zip } ).count() > 0:
                 if aimodels.objects(modelName=r_zip).count()>0:
@@ -53,11 +53,11 @@ def isValid(tar,r_zip):
                     #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
                     return {"succ_msg":"Valid Zip"}
             else:
-                return temp_val_contract["msg"]
+                return temp_val_contract["err_msg"]
         else:
-            return temp_file_present["msg"]
+            return temp_file_present["err_msg"]
     else:
-        return temp_file_present["msg"]
+        return temp_file_present["err_msg"]
 
 # def isValid(tar,r_zip):
 #     file_data=""
@@ -190,25 +190,6 @@ def generate_model_api(store_path):
     model_api = re.sub(r'<postprocessing_para_name>',
                        tokens['postprocess_fun_parameters'], model_api)
 
-    # updating return type  
-    # if(tokens['preprocess_return']!=""):              
-    #     model_api = re.sub(r'<preprocess_return>',
-    #                    " -> " + tokens['preprocess_return'], model_api)
-    # else:
-    #     model_api = re.sub(r'<preprocess_return>',
-    #                    "", model_api)
-    # if(tokens['predict_return']!=""):                    
-    #     model_api = re.sub(r'<predict_return>',
-    #                    " -> " + tokens['predict_return'], model_api)
-    # else:
-    #     model_api = re.sub(r'<predict_return>',
-    #                    "", model_api)   
-    # if(tokens['postprocess_return']!=""):
-    #     model_api = re.sub(r'<postprocess_return>',
-    #                    " -> " + tokens['postprocess_return'], model_api)
-    # else:
-    #     model_api = re.sub(r'<postprocess_return>',
-    #                    "", model_api)
 
     api_file.write(model_api)
     api_file.close()
@@ -235,7 +216,7 @@ def upload_model_file(request):
     resp=isValid(tar,r_zip)
     print(resp,"line 89")
     if 'succ_msg' in resp:
-        generate_model_api(tar)
+        # generate_model_api(tar)
         if(create_docker(r_zip,tar)):
             print("done create model")
             create_zip(r_zip,tar)

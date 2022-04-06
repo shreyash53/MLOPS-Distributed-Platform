@@ -30,18 +30,8 @@ class Schedules(db.Document):
 
 
 def get_app_instance_id():
-    last_id = Schedules.objects.order_by('-_id').first()
-
-    if last_id is None:
-        last_id = "AII_0"
-    else:
-        last_id = json.loads(last_id.to_json())
-        last_id = last_id['_id']
-
-    last_num = int(last_id[4:])
-    last_num = last_num+1
-    initstr = last_id[:4]+str(last_num)
-    return initstr
+    id = "AII_"+ datetime.datetime.now().isoformat()
+    return id
 
 
 @app.route('/schedule_application', methods=['POST'])
@@ -181,4 +171,4 @@ class SchedulingService(threading.Thread):
 if __name__ == "__main__":
     sched = SchedulingService()
     sched.start()
-    app.run(host="0.0.0.0", port=8001, debug=True)
+    app.run(host="0.0.0.0", port=8001, debug=False)

@@ -52,5 +52,5 @@ def download_dir(azurePath, azureFileName, filePath):
     '''
     file_service.get_file_to_path(fileshareName, azurePath, azureFileName, filePath)
 
-# temp = AZURE_MODEL_PATH+'/demo'
-# download_dir(temp,'demo','/home/ingenuity/Desktop/demo.zip')
+# temp = AZURE_MODEL_PATH+'/model1'
+# download_dir(temp,'model1','/home/ingenuity/Desktop/model1.zip')

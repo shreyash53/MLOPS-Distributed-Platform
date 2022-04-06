@@ -11,6 +11,7 @@ from Utilities.models import applications
 from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
+import datetime
 
 #PATH = os.path.dirname(__file__)/'Utilities/ApplicationCode' #Mandatory folder
 
@@ -19,18 +20,19 @@ p1="Utilities/ApplicationCode"
 PATH=os.path.join(PATH1,p1)
 
 def get_app_instance_id():
-    last_id = applications.objects.order_by('-_id').first()
+    id = "AI_"+ datetime.datetime.now().isoformat()
+    return id
 
-    if last_id is None:
-        last_id = "AI_0"
-    else:
-        # last_id = json.dumps(last_id.to_json())
-        last_id = last_id['_id']
+    # if last_id is None:
+    #     last_id = "AI_0"
+    # else:
+    #     # last_id = json.dumps(last_id.to_json())
+    #     last_id = last_id['_id']
 
-    last_num = int(last_id[3:])
-    last_num = last_num+1
-    initstr = last_id[:3]+str(last_num)
-    return initstr
+    # last_num = int(last_id[3:])
+    # last_num = last_num+1
+    # initstr = last_id[:3]+str(last_num)
+    # return initstr
 
 def isValid(tar,r_zip):
     #db.createCollection("appliations")
