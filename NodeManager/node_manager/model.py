@@ -2,7 +2,7 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField, ReferenceField, StringField, URLField, ListField, DictField
 
 class NodeDocument(Document):
-    nodeName = StringField(required=True)
+    nodeName = StringField()
     nodeIpAddress = StringField()
     nodePortNo = StringField()
     nodeUrl = URLField()
