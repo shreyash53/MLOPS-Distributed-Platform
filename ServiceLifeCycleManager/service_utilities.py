@@ -10,6 +10,7 @@ cluster = os.getenv('MONGODB_CLUSTER')
 kafka_bootstrap = os.getenv('kafka_bootstrap')
 PORT = os.getenv('PORT')
 HOST = os.getenv('HOST')
+
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mduser,mdpass , cluster,database_name)
 
 def mongodb():
@@ -27,6 +28,7 @@ class slcm(db.Document):
     ip = db.StringField()
     port = db.StringField()
     nodeid = db.StringField()
+
     def to_json(self):
         return {
             "instance_id":self.instance_id,

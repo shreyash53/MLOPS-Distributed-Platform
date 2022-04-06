@@ -2,6 +2,7 @@ from flask import Flask, request
 import service_utilities as sv
 import kafka
 from json import loads,dumps
+from json import loads
 import threading
 import dotenv
 import os
@@ -81,6 +82,7 @@ def dead_service():
 	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
 	print(obj[0].state)
+
 	if(obj.state == "running"):
 		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
@@ -104,15 +106,18 @@ def get_services(stype):
 		return  lst
 	elif stype == "stopped":
 		data = sv.fetchdb({"state" : "stopped"})
+
 		lst = []
 		for x in data:
 			lst.append([x.service_id,x.service_type,x.service_name])
 		return  lst
 	else:
 		return "invalid type"
+
 @app.route("/")
 def fun():
 	return "slcm"
+
 
 
 
@@ -120,3 +125,4 @@ if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
 	app.run(port=sv.PORT,host = sv.HOST )
+

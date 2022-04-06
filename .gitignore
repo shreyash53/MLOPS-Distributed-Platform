@@ -1,1 +1,11 @@
 shra
+*.pyc
+*.env
+.dockerignore
+logging_dockerfile_code.txt
+*.ipynb
+__pycache__
+*.json
+*.pickle
+*.zip
+

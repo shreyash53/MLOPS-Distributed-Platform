@@ -49,7 +49,9 @@ def appdeploy():
         appName=message.get("app_name")
         # print()
         # print()
+
         print(message)
+
         app= applications.objects(appName=appName).first()
         # print()
         # print()
@@ -147,6 +149,7 @@ def appdeploy():
         # sleep(5)
         print(data_app)
         producer.send('app_deploy1', value=data_app)
+
         sleep(5)
         print("data sent!!")
     
@@ -155,3 +158,4 @@ def appdeploy():
 if __name__ == '__main__':
     db = mongodb()
     appdeploy()
+
