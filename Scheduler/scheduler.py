@@ -71,10 +71,10 @@ def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
 def get_sec_in_json(j : dict) -> int:
-    days = j.get('days', 0)
-    hours = j.get('hours', 0)
-    minutes = j.get('minutes', 0)
-    seconds = j.get('seconds', 0)
+    days = int(j.get('days', 0))
+    hours = int(j.get('hours', 0))
+    minutes = int(j.get('minutes', 0))
+    seconds = int(j.get('seconds', 0))
     sec = seconds + (60 * (minutes + (60 * (hours + (24 * days)))))
     return sec
 

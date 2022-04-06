@@ -36,7 +36,7 @@ def example(uid, slug):
     }
     
     slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
-    slcm_url = "http://192.168.96.201:9002/service_lookup"
+    # slcm_url = "http://192.168.96.201:9002/service_lookup"
     res = requests.post(url=slcm_url,json=data).content
     return res
     # return "uid: %s, slug: %s" % (uid, slug)
