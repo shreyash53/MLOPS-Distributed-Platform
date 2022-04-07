@@ -17,3 +17,5 @@ def download_dir(azurePath, azureFileName, filePath):
     filePath: filePath(including file) where you want to download
     '''
     file_service.get_file_to_path(fileshareName, azurePath, azureFileName, filePath)
+
+# download_dir(AZURE_MODEL_PATH+'/demo', 'demo', '/home/shreyash/Downloads/demo.zip')

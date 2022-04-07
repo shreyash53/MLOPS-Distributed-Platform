@@ -11,6 +11,7 @@ from Utilities.models import aimodels
 from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
+import time
 
 # PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
 # mydir=Path.cwd()/'NewZip'
@@ -22,6 +23,10 @@ PATH1 = os.path.dirname(__file__)+"/../"
 p1="Utilities/ModelCode"
 PATH=os.path.join(PATH1,p1)
 #PATH=PATH1+p1
+
+def get_model_instance_id():
+    id = "MI_"+ str(int(time.time()))
+    return id
 
 def isValid(tar,r_zip):
     var1=tar+"/"+"contract.json"
@@ -41,7 +46,8 @@ def isValid(tar,r_zip):
                         with open(tar+"/"+'contract.json') as f:
                             file_data = json.load(f)
                         print(file_data)
-                        new_app = aimodels(modelName = r_zip,
+                        new_app = aimodels(modelId=get_model_instance_id(),
+                        modelName = r_zip,
                         path = AZURE_MODEL_PATH+"/"+r_zip,
                         contract = json.dumps(file_data)
                         )

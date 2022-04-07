@@ -1,13 +1,11 @@
 import mongoengine as db
-import os
-import dotenv
-dotenv.load_dotenv()
+from utilities.constant import *
 
-database_name = 'logging_db'
-mg_user = os.getenv('MONGODB_USER')
-mg_pass = os.getenv('MONGODB_PASS') 
-cluster = os.getenv('MONGODB_CLUSTER')
-DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mg_user,mg_pass , cluster,database_name)
+DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(
+        MONGODB_USER
+        , MONGODB_PASS 
+        , MONGODB_CLUSTER
+        , DATABASE_NAME)
 
 
 class Logs(db.Document):

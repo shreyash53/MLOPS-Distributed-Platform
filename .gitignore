@@ -1,11 +1,11 @@
 shra
 *.pyc
-*.env
-.dockerignore
+.env
 logging_dockerfile_code.txt
 *.ipynb
 __pycache__
 *.json
 *.pickle
 *.zip
-
+LogginService/__pycache__/dbconfig.cpython-38.pyc
+.gitignore

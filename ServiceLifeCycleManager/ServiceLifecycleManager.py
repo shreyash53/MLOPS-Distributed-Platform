@@ -93,7 +93,6 @@ def dead_service():
 			produce.send('service_dead_app', {'instance_id' : obj.instance_id})# to schedular add the request to ususal pipeline
 		elif obj.service_type == "model":
 			produce.send('service_dead_model',{'instance_id' : obj.instance_id})# to deployer  as deployer has access to the location of the models
-		
 
 	# restart
 	# if obj.service_type ==  "platform_service":

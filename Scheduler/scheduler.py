@@ -4,34 +4,27 @@ import json
 from mongoengine.fields import *
 import threading
 import datetime
-from kafka import KafkaProducer
+from kafka import KafkaProducer, KafkaConsumer
+from json import loads
 
 from utilities.constant import *
 from dbconfig import *
-from json import JSONDecodeError
+import time
 
+import os
+import dotenv
+dotenv.load_dotenv()
+
+HOST = os.getenv('HOST')
+PORT = os.getenv('PORT')
 
 app = Flask(__name__)
 
 db = mongodb()
 
-
-class Schedules(db.Document):
-    _id = db.StringField(primary_key=True)
-    app_name = db.StringField(required=True)
-    app_id = db.StringField(required=True)
-    next_start = db.DateTimeField(required=True)
-    next_stop = db.DateTimeField(required=True)
-    uptime = db.IntField(required=True)
-    downtime = db.IntField(required=True)
-    repetition = db.IntField(required=True)
-    sensors = db.StringField(required=True)
-
-
 def get_app_instance_id():
-    id = "AII_"+datetime.datetime.now().isoformat()
+    id = "AII_"+ str(int(time.time()))
     return id
-
 
 @app.route('/schedule_application', methods=['POST'])
 def scheduleapplication():
@@ -40,6 +33,7 @@ def scheduleapplication():
         app_instance_id = get_app_instance_id()
         first_start = parsedatetime(all_details['starttime'])
         first_stop = parsedatetime(all_details['endtime'])
+        downtime = get_sec_in_json(all_details['interval'])
         # TODO: We can reduce some fields here using database reference
         new_schedule = Schedules(_id=app_instance_id,
                                  app_name=all_details['app_name'], 
@@ -47,17 +41,18 @@ def scheduleapplication():
                                  next_start=first_start,
                                  next_stop=first_stop,
                                  uptime= (first_stop - first_start).total_seconds(),
-                                 downtime=2 #get_sec_in_json(all_details['interval']),
+                                 downtime=downtime,
                                  repetition=all_details['repetition'],
                                  sensors=json.dumps(all_details['sensors']))
 
         new_schedule.save()
     except Exception as e:
-          msg= "err_msg : " + str(e)
-          rep ={
-              "err_msg":msg
-          }
-          return rep
+        msg= "err_msg : " + str(e)
+        rep ={
+            "err_msg":msg
+        }
+        return rep
+    
     msg= "Scheduled!"
     rep={
         "succ_msg":msg,
@@ -70,16 +65,16 @@ def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
 def get_sec_in_json(j : dict) -> int:
-    days = j.get('days', 0)
-    hours = j.get('hours', 0)
-    minutes = j.get('minutes', 0)
-    seconds = j.get('seconds', 0)
+    days = int(j.get('days', 0))
+    hours = int(j.get('hours', 0))
+    minutes = int(j.get('minutes', 0))
+    seconds = int(j.get('seconds', 0))
     sec = seconds + (60 * (minutes + (60 * (hours + (24 * days)))))
     return sec
 
 
 def send_to_deployment_service(action, services):
-    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
+    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER_IP)
 
     if action not in ['start', 'stop']:
         producer.close()
@@ -156,9 +151,35 @@ class SchedulingService(threading.Thread):
 
             sleep(30)
 
+class ReSchedulingService(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while(True):
+            bootstrap_server = [BOOTSTRAP_SERVER_IP]
+            consumer = KafkaConsumer(
+                KAFKA_RESCHEDULE_TOPIC,
+                bootstrap_servers=bootstrap_server,
+                # auto_offset_reset='earliest',
+                enable_auto_commit=True,
+                group_id=GROUP_ID,
+                value_deserializer=lambda x: loads(x.decode('utf-8')))
+
+            for reschedule in consumer:
+                print(reschedule.value)
+                try:
+                    reschedule = reschedule.value
+                    instance = Schedules.objects(_id = reschedule['instance_id'])
+                    instance = [instance]
+                    send_to_deployment_service('start', instance)
+                except Exception as e:
+                    print(e)
 
 
 if __name__ == "__main__":
     sched = SchedulingService()
     sched.start()
-    app.run(host="0.0.0.0", port=8001, debug=False)
+    re_sched = ReSchedulingService()
+    re_sched.start()
+    app.run(host=HOST,port=PORT, debug=False)

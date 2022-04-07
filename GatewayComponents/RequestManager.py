@@ -1,12 +1,12 @@
-from urllib import response
 from flask import Flask, jsonify, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import true
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
 from ModelUpload.Model_Upload import *
 from Utilities.dbconfig import *
+import dotenv
+# from constant import *
+dotenv.load_dotenv() 
 
 app = Flask(__name__)
 db=mongodb()
@@ -27,7 +27,16 @@ app.url_map.converters['regex'] = RegexConverter
 
 @app.route('/app/<uid>/<regex("[a-zA-Z0-9.\/_%?-]*"):slug>')
 def example(uid, slug):
-    return "uid: %s, slug: %s" % (uid, slug)
+    data = {
+        "service_id":uid,
+        "slug":slug
+    }
+    
+    slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
+    # slcm_url = "http://192.168.96.201:9002/service_lookup"
+    res = requests.post(url=slcm_url,json=data).content
+    return res
+    # return "uid: %s, slug: %s" % (uid, slug)
 
 
 
@@ -293,12 +302,14 @@ def sensor_bind(current_user):
         
         to_scheduler["sensors"] = sensor_list
         url = "http://0.0.0.0:8001/schedule_application"
+        # url = "http://192.168.96.240:7000/schedule_application"
         res = requests.post(url,json=to_scheduler).json()
         if 'err_msg' in res:
-            return  render_template('sensor_form.html',succ_msg=res['err_msg'],sensors=to_send,app_name=appName)
-        res['succ_msg']="SSensor binding ids returned and Application Scheduled"
-        return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName)
-
+            return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
+        res['succ_msg']="Sensor binding Done and Application Scheduled!!"
+        app_instance_id = res['AII']
+        url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+        return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 
 
 
@@ -306,4 +317,4 @@ def sensor_bind(current_user):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False,host='0.0.0.0')
