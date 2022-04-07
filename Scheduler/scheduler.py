@@ -4,10 +4,12 @@ import json
 from mongoengine.fields import *
 import threading
 import datetime
-from kafka import KafkaProducer
+from kafka import KafkaProducer, KafkaConsumer
+from json import loads
 
 from utilities.constant import *
 from dbconfig import *
+import time
 
 import os
 import dotenv
@@ -20,11 +22,9 @@ app = Flask(__name__)
 
 db = mongodb()
 
-
 def get_app_instance_id():
-    id = "AII_"+datetime.datetime.now().isoformat()
+    id = "AII_"+ str(int(time.time()))
     return id
-
 
 @app.route('/schedule_application', methods=['POST'])
 def scheduleapplication():
@@ -151,9 +151,35 @@ class SchedulingService(threading.Thread):
 
             sleep(30)
 
+class ReSchedulingService(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while(True):
+            bootstrap_server = [BOOTSTRAP_SERVER_IP]
+            consumer = KafkaConsumer(
+                KAFKA_RESCHEDULE_TOPIC,
+                bootstrap_servers=bootstrap_server,
+                # auto_offset_reset='earliest',
+                enable_auto_commit=True,
+                group_id=GROUP_ID,
+                value_deserializer=lambda x: loads(x.decode('utf-8')))
+
+            for reschedule in consumer:
+                print(reschedule.value)
+                try:
+                    reschedule = reschedule.value
+                    instance = Schedules.objects(_id = reschedule['instance_id'])
+                    instance = [instance]
+                    send_to_deployment_service('start', instance)
+                except Exception as e:
+                    print(e)
 
 
 if __name__ == "__main__":
     sched = SchedulingService()
     sched.start()
+    re_sched = ReSchedulingService()
+    re_sched.start()
     app.run(host=HOST,port=PORT, debug=False)

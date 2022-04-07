@@ -1,6 +1,8 @@
 KAFKA_SCHEDULE_TOPIC = 'topic_schedule'
+KAFKA_RESCHEDULE_TOPIC = 'service_dead_app'
 SERVICE_NAME="Scheduler"
 DATABASE_NAME = 'scheduler_db'
+GROUP_ID = "scheduler_group_id"
 
 BOOTSTRAP_SERVER_IP = '20.219.107.251:9092'
 AZURE_FILESHARE='fileshare'
