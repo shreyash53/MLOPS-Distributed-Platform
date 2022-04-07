@@ -8,15 +8,18 @@ from flask import jsonify,request
 
 def signup(req):
     # req = req.get_json()    
-    username = req['username']
-    password = req['password']
-    role = req['role']
-    actor = Actor.objects(username = username).count()
-    print("Number of actors in actor db:",actor)
-    if actor > 0:
-        return {'err_msg':'User already exist'}
-    actor = Actor(username = username , password = password , role = role)
-    actor.save()
+    try:
+        username = req['username']
+        password = req['password']
+        role = req['role']
+        
+        actor = Actor.objects(username = username).count()
+        if actor > 0:
+            return {'err_msg':'Username already taken!'}
+        actor = Actor(username = username , password = password , role = role)
+        actor.save()
+    except Exception as e:
+        return {'err_msg': str(e)}
 
     return {'succ_msg':'Successfully added'}
 
