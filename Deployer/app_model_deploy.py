@@ -1,3 +1,4 @@
+from threading import Thread
 from flask import Flask,request, render_template
 import json
 from time import sleep
@@ -21,6 +22,7 @@ class applications(db.Document):
         }
 
 class aimodels(db.Document):
+    modelId = db.StringField()
     modelName = db.StringField(required=True,unique=True)
     path = db.StringField(required=True)
     contract = db.StringField(required=True)
@@ -103,7 +105,7 @@ def appdeploy():
             model_app=model_app.to_json()
             # print(model_app)
             model_location=model_app.get("path")
-            model_details["model_Id"]=modelId
+            model_details["model_id"]=modelId
             model_details["model_name"]=modelname
             model_details["model_location"]=model_location
             models_list.append(model_details)
@@ -148,14 +150,62 @@ def appdeploy():
         # producer.send('sensor_list', value=data_sensor)
         # sleep(5)
         print(data_app)
-        producer.send('app_deploy1', value=data_app)
+        producer.send('app_deploy2', value=data_app)
 
         sleep(5)
         print("data sent!!")
     
 
+def consumer_logic(data):
+    model_ = aimodels.objects.filter(modelId = data['service_id'])
+    if not model_:
+        print('No model found, now exiting')
+        return
+    model_ = model_.first()
+    request_data = {
+        'model_id' : data['service_id'],
+        'model_location' : model_.path,
+        'model_name' : model_.modelName
+    }
+    producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
+                        value_serializer=lambda x: 
+                        dumps(x).encode('utf-8'))
+    print('sending data to node manager')
+    producer.send('model_restart', value=request_data)
+
+    sleep(5)
+    print("data sent!!")
+
+def model_restart_consumer():
+    try:
+        consumer = KafkaConsumer(
+            'service_dead_model',
+            bootstrap_servers=[os.getenv('kafka_bootstrap')],
+            auto_offset_reset='earliest',
+            enable_auto_commit=True,
+            group_id='my-group',
+            value_deserializer=lambda x: loads(x.decode('utf-8'))
+        )
+        print('inside nodemanager consumer thread')
+        for data in consumer:
+            consumer_logic(data.value)
+
+
+    except Exception as e:
+        print('Error in node_manager.consumer_thread', e)
+
+
+class DeploymentConsumer(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self):
+        model_restart_consumer()
+
 
 if __name__ == '__main__':
     db = mongodb()
+    dc = DeploymentConsumer()
+    dc.start()
     appdeploy()
 
