@@ -1,7 +1,4 @@
-from urllib import response
 from flask import Flask, jsonify, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import true
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
