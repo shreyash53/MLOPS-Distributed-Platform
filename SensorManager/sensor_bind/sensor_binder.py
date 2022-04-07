@@ -77,6 +77,27 @@ def reg_bind_sensor(request_data):
 
 #     return checked_sensor
 
+
+def Start_Services():
+    Ob=SensorBindModel.objects.all()
+    for find2 in Ob:
+        is_sensor = find2.is_sensor
+        topic_name = "S_"+str(find2.sensor_bind_id)
+        IP = find2.sensor_ip
+        Port = find2.sensor_port
+        time = find2.time_in_sec
+        print(is_sensor, IP, Port, topic_name)
+        if(is_sensor):
+            t1 = threading.Thread(target=fun, args=(topic_name, IP, Port, time))
+            threads.append(t1)
+            t1.start()
+        else:
+            t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port, time))
+            threads.append(t2)
+            t2.start()
+    return "Success"
+
+
 def start_sensor(find2,x):
     topic_name = "S_"+str(find2.sensor_bind_id)
     IP = find2.sensor_ip
