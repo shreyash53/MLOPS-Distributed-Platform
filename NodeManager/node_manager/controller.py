@@ -1,5 +1,6 @@
 from json import loads
 from time import sleep
+import traceback
 
 from kafka import KafkaConsumer
 from mongoengine.queryset.visitor import Q
@@ -23,6 +24,11 @@ def add_node(node_data):
     except Exception as e:
         print('error while adding node in node_manager.add_node', e)
 
+def get_node_by_id(id):
+    try:
+        return NodeDocument.objects(id = id).get()
+    except Exception as e:
+        print('failed to retrieve', e)
 
 def add_all_nodes(nodes_data):
     # print(nodes_data)
@@ -45,11 +51,11 @@ def consumer_logic(consumer_data):
 def consumer_thread():
     try:
         consumer = KafkaConsumer(
-            'app_deploy1',
+            'app_deploy2',
             bootstrap_servers=[kafka_url],
             auto_offset_reset='earliest',
-            enable_auto_commit=True,
-            group_id='my-group',
+            enable_auto_commit=True, 
+            group_id='my-group-2',
             value_deserializer=lambda x: loads(x.decode('utf-8'))
         )
         print('inside nodemanager consumer thread')
@@ -58,4 +64,5 @@ def consumer_thread():
 
 
     except Exception as e:
+        print(traceback.format_exc())
         print('Error in node_manager.consumer_thread', e)

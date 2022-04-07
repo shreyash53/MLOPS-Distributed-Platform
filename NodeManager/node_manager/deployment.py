@@ -4,8 +4,9 @@ from json import dumps
 from time import sleep
 
 from node_manager.model import NodeDocument
-from utilities.constants import kafka_url, node_app, node_model
+from utilities.constants import kafka_url, node_app, node_model, SLCM_URL
 from kafka import KafkaProducer
+from requests import post
 
 def build_request_data(request_type, service_type, data, all_data=None):
     if service_type == 'app':
@@ -51,13 +52,32 @@ def deploy_model(model_to_deploy):
     except Exception as e:
         print('exception in node_manager.deploy_model', e)
 
+def check_for_running(service_, service_type):
+    if service_type == 'app':
+        service_id = service_['appInstanceId']
+    else:
+        service_id = service_['model_id']
+
+    response = post(SLCM_URL, json={
+        "service_id" : service_id,
+        "service_type" : service_type
+    })
+
+    if response.status_code == 200:
+        return True
+    return False
+
 
 def deploy_models(models_to_deploy):
     for model_ in models_to_deploy:
-        deploy_model(model_)
+        if check_for_running(model_, 'model'):
+            deploy_model(model_)
 
 
 def deploy_app(app_to_deploy, all_data):
+    if not check_for_running(app_to_deploy, 'app'):
+        print('app already running...')
+        return
     try:
         node = find_appropriate_node(node_app)
         if not node:

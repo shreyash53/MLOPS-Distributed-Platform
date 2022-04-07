@@ -33,7 +33,7 @@ def termination_handler(service_type, data):
         service_ = service_.first()
 
         terminate_service(service_)
-        unregister_service_with_slcm()
+        unregister_service_with_slcm(service_type, data)
         service_.delete()
         
     except Exception as e:

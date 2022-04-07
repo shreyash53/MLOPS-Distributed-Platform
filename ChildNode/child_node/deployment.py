@@ -9,7 +9,7 @@ import zipfile
 from json import dumps
 
 from kafka import KafkaProducer
-from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
+from utilities.constants import APP_DIR, MODEL_DIR, MY_IP, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
 import traceback
 
 file_stub = '{}/{}'
@@ -183,7 +183,7 @@ def deployment_handler(service_type, data):
             port = MODEL_PORT_SERVICE
             MODEL_PORT_SERVICE += 1
         register_service_in_node(service_type, data_, file_loc, tag_name, str(container), str(port))
-        register_service_with_slcm(service_type, data_, 'localhost', port)
+        register_service_with_slcm(service_type, data_, MY_IP, str(port))
     except Exception as e:
         print('error while deployment handling', e)
 

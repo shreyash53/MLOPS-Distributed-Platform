@@ -9,3 +9,5 @@ node_model = 'node_model'
 node_app = 'node_app'
 POST = ['POST']
 GET = ['GET']
+HTTP_OK_STATUS_CODE = 200
+SLCM_URL = 'http://192.168.178.153:9000'

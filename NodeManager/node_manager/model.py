@@ -2,7 +2,7 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField, ReferenceField, StringField, URLField, ListField, DictField
 
 class NodeDocument(Document):
-    nodeName = StringField()
+    nodeName = StringField(unique=True, required=True)
     nodeIpAddress = StringField()
     nodePortNo = StringField()
     nodeUrl = URLField()
@@ -16,5 +16,5 @@ class NodeDocument(Document):
 
 class RunningServices(Document):
     serviceId = StringField()
-    seviceType = StringField(default='app') #app, model
+    serviceType = StringField(default='app') #app, model
     node = ReferenceField(NodeDocument)

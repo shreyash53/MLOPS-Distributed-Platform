@@ -17,5 +17,7 @@ AZURE_MODEL_PATH = 'root/UserData/Models'
 
 SLCM_TOPIC_NAME = 'register'
 
-CHILD_NODE_IP = 'http://192.168.180.153'
+CHILD_NODE_IP = 'http://192.168.178.153'
 CHILD_NODE_URL = '{}:6000'.format(CHILD_NODE_IP)
+
+MY_IP = 'http://192.168.178.153:6201'
