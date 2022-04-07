@@ -15,8 +15,8 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-HOST = os.getenv('HOST')
-PORT = os.getenv('PORT')
+HOST = os.getenv('SCHEDULER_HOST')
+PORT = os.getenv('SCHEDULER_PORT')
 
 app = Flask(__name__)
 
