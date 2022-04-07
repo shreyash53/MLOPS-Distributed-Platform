@@ -24,19 +24,21 @@ def signup(req):
     return {'succ_msg':'Successfully added'}
 
 def login(req):
-    req = req.get_json()
     # print("REQUEST IN AUTHENTICATOR:",req)
-    username = req['username']
-    password = req['password']
-    role = req['role']
-    # print(username,password,role)
-    if Actor.objects(username = username).count() == 0:
-        return {'err_msg':'User not found'}
-    if Actor.objects(username = username , role = role).count() == 0:
-        return {'err_msg':'User with this role not found'}
-    if Actor.objects(username = username,password = password , role = role).count() == 0:
-        return {'err_msg':'Incorrect password'}
-    token = encode_auth_token(username,role).decode('utf-8')
+    try:
+        username = req['username']
+        password = req['password']
+        role = req['role']
+        # print(username,password,role)
+        if Actor.objects(username = username).count() == 0:
+            return {'err_msg':'User not found'}
+        if Actor.objects(username = username , role = role).count() == 0:
+            return {'err_msg':'User with this role not found'}
+        if Actor.objects(username = username,password = password , role = role).count() == 0:
+            return {'err_msg':'Incorrect password'}
+        token = encode_auth_token(username,role)
+    except Exception as e:
+        return {'err_msg' : str(e)}
     
     return {'token':token,'succ_msg':'Authentication Successfull','username':username,'role':role}
 
