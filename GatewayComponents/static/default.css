@@ -10,8 +10,6 @@
     object-fit: cover;
   }
   
-  
-  
   .cardbody-color{
     background-color: #ebf2fa;
   }
@@ -19,4 +17,11 @@
   a{
     text-decoration: none;
     color: green;
+  }
+
+  body {
+    background-image: url('https://www.wallpapertip.com/wmimgs/171-1719824_light-background-image-css.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
   }
