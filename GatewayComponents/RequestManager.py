@@ -304,8 +304,8 @@ def sensor_bind(current_user):
             sensor_list.append(t)
         
         to_scheduler["sensors"] = sensor_list
-        # url = "http://0.0.0.0:8001/schedule_application"
-        url = "http://192.168.96.240:7000/schedule_application"
+        url = "http://0.0.0.0:8001/schedule_application"
+        # url = "http://192.168.96.240:7000/schedule_application"
         res = requests.post(url,json=to_scheduler).json()
         if 'err_msg' in res:
             return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)

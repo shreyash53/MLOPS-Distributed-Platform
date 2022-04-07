@@ -22,7 +22,7 @@ def consume():
 	for message in consumer:
 		data = message.value
 		instance = data["instance_id"]
-		sv.fetch()
+		# sv.fetch()
 
 		if data["request_type"] == "register":
 			data["state"] = "running"
@@ -88,7 +88,7 @@ def dead_service():
 	
 		produce = kafka.KafkaProducer(bootstrap_servers=sv.bootstrap_servers,
                           value_serializer=lambda v: dumps(v).encode('utf-8'))
-		produce.send('service_dead', obj[0])
+		produce.send('service_dead', obj[0].to_json())
 
 	# restart
 	# if obj.service_type ==  "platform_service":
