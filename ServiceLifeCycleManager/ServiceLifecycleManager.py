@@ -2,7 +2,6 @@ from flask import Flask, request
 import service_utilities as sv
 import kafka
 from json import loads,dumps
-from json import loads
 import threading
 import dotenv
 import os
@@ -22,14 +21,15 @@ def consume():
 	for message in consumer:
 		data = message.value
 		instance = data["instance_id"]
-		# sv.fetch()
-
-		if data["request_type"] == "register":
+		obj = sv.fetchdb({"instance_id" : instance})
+		if obj == None :
+			continue
+		elif data["request_type"] == "register":
 			data["state"] = "running"
 			sv.savetodb(data)
 		elif data["request_type"] == "unregister":
 			sv.updatedb({"instance_id"  : data["instance_id"]} , {"state" :"stopped" })
-
+		
 
 ''''
 # expected request from node manager when docker service is started  
@@ -81,14 +81,18 @@ def dead_service():
 	print(data)
 	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
-	print(obj[0].state)
-
+	if obj == None:
+		return "NO such service"
+	obj = obj[0]
 	if(obj.state == "running"):
 		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
 		produce = kafka.KafkaProducer(bootstrap_servers=sv.bootstrap_servers,
                           value_serializer=lambda v: dumps(v).encode('utf-8'))
-		produce.send('service_dead', obj[0].to_json())
+		if obj.service_type == "application":
+			produce.send('service_dead_app', {'instance_id' : obj.instance_id})# to schedular add the request to ususal pipeline
+		elif obj.service_type == "model":
+			produce.send('service_dead_model',{'instance_id' : obj.instance_id})# to deployer  as deployer has access to the location of the models
 
 	# restart
 	# if obj.service_type ==  "platform_service":
@@ -106,18 +110,15 @@ def get_services(stype):
 		return  lst
 	elif stype == "stopped":
 		data = sv.fetchdb({"state" : "stopped"})
-
 		lst = []
 		for x in data:
 			lst.append([x.service_id,x.service_type,x.service_name])
 		return  lst
 	else:
 		return "invalid type"
-
 @app.route("/")
 def fun():
 	return "slcm"
-
 
 
 
@@ -125,4 +126,3 @@ if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
 	app.run(port=sv.PORT,host = sv.HOST )
-
