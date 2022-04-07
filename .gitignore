@@ -7,3 +7,5 @@ __pycache__
 *.json
 *.pickle
 *.zip
+LogginService/__pycache__/dbconfig.cpython-38.pyc
+.gitignore

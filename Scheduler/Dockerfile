@@ -13,5 +13,4 @@ RUN apk update && \
 
 HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"application_type\" : \"Smith\"}" "http://10.2.136.88:5000/heartbeat" || exit 1
 
-
-CMD ["python","logging_service.py"]
+CMD ["python","scheduler.py"]
