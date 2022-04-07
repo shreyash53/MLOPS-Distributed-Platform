@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="../static/default.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/default.css">
     <title>Schedule Application</title>
 </head>
 
@@ -26,85 +29,84 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-            <h2 class="text-center text-dark mt-5">Schedule Applications</h2>
-            <div class="card my-5">
-    
-                <form class="card-body cardbody-color p-lg-5" action="/end_user/sensor_bind" id="upload_form" method="post" enctype="multipart/form-data"> 
-    
-                    {% if app_name %}
-                    <input type="text" value="{{ app_name }}" name="app_name" hidden>
-                    <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
-                    {% endif %}
-                    {% if sensors%}
-                            {% for i in range(sensors|length) %}
-        
-        <h3>Sensor {{i+1}}</h3>                    
-        <label>DataType: {{  sensors[i]['sensordatatype'] }}</label>
-        <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}" placeholder="sensor_dypre_{{i+1}}" hidden>
-        <div class="mb-3">
-            <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
-        </div>
-        <div class="mb-3">
-            <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
-        </div>
-        
-{% endfor %}
-</div>
-                    {% endif %}
-            
-                    <hr>
-                    <div class="mb-3">
-                        <label for="starttime">Start Date and Time:</label>
-                        <input type="text" id="starttime" name="starttime" placeholder="DD/MM/YY HH:MM:SS">
-                    </div>
-                    <div class="mb-3">
-                        <label for="endtime">End Date and Time:</label>
-                        <input type="text" id="endtime" name="endtime" placeholder="DD/MM/YY HH:MM:SS">
-                    </div>
-                    <div class="mb-3">
-                        <label for="repetition">Repetition:</label>
-                        <input type="text" id="repetition" name="repetition">
-                    </div>
-                    <div class="mb-3">
-                        <label>Interval</label>
-                    </div>
-                    <div class="mb-3">
-                        <label for="Day">Days:</label>
-                        <input type="text" id="Day" name="Day">
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label for="Hour">Hours:</label>
-                        <input type="text" id="Hour" name="Hour">
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label for="Minute">Minutes:</label>
-                        <input type="text" id="Minute" name="Minute">
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label for="Second">Seconds:</label>
-                        <input type="text" id="Second" name="Second">
-                        
-                    </div>
-                    <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Schedule Application</button></div>
-            
-                    {% if err_msg %}
-                <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
+                <h2 class="text-center text-dark mt-5">Schedule Applications</h2>
+                <div class="card my-5">
+                    <form class="card-body cardbody-color p-lg-5" action="/end_user/sensor_bind" id="upload_form"
+                        method="post" enctype="multipart/form-data">
+
+                        {% if app_name %}
+                        <input type="text" value="{{ app_name }}" name="app_name" hidden>
+                        <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
+                        {% endif %}
+
+                        {% if sensors%}
+                        {% for i in range(sensors|length) %}
+                        <h3>Sensor {{i+1}}</h3>
+                        <label>DataType: {{ sensors[i]['sensordatatype'] }}</label>
+                        <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}"
+                            placeholder="sensor_dypre_{{i+1}}" hidden>
+                        <div class="mb-3">
+                            <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
+                        </div>
+                        {% endfor %}
+
+                </div>
                 {% endif %}
+
+                <hr>
+                <div class="mb-3">
+                    <label for="starttime">Start Date and Time:</label>
+                    <input type="text" id="starttime" name="starttime" placeholder="DD/MM/YY HH:MM:SS">
+                </div>
+                <div class="mb-3">
+                    <label for="endtime">End Date and Time:</label>
+                    <input type="text" id="endtime" name="endtime" placeholder="DD/MM/YY HH:MM:SS">
+                </div>
+                <div class="mb-3">
+                    <label for="repetition">Repetition:</label>
+                    <input type="text" id="repetition" name="repetition">
+                </div>
+                <div class="mb-3">
+                    <label>Interval</label>
+                </div>
+                <div class="mb-3">
+                    <label for="Day">Days:</label>
+                    <input type="text" id="Day" name="Day">
+                </div>
+                <div class="mb-3">
+                    <label for="Hour">Hours:</label>
+                    <input type="text" id="Hour" name="Hour">
+                </div>
+                <div class="mb-3">
+                    <label for="Minute">Minutes:</label>
+                    <input type="text" id="Minute" name="Minute">
+                </div>
+                <div class="mb-3">
+                    <label for="Second">Seconds:</label>
+                    <input type="text" id="Second" name="Second">
+                </div>
+                <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Schedule
+                        Application</button></div>
+
+                {% if err_msg %}
+                <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}
+                </div>
+                {% endif %}
+
                 {% if succ_msg %}
-                <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}</div>
-                <br>
-                <br>
+                <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{ succ_msg }}
+                </div>
                 <a href="{{url}}">Link to Use app</a>
                 {% endif %}
+
                 </form>
             </div>
-    
-            </div>
-            
         </div>
-        </div>
+    </div>
+    </div>
 </body>
+
 </html>
