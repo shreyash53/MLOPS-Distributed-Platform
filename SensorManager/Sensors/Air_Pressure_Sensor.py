@@ -7,11 +7,7 @@ app = Flask(__name__)
 
 
 def get_data():
-    randomlist = []
-    for i in range(7):
-        a = random.uniform(13.0, 16.0)
-        randomlist.append(round(a, 1))
-    return randomlist
+    return round(random.uniform(13.0, 16.0),2)
 
 
 @app.route('/', methods=["POST"])
@@ -23,4 +19,4 @@ def hello_world():
 
 
 if __name__ == '__main__':
-	app.run(debug=True, port=5002)
+	app.run(debug=True, port=8009)

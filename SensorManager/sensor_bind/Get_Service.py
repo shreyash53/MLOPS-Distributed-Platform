@@ -23,12 +23,17 @@ def fun(topic_name,ip,port,time):
                              dumps(x).encode('utf-8'))
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
-            val = requests.post(url).content
-            jsonResponse = json.loads(val.decode('utf-8'))
+            try:
+                val = requests.post(url).content
+                jsonResponse = json.loads(val.decode('utf-8'))
+                dic = {}
+                dic['data'] = jsonResponse
+                producer.send(topic_name, value=dic)
+            except:
+                pass
             # print("To Topic:")
             # print(topic_name)
             # print(jsonResponse)
-            producer.send(topic_name, value=jsonResponse)
             sleep(time)
 
 def fun2(topic_name, ip, port,time):
@@ -40,13 +45,16 @@ def fun2(topic_name, ip, port,time):
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
     while(1):
-        for message in consumer:
-            # print("From Topic:")
-            # print(topic_name)
-            message=message.value
-            url = "http://"+str(ip)+":"+str(port)+"/"
-            requests.post(url, json=message)
-            sleep(time)
+        try:
+            for message in consumer:
+                # print("From Topic:")
+                # print(topic_name)
+                message=message.value
+                url = "http://"+str(ip)+":"+str(port)+"/"
+                requests.post(url, json=message)
+        except:
+            pass
+        sleep(time)
 
 # if(is_sensor):
 #     fun(topic_name, ip, port)

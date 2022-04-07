@@ -35,41 +35,31 @@ def Get_Data():
 def Check_Dev():
     request_data = request.json
     i,lis = Check_From_Dev(request_data)
-    dicc={}
+    dic={}
     if i:
-        for i in lis:    
-            dic={}
             dic["msg"] = "error"
-            dic["status"]="0"
-            dic["sensorid"]=i
-            key="Details"
-            if key in dicc.keys():
-                dicc["Details"].append(dic)
-            else:
-                dicc["Details"]=[]
-                dicc["Details"].append(dic)
+            dic["status"]=0
+            dic["sensorid"]=lis[0]
     else:
-        dic={}
-        dic["msg"]="Success"
-        dic["status"] ="1"
-        dicc["Details"]=[]
-        dicc["Details"].append(dic)
+            dic["msg"] = "Success"
+            dic["status"]=1
 
-    return dicc
+    return dic
     
 
 @app.route("/Check_From_AppRunner", methods=["POST","GET"])
 def Check_Run2():
     request_data = request.json
+    print(request_data)
     i,lis1,lis2 = Check_From_Runner(request_data)
+    dic={}
     if i:
-        dic={}
         dic["error"]=lis1
-        return dic
     else:
-        dic={}
         dic["Success_Message"]=lis2
-        return dic
+        
+    print(dic)
+    return jsonify(dic)
 # with app.app_context():
 #     db.create_all()
 
