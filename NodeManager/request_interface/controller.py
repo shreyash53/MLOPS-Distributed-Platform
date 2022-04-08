@@ -23,21 +23,23 @@ def get_model_data(modelId, data):
     #     Q(serviceId = modelId) &
     #     Q(serviceType = 'model')
     # )
-    response = post(SLCM_URL, json={
-        "service_id" : modelId,
-        "service_type" : "model"
-    })
-    if not response.status_code == 200:
-        print('No model found')
-        return "No data"
-    response = response.json()
+    # response = post(SLCM_URL, json={
+    #     "service_id" : modelId,
+    #     "service_type" : "model"
+    # })
+    # if not response.status_code == 200:
+        # print('No model found')
+        # return "No data"
+    # response = response.json()
     # url = build_url(model_.first())
-    url = response['url']
+    # url = response['url']
+    url = 'http://localhost:12000'
     return post('{}/get_result'.format(url), json=data).json()
 
 
 def get_sensor_data(sensor_build_id):
     try:
+        print('sensor_bind_id: ', sensor_build_id)
         sensor_topic = 'S_{}'.format(sensor_build_id)
         consumer.subscribe([sensor_topic])
         print('connection successfull')

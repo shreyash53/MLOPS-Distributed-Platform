@@ -13,7 +13,8 @@ GET = ['GET']
 
 # APP_DIR = '/home/shreyash/data/app'
 # MODEL_DIR = '/home/shreyash/data/model'
-USER_DIR = expanduser('~/')
+# USER_DIR = expanduser('~/')
+USER_DIR = '/home/user/'
 APP_DIR = join(USER_DIR, 'Downloads', 'data', 'apps')
 MODEL_DIR = join(USER_DIR, 'Downloads', 'data', 'models')
 

@@ -46,7 +46,7 @@ def savetodb(kwargs):
         data.save()
         return "success"
     except Exception as e: 
-        return "failed with {}".format(e)
+        return None
 
 
 def fetchdb(kwargs):
@@ -54,14 +54,15 @@ def fetchdb(kwargs):
         data = slcm.objects(**kwargs)
         return data
     except Exception as e:
-        return  "failed with {}".format(e)
+        return  None
+
 
 def updatedb(kwargs,kwargs2):
     try:
         data = slcm.objects(**kwargs).update(**kwargs2)
         return "success"
     except Exception as e:
-        return  "failed with {}".format(e)
+        return  None
     
 def inc_service(name , stype):
     try :
@@ -70,7 +71,7 @@ def inc_service(name , stype):
         obj.update(useddby = cur+1)
         return "success"
     except Exception as e:
-            return e
+            return None
 
 def dec_service(name , stype):
     try :
@@ -79,7 +80,7 @@ def dec_service(name , stype):
         obj.update(useddby = cur-1)
         return cur-1
     except Exception as e:
-            return e
+            return None
 
 
 # data =  {"service_id":1 , "service_name" : "service4","service_type" : "Asdasd","ip":"asdasdas","port":"fsdfsd"}

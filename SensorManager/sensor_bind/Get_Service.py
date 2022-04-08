@@ -31,9 +31,9 @@ def fun(topic_name,ip,port,time):
                 producer.send(topic_name, value=dic)
             except:
                 pass
-            # print("To Topic:")
-            # print(topic_name)
-            # print(jsonResponse)
+            print("To Topic:")
+            print(topic_name)
+            print(dic)
             sleep(time)
 
 def fun2(topic_name, ip, port,time):

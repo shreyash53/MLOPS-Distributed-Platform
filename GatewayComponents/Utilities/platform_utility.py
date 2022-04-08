@@ -1,4 +1,5 @@
 import os
+from re import S
 import requests
 import dotenv
 dotenv.load_dotenv()
@@ -10,14 +11,15 @@ nm = os.getenv("num_models") # number of models
 url = os.getenv('url')
 
 sensors = dict()
-for x in range(1, int(ns)+1):
-	sname = "S_"+str(x)
+sensor_ids_list = '<sensor_ids>'
+for s_id in sensor_ids_list:
+	sname = "S_"+str(s_id)
 	sensors[sname] = os.getenv(sname) #
 
-models = dict()
-for x in range(1, int(nm)+1):
-	Mname = "M_"+str(x)
-	models[Mname] = os.getenv(Mname) #
+# models = dict()
+# for x in range(1, int(nm)+1):
+# 	Mname = "M_"+str(x)
+# 	models[Mname] = os.getenv(Mname) #
 	
 	
 
@@ -31,8 +33,8 @@ def  getsensordata(sensor_id):
 	# 	return "error"
 	
 def getmodeldata(model_id,data):
-	model_id = "M_" + str(model_id)
-	url_ = url + '/api' + '/model' + '/' + models[model_id]
+	# model_id = "M_" + str(model_id)
+	url_ = url + '/api' + '/model' + '/' + model_id
 	response = requests.post(url_ , json = data)
 	# if response.status_code ==200:
 	return response.json()

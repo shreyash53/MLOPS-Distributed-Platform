@@ -27,7 +27,7 @@ def heartbeat():
         content = request.json
         
     print(content)
-    service_id = content['instance_id']
+    service_id = content['service_id']
     heart = KafkaProducer(bootstrap_servers='{}:{}'.format(kafka_ip,kafka_port),
                           api_version = (0,10,1),
                           value_serializer=lambda v: json.dumps(v).encode('utf-8'))
