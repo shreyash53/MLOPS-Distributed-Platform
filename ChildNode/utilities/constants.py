@@ -1,3 +1,4 @@
+from os.path import expanduser, join
 
 static_ip = '0.0.0.0'
 static_port = '6100'
@@ -12,15 +13,16 @@ GET = ['GET']
 
 # APP_DIR = '/home/shreyash/data/app'
 # MODEL_DIR = '/home/shreyash/data/model'
-APP_DIR = '/home/ingenuity/Downloads/data/app'
-MODEL_DIR = '/home/ingenuity/Downloads/data/model'
+USER_DIR = expanduser('~/')
+APP_DIR = join(USER_DIR, 'Downloads', 'data', 'apps')
+MODEL_DIR = join(USER_DIR, 'Downloads', 'data', 'models')
 
 AZURE_MODEL_PATH = 'root/UserData/Models'
 
 SLCM_TOPIC_NAME = 'register'
 
 # CHILD_NODE_IP = 'http://192.168.178.153'
-CHILD_NODE_IP = 'http://localhost'
+CHILD_NODE_IP = 'http://192.168.43.74'
 CHILD_NODE_URL = '{}:6000'.format(CHILD_NODE_IP)
 
 # MY_IP = 'http://192.168.178.153:6201'
