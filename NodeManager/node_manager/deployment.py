@@ -58,7 +58,7 @@ def check_for_running(service_, service_type):
     else:
         service_id = service_['model_id']
 
-    response = post(SLCM_URL, json={
+    response = post(SLCM_URL+'/service_lookup', json={
         "service_id" : service_id,
         "service_type" : service_type
     })
@@ -70,12 +70,12 @@ def check_for_running(service_, service_type):
 
 def deploy_models(models_to_deploy):
     for model_ in models_to_deploy:
-        if check_for_running(model_, 'model'):
+        if not check_for_running(model_, 'model'):
             deploy_model(model_)
 
 
 def deploy_app(app_to_deploy, all_data):
-    if not check_for_running(app_to_deploy, 'app'):
+    if check_for_running(app_to_deploy, 'app'):
         print('app already running...')
         return
     try:

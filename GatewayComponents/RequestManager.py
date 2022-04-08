@@ -247,10 +247,11 @@ def get_sensor(current_user):
 @token_required
 def sensor_bind(current_user):
     appName = request.form['app_name']
-    count = applications.objects(appName=appName).count()
+    # count = applications.objects(appName=appName).count()
     temp = applications.objects(appName=appName).first()
     temp = temp['contract']
     temp = json.loads(temp)
+    count = len(temp['sensors'])
     to_send = []
     for i in temp['sensors']:
         temp = {
@@ -299,6 +300,7 @@ def sensor_bind(current_user):
                 "sensor_binding_id": i['sensor_bind_id']
             }
             sensor_list.append(t)
+        print("Sensor List Line 302 \n",sensor_list)
         
         to_scheduler["sensors"] = sensor_list
         url = "http://0.0.0.0:8001/schedule_application"

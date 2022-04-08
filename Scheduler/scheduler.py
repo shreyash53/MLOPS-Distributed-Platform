@@ -44,6 +44,7 @@ def scheduleapplication():
                                  downtime=downtime,
                                  repetition=all_details['repetition'],
                                  sensors=json.dumps(all_details['sensors']))
+        print("Sensor List: ",all_details['sensors'])
 
         new_schedule.save()
     except Exception as e:

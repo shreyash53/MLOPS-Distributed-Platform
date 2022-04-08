@@ -19,4 +19,4 @@ urllib3==1.26.9
 Werkzeug==2.1.0
 zipp==3.7.0
 dnspython
-
+python-on-whales

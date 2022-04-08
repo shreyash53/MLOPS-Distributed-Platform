@@ -65,12 +65,14 @@ def service_lookup():
 	except:
 		slug = ""
 
-	obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })[0]
-	if(obj!=None and obj["state"] == "running"):
-		url ="http://"+obj["ip"]+":"+obj["port"]+slug
-		return {"msg" : "Runnning" , "url": url ,"kafka" : None ,"node" : obj.nodeid, "instance_id" : obj["instance_id"]},200
-	elif(obj!=None and obj["state"] == "stopped"):
-		return {"msg" : "NotRunning"},400
+	obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })
+	if obj:
+		obj = obj.first()
+		if(obj!=None and obj["state"] == "running"):
+			url ="http://"+obj["ip"]+":"+obj["port"]+slug
+			return {"msg" : "Runnning" , "url": url ,"kafka" : None ,"node" : obj.nodeid, "instance_id" : obj["instance_id"]},200
+		elif(obj!=None and obj["state"] == "stopped"):
+			return {"msg" : "NotRunning"},400
 	else:
 		return {"msg" : "NotFound"},400
 
