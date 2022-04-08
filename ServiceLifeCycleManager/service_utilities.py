@@ -10,15 +10,15 @@ cluster = os.getenv('MONGODB_CLUSTER')
 kafka_bootstrap = os.getenv('kafka_bootstrap')
 PORT = os.getenv('PORT')
 HOST = os.getenv('HOST')
-
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mduser,mdpass , cluster,database_name)
+
+print(kafka_bootstrap)
 
 def mongodb():
     db.connect(host=DB_URI)
     return db
 
 db = mongodb()
-
 
 class slcm(db.Document):
     instance_id = db.StringField()
@@ -28,7 +28,6 @@ class slcm(db.Document):
     ip = db.StringField()
     port = db.StringField()
     nodeid = db.StringField()
-
     def to_json(self):
         return {
             "instance_id":self.instance_id,
@@ -46,22 +45,22 @@ def savetodb(kwargs):
         data.save()
         return "success"
     except Exception as e: 
-        return "failed with {}".format(e)
+        return None
 
 
 def fetchdb(kwargs):
     try:
-        data = slcm.objects(**kwargs)
+        data = slcm.objects(**kwargs)[0]
         return data
     except Exception as e:
-        return  "failed with {}".format(e)
+        return  None
 
 def updatedb(kwargs,kwargs2):
     try:
         data = slcm.objects(**kwargs).update(**kwargs2)
         return "success"
     except Exception as e:
-        return  "failed with {}".format(e)
+        return  None
     
 def inc_service(name , stype):
     try :
@@ -70,7 +69,7 @@ def inc_service(name , stype):
         obj.update(useddby = cur+1)
         return "success"
     except Exception as e:
-            return e
+            return None
 
 def dec_service(name , stype):
     try :
@@ -79,10 +78,13 @@ def dec_service(name , stype):
         obj.update(useddby = cur-1)
         return cur-1
     except Exception as e:
-            return e
+            return None
 
-
-# data =  {"service_id":1 , "service_name" : "service4","service_type" : "Asdasd","ip":"asdasdas","port":"fsdfsd"}
+'''data =  { "instance_id" : "1234","service_type" : "application","service_name" : "new",
+    "state" : "stopped",
+    "ip" : "0.0.0.0",
+    "port" : "9090",
+    "nodeid" : "45678"}'''
 # data1 = {"service_name" : "service4"}
 # data2 = { "service_name" : "serrvice5"}
 
