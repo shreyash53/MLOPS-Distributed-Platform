@@ -1,6 +1,10 @@
-from node_manager import app
+from node_manager_app import app
 from utilities.constants import static_ip, static_port
-from threading import Thread
+from node_manager.consumers import DeploymentConsumer, ServiceRestartConsumer
+
 if __name__ == '__main__':
-    # kafka_consumer = Thread()
-    app.run(debug=True, host=static_ip, port=static_port)
+    kk = DeploymentConsumer()
+    kk.start()
+    srvc = ServiceRestartConsumer()
+    srvc.start()
+    app.run(debug=False, host=static_ip, port=static_port)

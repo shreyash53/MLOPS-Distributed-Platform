@@ -1,4 +1,7 @@
+BOOTSTRAP_SERVERS = '20.219.107.251:9092'
+KAFKA_SCHEDULE_TOPIC = 'schedule'
 AZURE_ROOT_PATH = 'root'
 AZURE_PLATFORM_PATH = 'root/PlatformFile'
 AZURE_APP_PATH = 'root/UserData/AppData'
 AZURE_MODEL_PATH = 'root/UserData/Models'
+

@@ -141,6 +141,7 @@ def Check_From_Runner(Request_Data):
     sid=[]
     flag=0
     i=0
+    print("Sensor Request Details: ",Request_Data['Details'])
     for sensor in Request_Data["Details"]:
         a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
             sensor_loc=sensor['Sensor_loc'])).first()
