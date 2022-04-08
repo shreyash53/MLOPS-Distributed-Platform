@@ -45,13 +45,16 @@ def fun2(topic_name, ip, port,time):
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
     while(1):
-        for message in consumer:
-            # print("From Topic:")
-            # print(topic_name)
-            message=message.value
-            url = "http://"+str(ip)+":"+str(port)+"/"
-            requests.post(url, json=message)
-            sleep(time)
+        try:
+            for message in consumer:
+                # print("From Topic:")
+                # print(topic_name)
+                message=message.value
+                url = "http://"+str(ip)+":"+str(port)+"/"
+                requests.post(url, json=message)
+        except:
+            pass
+        sleep(time)
 
 # if(is_sensor):
 #     fun(topic_name, ip, port)

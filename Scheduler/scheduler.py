@@ -15,8 +15,8 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-HOST = os.getenv('HOST')
-PORT = os.getenv('PORT')
+HOST = os.getenv('SCHEDULER_HOST')
+PORT = os.getenv('SCHEDULER_PORT')
 
 app = Flask(__name__)
 
@@ -44,6 +44,7 @@ def scheduleapplication():
                                  downtime=downtime,
                                  repetition=all_details['repetition'],
                                  sensors=json.dumps(all_details['sensors']))
+        print("Sensor List: ",all_details['sensors'])
 
         new_schedule.save()
     except Exception as e:
