@@ -5,11 +5,8 @@ import json
 app = Flask(__name__)
 
 def get_data():
-    randomlist=[]
-    for i in range(7):
-        randomlist.append(round(random.uniform(30.0, 38.0),1))
-    return randomlist
-
+    return round(random.uniform(2.0, 5.0),3)
+    
 @app.route('/',methods=["POST"])
 def hello_world():
     val = get_data()
@@ -18,4 +15,4 @@ def hello_world():
     return jsonString
 
 if __name__ == '__main__':
-	app.run(debug=True,port=5000)
+	app.run(debug=True,port=8006)
