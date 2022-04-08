@@ -36,7 +36,7 @@ def login(req):
             return {'err_msg':'User with this role not found'}
         if Actor.objects(username = username,password = password , role = role).count() == 0:
             return {'err_msg':'Incorrect password'}
-        token = encode_auth_token(username,role)
+        token = encode_auth_token(username,role).decode('utf-8')
     except Exception as e:
         return {'err_msg' : str(e)}
     
