@@ -19,17 +19,26 @@ def consume():
     value_deserializer=lambda x: loads(x.decode('utf-8')))
 
 	for message in consumer:
-		data = message.value
-		instance = data["instance_id"]
-		obj = sv.fetchdb({"instance_id" : instance})
-		if obj == None :
-			continue
-		elif data["request_type"] == "register":
-			data["state"] = "running"
-			sv.savetodb(data)
-		elif data["request_type"] == "unregister":
-			sv.updatedb({"instance_id"  : data["instance_id"]} , {"state" :"stopped" })
-		
+		try:
+			data = message.value
+			instance = data["instance_id"]
+			print("request recieved from : ",instance)
+			obj = sv.fetchdb({"instance_id" : instance})
+			if obj == None :
+				if data["request_type"] == "register":
+					print("saving : ", instance)
+					data["state"] = "running"
+					data.pop("request_type")
+					# print(data)
+					print(sv.savetodb(data))
+
+			elif data["request_type"] == "unregister":
+				sv.updatedb({"instance_id"  : data["instance_id"]} , {"state" :"stopped" })
+			elif data["request_type"] == "register":
+				sv.updatedb({"instance_id"  : data["instance_id"]} , {"state" :"running" })
+				print("updated")
+		except : 
+			pass
 
 ''''
 # expected request from node manager when docker service is started  
@@ -65,6 +74,7 @@ def service_lookup():
 	except:
 		slug = ""
 
+
 	obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })
 	if obj:
 		obj = obj.first()
@@ -83,9 +93,11 @@ def dead_service():
 	print(data)
 	name = data['instance_id']
 	obj = sv.fetchdb({"instance_id" : name })
+	print("obj ", obj)
 	if obj == None:
 		return "NO such service"
-	obj = obj[0]
+	print("asd")
+
 	if(obj.state == "running"):
 		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
@@ -95,6 +107,7 @@ def dead_service():
 			produce.send('service_dead_app', {'instance_id' : obj.instance_id})# to schedular add the request to ususal pipeline
 		elif obj.service_type == "model":
 			produce.send('service_dead_model',{'instance_id' : obj.instance_id})# to deployer  as deployer has access to the location of the models
+		
 
 	# restart
 	# if obj.service_type ==  "platform_service":
@@ -127,4 +140,5 @@ def fun():
 if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
+	print("started")
 	app.run(port=sv.PORT,host = sv.HOST )
