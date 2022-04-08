@@ -8,32 +8,37 @@ from flask import jsonify,request
 
 def signup(req):
     # req = req.get_json()    
-    username = req['username']
-    password = req['password']
-    role = req['role']
-    actor = Actor.objects(username = username).count()
-    print("Number of actors in actor db:",actor)
-    if actor > 0:
-        return {'err_msg':'User already exist'}
-    actor = Actor(username = username , password = password , role = role)
-    actor.save()
+    try:
+        username = req['username']
+        password = req['password']
+        role = req['role']
+        
+        actor = Actor.objects(username = username).count()
+        if actor > 0:
+            return {'err_msg':'Username already taken!'}
+        actor = Actor(username = username , password = password , role = role)
+        actor.save()
+    except Exception as e:
+        return {'err_msg': str(e)}
 
     return {'succ_msg':'Successfully added'}
 
 def login(req):
-    req = req.get_json()
     # print("REQUEST IN AUTHENTICATOR:",req)
-    username = req['username']
-    password = req['password']
-    role = req['role']
-    # print(username,password,role)
-    if Actor.objects(username = username).count() == 0:
-        return {'err_msg':'User not found'}
-    if Actor.objects(username = username , role = role).count() == 0:
-        return {'err_msg':'User with this role not found'}
-    if Actor.objects(username = username,password = password , role = role).count() == 0:
-        return {'err_msg':'Incorrect password'}
-    token = encode_auth_token(username,role).decode('utf-8')
+    try:
+        username = req['username']
+        password = req['password']
+        role = req['role']
+        # print(username,password,role)
+        if Actor.objects(username = username).count() == 0:
+            return {'err_msg':'User not found'}
+        if Actor.objects(username = username , role = role).count() == 0:
+            return {'err_msg':'User with this role not found'}
+        if Actor.objects(username = username,password = password , role = role).count() == 0:
+            return {'err_msg':'Incorrect password'}
+        token = encode_auth_token(username,role)
+    except Exception as e:
+        return {'err_msg' : str(e)}
     
     return {'token':token,'succ_msg':'Authentication Successfull','username':username,'role':role}
 

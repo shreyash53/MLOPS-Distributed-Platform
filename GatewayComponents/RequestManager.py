@@ -70,27 +70,25 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
+@app.route('/signup',methods=["GET", "POST"])
+def signup_page():
+    if request.method == "GET":
+        return render_template('signup.html')
+    if request.method == "POST":
+        resp = signup({  'username':request.form['username']  ,  'password':request.form['password']  ,  'role':request.form['role']  })
+        if 'succ_msg' in resp:
+            return render_template('signup.html',succ_msg=resp['succ_msg'])
+        else:
+            return render_template('signup.html',err_msg=resp['err_msg'])
 
-
-@app.route('/')
-def home():
-    return render_template('signup.html')
-
-@app.route('/login_')
-def login_render():
-    return render_template('login.html')
-
-@app.route('/signup',methods=["POST"])
-def signup_req():
-    resp = signup({  'username':request.form['username']  ,  'password':request.form['password']  ,  'role':request.form['role']  })
-    if 'succ_msg' in resp:
-        return render_template('signup.html',succ_msg=resp['succ_msg'])
-    else:
-        return render_template('signup.html',err_msg=resp['err_msg'])
-
-@app.route('/login',methods=["POST"])
-def login_req():
-    return jsonify(login(request))
+@app.route('/', methods=["GET"])
+@app.route('/login',methods=["GET", "POST"])
+def login_page():
+    if request.method == "GET":
+        return render_template('login.html')
+    if request.method == "POST":
+        resp = login({  'username':request.form['username']  ,  'password':request.form['password']  ,  'role':request.form['role']  })
+        return render_template('login.html', ret=resp)
 
 @app.route('/app_developer',methods=["GET","POST"])
 # @token_required
