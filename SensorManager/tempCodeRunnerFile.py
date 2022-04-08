@@ -1,3 +1,7 @@
 from sensor_manager import app
-if __name__ == "__main__":
-	app.run(debug=True, threaded=True, port=9002)
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SENSOR_MGR_PORT = os.getenv('SEN

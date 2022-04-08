@@ -19,24 +19,28 @@ import requests
 #     return randomlist
 
 def fun(topic_name,ip,port,time):
-        producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda x:
+        producer = KafkaProducer(bootstrap_servers=['20.219.107.251:9092'], value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
-        # print("AAAAAAAAAAAAAAAAA")
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
-            val = requests.post(url).content
-            jsonResponse = json.loads(val.decode('utf-8'))
-            print("To Topic:")
-            print(topic_name)
-            print(jsonResponse)
-            producer.send(topic_name, value=jsonResponse)
+            try:
+                val = requests.post(url).content
+                jsonResponse = json.loads(val.decode('utf-8'))
+                dic = {}
+                dic['data'] = jsonResponse
+                producer.send(topic_name, value=dic)
+            except:
+                pass
+            # print("To Topic:")
+            # print(topic_name)
+            # print(jsonResponse)
             sleep(time)
 
 def fun2(topic_name, ip, port,time):
     consumer = KafkaConsumer(
         topic_name,
-        bootstrap_servers=['localhost:9092'],
-        auto_offset_reset='earliest',
+        bootstrap_servers=['20.219.107.251:9092'],
+        # auto_offset_reset='earliest',
         enable_auto_commit=True,
         group_id='my-group',
         value_deserializer=lambda x: loads(x.decode('utf-8')))

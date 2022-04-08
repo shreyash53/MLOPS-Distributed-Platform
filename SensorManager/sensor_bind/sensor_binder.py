@@ -62,76 +62,20 @@ def reg_bind_sensor(request_data):
         print(e)
         return "Failed to process", HTTP_INTERNAL_SERVER
 
-
-"""def (request_data):
-#     try:
-#         sensor_bind_ids = {}
-#         for sensor_data in request_data['Details']:
-#             sp=sensor_data['port']
-#             find = bool(SensorBindModel.query.filter_by(
-#                 sensor_port=sp).first())
-#             if not find:
-#  reg_bind_sensor               d1 = sensor_data['name']
-#                 d2 = sensor_data['ip']
-#                 d3 = sensor_data['port']
-#                 d4 = sensor_data['loc']
-#                 d5 = sensor_data['type']
-#                 data = SensorBindModel(d1,d2,d3,d4,d5)
-#                 db.session.add(data)
-#                 db.session.commit()
-#                 find2 = SensorBindModel.query.filter_by(
-#                     sensor_port=sp).first()
-#                 sid = find2.sensor_bind_id
-#                 sensor_bind_ids[find2.sensor_name]=(str)(sid)
-#                 # print(type(find2))
-#                 # return find2
-#             else:
-#                 return "Port Already Exists"
-#         return sensor_bind_ids
-
-#     except Exception as e:
-#         print(e)
-#         return "Failed to process", HTTP_INTERNAL_SERVER"""
-
-def Check(r_data):
-    checked_sensor = {"ids":[]}
-    flag=1
-    for request_data in r_data["Details"]:
-        loc = request_data['loc']
-        stype = request_data['stype']
-        find2 = SensorBindModel.objects.filter(
-            Q(sensor_loc=loc) & Q(sensor_type=stype)).first()
-        if(find2):
-            checked_sensor['ids'].append()
-        else:
-           return "All sensors of given type are not present at the given location"
-    """  # a = bool(SensorBindModel.query.filter_by(
-        #     sensor_loc=loc, sensor_bind_id=sid).first())
-        # if(a):
-        #     s = "Sensor "+sid+" is present at provided location"
-        #     checked_sensor[str(sid)] = s
-        # else:
-        #     s2 = "Sensor "+sid+" is not present at provided location"
-        #     checked_sensor[str(sid)] = s2"""
-    return checked_sensor
-
-
-"""# def Check(r_data):
-#     checked_sensor={}
+# def Check(r_data):
+#     checked_sensor = {"ids":[]}
+#     flag=1
 #     for request_data in r_data["Details"]:
-#         loc=request_data['loc']
-#         sid=request_data['sid']
-#         # find2 = SensorBindModel.objects.filter(
-#         #     Q(sensor_loc=loc) sensor_bind_id=sid)).first()
-#         a = bool(SensorBindModel.query.filter_by(sensor_loc=loc, sensor_bind_id = sid).first())
-#         if(a):
-#             s = "Sensor "+sid+" is present at provided location" 
-#             checked_sensor[str(sid)] = s
+#         loc = request_data['loc']
+#         stype = request_data['stype']
+#         find2 = SensorBindModel.objects.filter(
+#             Q(sensor_loc=loc) & Q(sensor_type=stype)).first()
+#         if(find2):
+#             checked_sensor['ids'].append()
 #         else:
-#             s2= "Sensor "+sid+" is not present at provided location"
-#             checked_sensor[str(sid)] = s2
-    
-#     return checked_sensor"""
+#            return "All sensors of given type are not present at the given location"
+
+#     return checked_sensor
 
 def start_sensor(find2,x):
     topic_name = "S_"+str(find2.sensor_bind_id)
@@ -151,24 +95,6 @@ def sensor_add_db(val):
 def sensor_add(val):
     Sensor_Used.objects(sensor_bind_id=val).update_one(inc__number=1)
 
-"""    #         sensor_ = SensorBindModel.query.filter_by(sensor_port=sensor_data['sensor_port']).first()
-    #         if not sensor_:
-    #             sensor_obj = SensorBindModel(**sensor_data)
-    #             try:
-    #                 db.session.add(sensor_obj)
-    #                 db.session.commit()
-    #             except Exception as i:
-    #                 print(i)
-    #                 return jsonify(error="Failed"), HTTP_BAD_REQUEST
-
-    #             db.session.refresh(sensor_obj)
-    #             sensor_bind_ids.append(sensor_obj.sensor_bind_id)
-
-    #         # api_response = requests.get(url="localhost:8081//service_lookup?service_name="+str(sensor_obj))
-    #     return jsonify(data=sensor_bind_ids), HTTP_OK
-"""
-
-
 def Check_Vals():
     auxiliaryList = []
     for sensor in SensorBindModel.objects:
@@ -182,26 +108,36 @@ def Check_From_Dev(Request_Data):
     error=[]
     flag=0
     for sensor in Request_Data["Details"]:
-        a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
-            sensor_data_type=sensor['Sensor_Data_Type'])).first()
+        a=SensorBindModel.objects.filter(Q(sensor_type=sensor["sensortype"]) & Q(
+            sensor_data_type=sensor['sensordatatype'])).first()
         if not a:
-            error.append(sensor['Sensor_id'])
+            error.append(sensor['sensorid'])
             flag=1
-    return flag,error
+        return flag,error
 
 def Check_From_Runner(Request_Data):
     error=[]
     sid=[]
     flag=0
+    i=0
+    print("Sensor Request Details: ",Request_Data['Details'])
     for sensor in Request_Data["Details"]:
         a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
             sensor_loc=sensor['Sensor_loc'])).first()
+        # print(a.sensor_loc,"line 126")
         if not a:
-            x = (sensor['Sensor_Type'], sensor['Sensor_loc'])
-            error.append(x)
+            error.append(i)
             flag=1
         else:
-            sid.append(a.sensor_bind_id)
+            dic={}
+            dic['sensor_bind_id']=a.sensor_bind_id
+            dic['sensor_name']=a.sensor_name
+            sid.append(dic)
+        i+=1
+    # print(flag," ",error," ",sid)
     return flag,error,sid
+
+
+
 
 
