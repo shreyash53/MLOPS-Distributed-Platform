@@ -130,8 +130,9 @@ def get_env_data(data):
             "num_models" : num_models,
             "num_sensors" : num_sensors
         }
-        for data_ in data['models_data']:
-            result['M_{}'.format(data_['model_id'])] = data_['model_id']
+        # for data_ in data['models_data']:
+            # result[data_['model_id']] = data_['model_id']
+            # result['M_{}'.format(data_['model_id'])] = data_['model_id']
 
         for data in data['sensor_data']:
             result['S_{}'.format(data['sensor_app_id'])] = data['sensor_binding_id']
