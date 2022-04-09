@@ -86,5 +86,5 @@ def listen_for_notifs():
 if __name__ == "__main__":
     listener = Thread(target=listen_for_notifs)
     listener.start()
-    app.run(host='0.0.0.0', port=8000, debug=False)
+    app.run(debug=False, port="5000", host='0.0.0.0')
 

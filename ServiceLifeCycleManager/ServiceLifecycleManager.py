@@ -141,4 +141,4 @@ if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
 	print("started")
-	app.run(port=sv.PORT,host = sv.HOST )
+	app.run(debug=False, port="5000", host='0.0.0.0' )
