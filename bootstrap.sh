@@ -20,5 +20,5 @@
 
 python3 -m venv shra
 source ./shra/bin/activate
-python bootstrap.py
+python bootstrap.py $1
 deactivate

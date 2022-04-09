@@ -3,7 +3,7 @@ import re
 TEMPLATE_PATH = "./BootstrapService/Template_Dockerfile.txt"
 
 
-def create_docker(destination_path, monitor_ip, entry_point_py_file_name):
+def create_docker_file(destination_path, monitor_ip, entry_point_py_file_name):
 
     docker_file = open(TEMPLATE_PATH, 'r')
     docker_template = docker_file.read()
