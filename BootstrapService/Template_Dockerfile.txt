@@ -6,9 +6,9 @@ WORKDIR /home/app
 COPY . .
 
 RUN pip install -r requirements.txt
-RUN apk update && \
-    apk add curl \
-    rm -rf /var/cache/apk/*
+RUN apt-get update -y && \
+    apt-get install curl -y
+    # rm -rf /var/cache/apk/*
 
 HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"application_type\" : \"Smith\"}" "http://<monitor_ip>:5000/heartbeat" || exit 1
 

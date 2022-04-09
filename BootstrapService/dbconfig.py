@@ -1,6 +1,5 @@
-from typing_extensions import Required
 import mongoengine as db
-from utilities.constant import *
+from BootstrapService.utilities.constant import *
 
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(
         MONGODB_USER
