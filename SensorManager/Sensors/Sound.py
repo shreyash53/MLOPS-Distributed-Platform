@@ -9,18 +9,17 @@ from time import sleep
 import requests
 
 
-
 producer = KafkaProducer(bootstrap_servers=['20.219.107.251:9092'], value_serializer=lambda x:
-                             dumps(x).encode('utf-8'))
+                         dumps(x).encode('utf-8'))
 
-url = "http://127.0.0.1:8006/"
+url = "http://127.0.0.1:8008/"
 while(1):
     try:
         val = requests.post(url).content
         jsonResponse = json.loads(val.decode('utf-8'))
         dic = {}
         dic['data'] = jsonResponse
-        producer.send('S_487548', value=dic)
+        producer.send('S_813284', value=dic)
         print(dic)
     except:
         pass

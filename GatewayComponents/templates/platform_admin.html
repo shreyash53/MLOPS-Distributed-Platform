@@ -15,15 +15,25 @@
 
     <script>
         function append_token() {
-            curr_api = $('#sensor').attr('action');
+            curr_api = $('#upload_sensor').attr('action');
             console.log(curr_api)
             console.log(sessionStorage.getItem("user_token"))
-            $('#sensor').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+            $('#upload_sensor').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+
+            curr_api = $('#bind_sensor').attr('action');
+            console.log(curr_api)
+            console.log(sessionStorage.getItem("user_token"))
+            $('#bind_sensor').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
 
             curr_api = $('#node').attr('action');
             console.log(curr_api)
             console.log(sessionStorage.getItem("user_token"))
             $('#node').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
+        }
+        function logout(){
+            sessionStorage.removeItem('user_token');
+            sessionStorage.clear();
+            window.location.href='/'
         }
     </script>
 
@@ -36,9 +46,9 @@
                 <h2 class="text-center text-dark mt-5">Add Sensor</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" form action="/platform_admin/upload_sensor"
-                        id="sensor" method="post" enctype="multipart/form-data">
+                        id="upload_sensor" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label class="form-label" for="customFile">Upload Sensor File</label>
+                            <label class="form-label" for="customFile">Upload Sensor Registration File</label>
                             <input type="file" name="file" class="form-control" id="customFile" />
                         </div>
                         <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Add this
@@ -48,7 +58,26 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="text-center text-dark mt-5">Bind Sensor</h2>
+                <div class="card my-5">
+                    <form class="card-body cardbody-color p-lg-5" form action="/platform_admin/bind_sensor"
+                        id="bind_sensor" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="customFile">Upload Sensor Binding Configuration</label>
+                            <input type="file" name="file" class="form-control" id="customFile" />
+                        </div>
+                        <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Bind
+                                sensor</button></div>
+                </div>
+                </form>
+            </div>
+        </div>
     </div>
+
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
@@ -67,7 +96,13 @@
                 </form>
             </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% if err_msg %}

@@ -23,12 +23,17 @@
         // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
+    function logout(){
+        sessionStorage.removeItem('user_token');
+        sessionStorage.clear();
+        window.location.href='/'
+    }
 </script>
 
 <body onload="append_token()">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Schedule Applications</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" action="/end_user/sensor_bind" id="upload_form"
@@ -103,6 +108,42 @@
                 {% endif %}
 
                 </form>
+            </div>
+
+                <div class="col-md-6">
+                    <h2 class="text-center text-dark mt-5">Available Sensors</h2>
+                    <div class="card my-5">
+    
+                        {% if sensor_details %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Sensor Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+    
+                                {% for i in range(sensor_details|length) %}
+                                <tr>
+                                    <th scope="row">{{ i+1 }}</th>
+                                    <td>{{ sensor_details[i][0] }}</td>
+                                </tr>
+                                {% endfor %}
+    
+                            </tbody>
+                        </table>
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                </div>
             </div>
         </div>
     </div>

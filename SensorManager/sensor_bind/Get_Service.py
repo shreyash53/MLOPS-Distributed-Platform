@@ -34,7 +34,6 @@ def fun(topic_name,ip,port,time):
                 print(dic)
             except:
                 pass
-            
             sleep(time)
 
 def fun2(topic_name, ip, port,time):
@@ -48,8 +47,8 @@ def fun2(topic_name, ip, port,time):
     while(1):
         try:
             for message in consumer:
-                # print("From Topic:")
-                # print(topic_name)
+                print("From Topic:")
+                print(topic_name)
                 message=message.value
                 url = "http://"+str(ip)+":"+str(port)+"/"
                 requests.post(url, json=message)
