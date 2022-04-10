@@ -113,7 +113,7 @@ def app_developer_view():
     sensor_details = requests.get(url=url).json()
     sensor_details = sensor_details['details']
     model_details = aimodels.objects().all()
-    model_details = [i.modelName for i in model_details]
+    model_details = [[i.modelName,i.modelId] for i in model_details]
     print(sensor_details,model_details)
     return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
 
@@ -174,7 +174,7 @@ def upload_app(current_user):
     # sensor_details = [ [i[0],i[1]] for i in sensor_details ]
     # model_details = ['m1','m2','m3']
     model_details = aimodels.objects().all()
-    model_details = [i.modelName for i in model_details]
+    model_details = [[i.modelName,i.modelId] for i in model_details]
     if 'err_msg' in resp:
         return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
     elif 'succ_msg' in resp:
@@ -212,10 +212,28 @@ def upload_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
+    res = requests.post("http://0.0.0.0:9003/Sensor_Reg",json=f).json()
+    print(res)
+    return res
+    # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+
+@app.route('/platform_admin/bind_sensor',methods=['POST'])
+@token_required
+def bind_sensor(current_user):
+    if current_user.role != 'platform_admin':
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401 
+
+    if 'file' not in request.files:
+    #if request.files:
+        print("no file")
+        return 'No file found.'
+    f = request.files['file']
+    f = json.load(f)
     res = requests.post("http://0.0.0.0:9003/Sensor_Bind",json=f).json()
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+
 
 @app.route('/platform_admin/add_node',methods=['POST'])
 @token_required
@@ -246,7 +264,10 @@ def get_sensor(current_user):
             "sensordatatype": i['sensordatatype']
         }
         to_send.append(temp)
-    return render_template("sensor_form.html",app_name = appName,sensors=to_send)
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+    sensor_details = requests.get(url=url).json()
+    sensor_details = sensor_details['details']
+    return render_template("sensor_form.html",app_name = appName,sensors=to_send,sensor_details=sensor_details)
 
 @app.route('/end_user/sensor_bind',methods=['POST'])
 @token_required

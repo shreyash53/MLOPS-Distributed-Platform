@@ -21,6 +21,11 @@
         console.log(sessionStorage.getItem("user_token"))
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
+    function logout(){
+        sessionStorage.removeItem('user_token');
+        sessionStorage.clear();
+        window.location.href='/'
+    }
 </script>
 
 <body onload="append_token()">
@@ -70,6 +75,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Model Name</th>
+                                    <th scope="col">Model ID</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,7 +83,8 @@
                                 {% for i in range(model_details|length) %}
                                 <tr>
                                     <th scope="row">{{ i + 1 }}</th>
-                                    <td>{{ model_details[i] }}</td>
+                                    <td>{{ model_details[i][0] }}</td>
+                                    <td>{{ model_details[i][1] }}</td>
                                 </tr>
                                 {% endfor %}
 
@@ -115,6 +122,13 @@
                         {% endif %}
 
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
                 </div>
             </div>
         </div>

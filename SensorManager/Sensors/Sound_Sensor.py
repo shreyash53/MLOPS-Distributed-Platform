@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 def get_data():
-    return round(random.uniform(25.0, 31.0),2)
+    return (round(random.uniform(60.0, 70.0), 2))
 
 @app.route('/', methods=["POST"])
 def hello_world():
