@@ -133,12 +133,13 @@ def appdeploy():
             for each_bindings in sensors:
                 # print("each binding")
                 # print(each_bindings)
-                # if each_sensor['sensorname']==\
-                    # each_bindings['sensor_name']:
-                sen["sensor_app_id"]=each_sensor['sensorid']
-                sen["sensor_name"]=each_sensor['sensorname']
-                sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
-                sen_lis.append(sen)
+                if each_sensor['sensorname']==\
+                    each_bindings['sensor_name']:
+                    sen["sensor_app_id"]=each_sensor['sensorid']
+                    sen["sensor_name"]=each_sensor['sensorname']
+                    sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
+                    sen_lis.append(sen)
+                    break
 
         # print()
         # print()

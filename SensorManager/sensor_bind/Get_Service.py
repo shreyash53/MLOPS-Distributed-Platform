@@ -29,11 +29,12 @@ def fun(topic_name,ip,port,time):
                 dic = {}
                 dic['data'] = jsonResponse
                 producer.send(topic_name, value=dic)
+                print("To Topic:")
+                print(topic_name)
+                print(dic)
             except:
                 pass
-            print("To Topic:")
-            print(topic_name)
-            print(dic)
+            
             sleep(time)
 
 def fun2(topic_name, ip, port,time):

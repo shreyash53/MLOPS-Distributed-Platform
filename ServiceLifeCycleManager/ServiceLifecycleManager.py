@@ -67,23 +67,27 @@ def service_lookup():
 	ser=request_data["service_id"]
 	try:
 		sertype = request_data["service_type"]
+		obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })
 	except:
-		pass
+		obj = sv.fetchdb({"instance_id" :ser })
 	try:
 		slug = request_data["slug"]
 	except:
 		slug = ""
 
 
-	obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })
+	
 	if obj:
-		obj = obj.first()
+		# obj = obj
 		if(obj!=None and obj["state"] == "running"):
-			url ="http://"+obj["ip"]+":"+obj["port"]+slug
+			url =obj["service_ip"]+":"+obj["service_port"]+slug
+			print ("success : ",url)
 			return {"msg" : "Runnning" , "url": url ,"kafka" : None ,"node" : obj.nodeid, "instance_id" : obj["instance_id"]},200
 		elif(obj!=None and obj["state"] == "stopped"):
+			print(ser," Not running")
 			return {"msg" : "NotRunning"},400
 	else:
+		print(ser," NOt found")
 		return {"msg" : "NotFound"},400
 
 #monitor will hit this api when it does not get a heartbeat from a service

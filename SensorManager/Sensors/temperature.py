@@ -24,6 +24,7 @@ while(1):
     try:
         val = requests.post(url).content
         jsonResponse = json.loads(val.decode('utf-8'))
+        print("Success")
         dic = {}
         dic['data'] = jsonResponse
         producer.send('S_499992', value=dic)

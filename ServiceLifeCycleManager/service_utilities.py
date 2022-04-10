@@ -25,8 +25,8 @@ class slcm(db.Document):
     service_type = db.StringField()
     service_name = db.StringField()
     state = db.StringField()
-    ip = db.StringField()
-    port = db.StringField()
+    service_ip = db.StringField()
+    service_port = db.StringField()
     nodeid = db.StringField()
     def to_json(self):
         return {
@@ -34,8 +34,8 @@ class slcm(db.Document):
             "service_type": self.service_type,
             "service_name" : self.service_name,
             "state":self.state,
-            "ip" : self.ip,
-            "port":self.port,
+            "service_ip" : self.ip,
+            "service_port":self.port,
             "nodeid":self.nodeid
         }
 

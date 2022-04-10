@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
@@ -31,11 +31,18 @@ def example(uid, slug):
         "service_id":uid,
         "slug":slug
     }
+    print("Data: ",data)
     
     slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
-    res = requests.post(url=slcm_url,json=data).content
-    return res
+    res = requests.post(url=slcm_url,json=data)
+    if(res.status_code==400):
+        return ("Application Not Scheduled!! Please look after sometime!!")
+    else :
+        res = res.json
+        redirect(location=res['url'])
+
+    
     # return "uid: %s, slug: %s" % (uid, slug)
 
 
@@ -308,8 +315,8 @@ def sensor_bind(current_user):
             return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
         res['succ_msg']="Sensor binding Done and Application Scheduled!!"
         app_instance_id = res['AII']
-        # url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
-        url_end_user = 'http://localhost:11000/'
+        url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+        # url_end_user = 'http://localhost:11000/'
         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 
 

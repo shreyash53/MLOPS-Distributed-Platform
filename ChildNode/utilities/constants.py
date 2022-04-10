@@ -27,4 +27,4 @@ CHILD_NODE_IP = 'http://192.168.43.74'
 CHILD_NODE_URL = '{}:6000'.format(CHILD_NODE_IP)
 
 # MY_IP = 'http://192.168.178.153:6201'
-MY_IP = 'http://localhost:6201'
+MY_IP = 'http://localhost'
