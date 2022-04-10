@@ -23,4 +23,4 @@ def get_result():
 
 if __name__ == "__main__":
     port_no = sys.argv[1]
-    app.run(port=port_no)
+    app.run(debug=False, port="5000", host='0.0.0.0')

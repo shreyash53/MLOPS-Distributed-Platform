@@ -3,7 +3,7 @@ from utilities.constant import *
 
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(
         MONGODB_USER
-        , MONGODB_PASS 
+        , MONGODB_PASS
         , MONGODB_CLUSTER
         , DATABASE_NAME)
 
