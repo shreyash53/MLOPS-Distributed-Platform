@@ -7,6 +7,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
+db = mongodb()
 
 class Build_run_service(threading.Thread):
     def __init__(self, docker_file_path, tag, host_port, service_name):
@@ -18,8 +19,8 @@ class Build_run_service(threading.Thread):
 
     def run(self):
         docker_image = docker.build(self.docker_file_path, tags=self.tag)
-        container = docker.run(self.tag, detach=True, publish=[
-                               (self.host_port, 5000)])
+        container = docker.run(self.tag, detach=True, 
+                            publish=[(self.host_port, 5000)])
         new_service = Bootstrap(service_name=self.service_name,
                                 contrainer_id=str(container))
 

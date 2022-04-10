@@ -2,6 +2,14 @@ import re
 
 TEMPLATE_PATH = "./BootstrapService/Template_Dockerfile.txt"
 
+# def generate_env_string(env_file_path):
+#     try:
+#         env_file = open(env_file_path, 'r')
+#         env_str = env_file.read()
+#         env_file.close()
+#         return env_str
+#     except Exception as e:
+#         return ""
 
 def create_docker_file(destination_folder_path, monitor_ip, entry_point_py_file_name):
 
@@ -15,6 +23,10 @@ def create_docker_file(destination_folder_path, monitor_ip, entry_point_py_file_
     new_docker_file = open(destination_folder_path+"/"+'Dockerfile', 'w')
 
     docker_template = re.sub(r'<monitor_ip>', monitor_ip, docker_template)
+    # env_str = generate_env_string(destination_folder_path+"/.env")
+    # if env_str == "":
+    #     return "Error: .env file not found in "+destination_folder_path
+    # docker_template = re.sub(r'<env_var>', env_str, docker_template)
     docker_template = re.sub(
         r'<entry_point>', entry_point_py_file_name, docker_template)
     new_docker_file.write(docker_template)

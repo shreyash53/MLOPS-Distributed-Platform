@@ -4,14 +4,8 @@ import threading
 from kafka import KafkaConsumer
 from json import loads
 
-import os
-import dotenv
-dotenv.load_dotenv()
-
 
 app = Flask(__name__)
-HOST = os.getenv('HOST')
-PORT = os.getenv('PORT')
 
 db = mongodb()
 
