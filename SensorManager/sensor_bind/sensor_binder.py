@@ -27,9 +27,9 @@ def reg_sensor(request_data):
             if not SensorRegisterModel.objects.filter(Q(sensor_type=tp) & Q(sensor_data_type=d_tp)):
                 conference_ = SensorRegisterModel(sensor_type=tp, sensor_data_type=d_tp)
                 conference_.save()
+                return "Successful"
             else:
                 return "This type and data type already exists"
-        return "Successful"
     except:
         return "Failed to process", HTTP_INTERNAL_SERVER
 
@@ -138,10 +138,40 @@ def sensor_add(val):
 def Check_Vals():
     auxiliaryList = []
     for sensor in SensorBindModel.objects:
-        a = (sensor.sensor_type, sensor.sensor_data_type)
-        print(a)
-        if a not in auxiliaryList:
-            auxiliaryList.append(a)
+        a = (sensor.sensor_type, sensor.sensor_data_type,
+             sensor.sensor_loc, sensor.sensor_bind_id,sensor.sensor_name)
+        if len(auxiliaryList)==0:
+            x = []
+            x.append(a[0])
+            x.append(a[1])
+            y = []
+            y.append((a[2], a[3],a[4]))
+            x.append(y)
+            auxiliaryList.append(x)
+        else:
+            for i in range(len(auxiliaryList)):
+                if a[0] == auxiliaryList[i][0] and a[1] == auxiliaryList[i][1]:
+                    f=0
+                    for j in range(len(auxiliaryList[i][2])):
+                        if a[2] == auxiliaryList[i][2][0] and a[3] == auxiliaryList[i][2][1]:
+                            f=1
+                    if(f==0):
+                        # print("Old: ",(a[2],a[3]))
+                        auxiliaryList[i][2].append((a[2],a[3],a[4]))
+                else:
+                    s=0
+                    for k in range(len(auxiliaryList)):
+                        if a[0] == auxiliaryList[k][0] and a[1] == auxiliaryList[k][1]:
+                            s=1
+                    if s==0:
+                        x=[]
+                        x.append(a[0])
+                        x.append(a[1])
+                        y=[]
+                        y.append((a[2],a[3],a[4]))
+                        x.append(y)
+                        # print ("New: ", x)
+                        auxiliaryList.append(x)
     return auxiliaryList
 
 def Check_From_Dev(Request_Data):
@@ -155,26 +185,23 @@ def Check_From_Dev(Request_Data):
             flag=1
         return flag,error
 
-def Check_From_Runner(Request_Data):
-    error=[]
-    sid=[]
-    flag=0
-    i=0
-    for sensor in Request_Data["Details"]:
-        a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
-            sensor_loc=sensor['Sensor_loc'])).first()
-        # print(a.sensor_loc,"line 126")
-        if not a:
-            error.append(i)
-            flag=1
-        else:
-            dic={}
-            dic['sensor_bind_id']=a.sensor_bind_id
-            dic['sensor_name']=a.sensor_name
-            sid.append(dic)
-        i+=1
-    # print(flag," ",error," ",sid)
-    return flag,error,sid
+def Get_Location(Request_Data):
+    main_dic=[]
+    for sensor in Request_Data["details"]:
+        sid=[]
+        for sen in SensorBindModel.objects:
+            if sen.sensor_type==sensor['sensortype'] and sen.sensor_data_type==sensor['sensordatatype']:    
+                flag=0
+                for loc in sid:
+                    if loc['loc']==sen.sensor_loc:
+                        flag=1
+                if(flag==0):
+                    dic={}
+                    dic['sensor_bind_id']=sen.sensor_bind_id
+                    dic['loc']=sen.sensor_loc
+                    sid.append(dic)    
+        main_dic.append({"type":sensor['sensortype'],"datatype":sensor['sensordatatype'],"locations":sid})    # print(flag," ",error," ",sid)
+    return main_dic
 
 
 
