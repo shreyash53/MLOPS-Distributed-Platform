@@ -53,7 +53,7 @@ if __name__ == "__main__":
                       service_name=os.getenv('monitoring_service_name')).start()
     create_docker_file("./ServiceLifeCycleManager",
                     monitor_ip=monitor_ip,
-                    entry_point_py_file_name="ServiceLifeCycleManager.py")
+                    entry_point_py_file_name="ServiceLifecycleManager.py")
     Build_run_service("./ServiceLifeCycleManager/",
                       tag="service_life_cycle_manager",
                       host_port=os.getenv('SLCM_service_port'),
