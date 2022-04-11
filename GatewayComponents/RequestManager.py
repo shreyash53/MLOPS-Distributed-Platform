@@ -11,8 +11,8 @@ dotenv.load_dotenv()
 app = Flask(__name__)
 db=mongodb()
 
-SENSOR_MGR_IP = 'http://0.0.0.0'
-SENSOR_MGR_PORT = 9003
+SENSOR_MGR_IP = os.environ.get('sensor_manager_service_ip')
+SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
 app.config['SECRET_KEY'] = 'root'
 
 from flask import Blueprint
@@ -33,7 +33,7 @@ def example(uid, slug):
     }
     print("Data: ",data)
     
-    slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
+    slcm_url = os.environ.get('SLCM_service_ip')+":" + os.environ.get('SLCM_service_port') + '/service_lookup'
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
     res = requests.post(url=slcm_url,json=data)
     if(res.status_code==400):
@@ -212,7 +212,8 @@ def upload_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = requests.post("http://0.0.0.0:9003/Sensor_Reg",json=f).json()
+    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Reg"
+    res = requests.post(url,json=f).json()
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
@@ -229,7 +230,8 @@ def bind_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = requests.post("http://0.0.0.0:9003/Sensor_Bind",json=f).json()
+    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Bind"
+    res = requests.post(url,json=f).json()
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
@@ -336,7 +338,7 @@ def sensor_bind(current_user):
             return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
         res['succ_msg']="Sensor binding Done and Application Scheduled!!"
         app_instance_id = res['AII']
-        url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+        url_end_user = 'http://' + os.environ.get('request_manager_service_ip') + ':' + os.environ.get('request_manager_service_port')+'/app/' + app_instance_id + '/'
         # url_end_user = 'http://localhost:11000/'
         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 

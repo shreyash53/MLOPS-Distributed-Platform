@@ -1,11 +1,11 @@
 from sensor_manager import *
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import threading
 
-load_dotenv()
+# load_dotenv()
 
-SENSOR_MGR_PORT = os.getenv('SENSOR_MGR_PORT')
+# SENSOR_MGR_PORT = os.getenv('SENSOR_MGR_PORT')
 
 t1 = threading.Thread(target=Start_Services)
 t1.start()

@@ -7,6 +7,8 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
+monitor_ip = os.environ.get("monitoring_service_ip")
+
 db = mongodb()
 
 class Build_run_service(threading.Thread):
@@ -42,7 +44,6 @@ def stop_service(service_name):
 
 
 if __name__ == "__main__":
-    monitor_ip = sys.argv[1]
     create_docker_file("./MonitoringService",
                     monitor_ip=monitor_ip,
                     entry_point_py_file_name="monitor.py")
