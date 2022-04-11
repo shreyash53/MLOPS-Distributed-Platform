@@ -12,15 +12,25 @@ monitor_ip = os.environ.get("monitoring_service_ip")
 db = mongodb()
 
 class Build_run_service(threading.Thread):
-    def __init__(self, docker_file_path, tag, host_port, service_name):
+    def __init__(self, 
+                    dockerfile_destination_folder,
+                    tag, host_port, 
+                    service_name,
+                    monitor_ip,
+                    entry_point_py_file_name):
         threading.Thread.__init__(self)
-        self.docker_file_path = docker_file_path
+        self.dockerfile_destination_folder = dockerfile_destination_folder
         self.tag = tag
         self.host_port = host_port
         self.service_name = service_name
+        self.monitor_ip = monitor_ip
+        self.entry_point_py_file_name = entry_point_py_file_name
 
     def run(self):
-        docker_image = docker.build(self.docker_file_path, tags=self.tag)
+        create_docker_file(self.dockerfile_destination_folder,
+                    monitor_ip=self.monitor_ip,
+                    entry_point_py_file_name=self.entry_point_py_file_name)
+        docker_image = docker.build(self.dockerfile_destination_folder+'/', tags=self.tag)
         container = docker.run(self.tag, detach=True, 
                             publish=[(self.host_port, 5000)])
         new_service = Bootstrap(service_name=self.service_name,
@@ -44,69 +54,68 @@ def stop_service(service_name):
 
 
 if __name__ == "__main__":
-    create_docker_file("./MonitoringService",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="monitor.py")
-    Build_run_service("./MonitoringService/",
+    Build_run_service("./MonitoringService",
                       tag="monitor",
                       host_port=os.getenv('monitoring_service_port'),
-                      service_name=os.getenv('monitoring_service_name')).start()
-    create_docker_file("./ServiceLifeCycleManager",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="ServiceLifecycleManager.py")
-    Build_run_service("./ServiceLifeCycleManager/",
+                      service_name=os.getenv('monitoring_service_name'),
+                      monitor_ip=monitor_ip,
+                      entry_point_py_file_name="monitor.py").start()
+ 
+    Build_run_service("./ServiceLifeCycleManager",
                       tag="service_life_cycle_manager",
                       host_port=os.getenv('SLCM_service_port'),
-                      service_name=os.getenv('SLCM_service_name')).start()
-    create_docker_file("./GatewayComponents",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="RequestManager.py")
+                      service_name=os.getenv('SLCM_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="ServiceLifecycleManager.py").start()
+
     Build_run_service("./GatewayComponents/",
                       tag="request_manager",
                       host_port=os.getenv('request_manager_service_port'),
-                      service_name=os.getenv('request_manager_service_name')).start()
-    create_docker_file("./LogginService",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="logging_service.py")
+                      service_name=os.getenv('request_manager_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="RequestManager.py").start()
+
     Build_run_service("./LogginService/",
                       tag="logging",
                       host_port=os.getenv('logging_service_port'),
-                      service_name=os.getenv('logging_service_name')).start()
-    create_docker_file("./Scheduler",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="scheduler.py")
+                      service_name=os.getenv('logging_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="logging_service.py").start()
+
     Build_run_service("./Scheduler/",
                       tag="scheduler",
                       host_port=os.getenv('scheduler_service_port'),
-                      service_name=os.getenv('scheduler_service_name')).start()                      
-    create_docker_file("./NotificationManager",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="notificationmanager.py")
+                      service_name=os.getenv('scheduler_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="scheduler.py").start()                      
+
     Build_run_service("./NotificationManager/",
                       tag="notification_manager",
                       host_port=os.getenv('notification_manager_service_port'),
-                      service_name=os.getenv('notification_manager_service_name')).start()                      
-    create_docker_file("./SensorManager",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="Sensor_Manager_Driver.py")
+                      service_name=os.getenv('notification_manager_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="notificationmanager.py").start()                      
+
     Build_run_service("./SensorManager/",
                       tag="sensor_manager",
                       host_port=os.getenv('sensor_manager_service_port'),
-                      service_name=os.getenv('sensor_manager_service_name')).start()
-    create_docker_file("./Deployer",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="app_model_deploy.py")
+                      service_name=os.getenv('sensor_manager_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="Sensor_Manager_Driver.py").start()
+
     Build_run_service("./Deployer/",
                       tag="deployer",
                       host_port=os.getenv('deployer_service_port'),
-                      service_name=os.getenv('deployer_service_name')).start()                      
-    create_docker_file("./NodeManager",
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name="driver.py")
+                      service_name=os.getenv('deployer_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="app_model_deploy.py").start()                      
+
     Build_run_service("./NodeManager/",
                       tag="node_manager",
                       host_port=os.getenv('node_manager_service_port'),
-                      service_name=os.getenv('node_manager_service_name')).start()
+                      service_name=os.getenv('node_manager_service_name'),
+                      monitor_ip=monitor_ip,
+                    entry_point_py_file_name="driver.py").start()
 
 
 
