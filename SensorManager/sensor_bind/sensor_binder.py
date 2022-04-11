@@ -1,4 +1,5 @@
 from .sensor_bind_model import SensorBindModel
+from .sensor_bind_model import SensorRegisterModel
 from .sensor_bind_model import Sensor_Used
 from .Get_Service import *
 from dbconfig import *
@@ -17,6 +18,21 @@ def get_Val():
     return seconds[-6:]
 
 db = mongodb()
+
+def reg_sensor(request_data):
+    try:
+        for sensor_data in request_data['Details']:
+            tp=sensor_data['type']
+            d_tp=sensor_data['data_type']
+            if not SensorRegisterModel.objects.filter(Q(sensor_type=tp) & Q(sensor_data_type=d_tp)):
+                conference_ = SensorRegisterModel(sensor_type=tp, sensor_data_type=d_tp)
+                conference_.save()
+            else:
+                return "This type and data type already exists"
+        return "Successful"
+    except:
+        return "Failed to process", HTTP_INTERNAL_SERVER
+
 def reg_bind_sensor(request_data):
     try:  
         # sensor_bind_ids = {}
@@ -24,35 +40,38 @@ def reg_bind_sensor(request_data):
             sp = sensor_data['port']
             sip= sensor_data['ip']
             if not SensorBindModel.objects.filter(Q(sensor_port=sp) & Q(sensor_ip=sip)):
-                d1 = sensor_data['name']
-                d2 = sensor_data['ip']
-                d3 = sensor_data['port']
-                d4 = sensor_data['loc']
-                d5 = sensor_data['type']
-                d6 = sensor_data['data_type']
-                d7 = get_Val()
-                # d7="1"
-                d8 =sensor_data['is_sensor']
-                d9 = sensor_data['time_in_sec']
-                conference_ = SensorBindModel(sensor_name=d1, sensor_ip=d2, sensor_port=d3, sensor_loc=d4, sensor_type=d5, sensor_data_type=d6, sensor_bind_id=d7, is_sensor=d8, time_in_sec=d9)
-                conference_.save()
-                # print("HEllo")
-                find2 = SensorBindModel.objects.filter(
-                    Q(sensor_port=sp) & Q(sensor_ip=sip)).first() 
-                is_sensor = find2.is_sensor
-                topic_name = "S_"+str(find2.sensor_bind_id)
-                IP = find2.sensor_ip
-                Port = find2.sensor_port
-                time= find2.time_in_sec
-                print(is_sensor, IP, Port, topic_name)
-                if(is_sensor):
-                    t1 = threading.Thread(target=fun, args=(topic_name, IP, Port,time))
-                    threads.append(t1)
-                    t1.start()
+                if (SensorRegisterModel.objects.filter(Q(sensor_type=sensor_data['type']) & Q(sensor_data_type=sensor_data['data_type']))):
+                    d1 = sensor_data['name']
+                    d2 = sensor_data['ip']
+                    d3 = sensor_data['port']
+                    d4 = sensor_data['loc']
+                    d5 = sensor_data['type']
+                    d6 = sensor_data['data_type']
+                    d7 = get_Val()
+                    # d7="1"
+                    d8 =sensor_data['is_sensor']
+                    d9 = sensor_data['time_in_sec']
+                    conference_ = SensorBindModel(sensor_name=d1, sensor_ip=d2, sensor_port=d3, sensor_loc=d4, sensor_type=d5, sensor_data_type=d6, sensor_bind_id=d7, is_sensor=d8, time_in_sec=d9)
+                    conference_.save()
+                    # print("HEllo")
+                    find2 = SensorBindModel.objects.filter(
+                        Q(sensor_port=sp) & Q(sensor_ip=sip)).first() 
+                    is_sensor = find2.is_sensor
+                    topic_name = "S_"+str(find2.sensor_bind_id)
+                    IP = find2.sensor_ip
+                    Port = find2.sensor_port
+                    time= find2.time_in_sec
+                    print(is_sensor, IP, Port, topic_name)
+                    if(is_sensor):
+                        t1 = threading.Thread(target=fun, args=(topic_name, IP, Port,time))
+                        threads.append(t1)
+                        t1.start()
+                    else:
+                        t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port,time))
+                        threads.append(t2)
+                        t2.start()
                 else:
-                    t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port,time))
-                    threads.append(t2)
-                    t2.start()
+                    return "No such sensor type and sensor data type exists on our platform"
             else:
                 return "This IP:PORT Already Exists"
         return "Successful" 
@@ -141,7 +160,6 @@ def Check_From_Runner(Request_Data):
     sid=[]
     flag=0
     i=0
-    print("Sensor Request Details: ",Request_Data['Details'])
     for sensor in Request_Data["Details"]:
         a=SensorBindModel.objects.filter(Q(sensor_type=sensor['Sensor_Type']) & Q(
             sensor_loc=sensor['Sensor_loc'])).first()

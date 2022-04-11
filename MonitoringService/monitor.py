@@ -107,7 +107,7 @@ def heartbeat():
     return Response(content,status=200)
 
 def runflask():
-    app.run(host='localhost',port=5000,debug=False)
+    app.run(host='0.0.0.0',port=5000,debug=False)
 
 
 if __name__ == "__main__":
@@ -118,5 +118,3 @@ if __name__ == "__main__":
     threading.Thread(target=flush).start()
     threading.Thread(target=log_reader()).start()
     runflask()
-
-

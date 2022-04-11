@@ -15,6 +15,15 @@ app = Flask(__name__)
 db = mongodb()
 
 
+@app.route("/Sensor_Reg", methods=["POST", "GET"])
+def Sensor_Reg():
+    request_data = request.json
+    # print(request_data)
+    ret_value = reg_sensor(request_data)
+    data = {}
+    data["Message"] = ret_value
+    return data
+
 @app.route("/Sensor_Bind", methods=["POST","GET"])
 def Sensor_Bind():
     request_data = request.json

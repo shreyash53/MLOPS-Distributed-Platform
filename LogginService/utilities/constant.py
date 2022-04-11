@@ -1,9 +1,14 @@
+import os
+import dotenv
+dotenv.load_dotenv()
+
+BOOTSTRAP_SERVER_IP = os.getenv('kafka_bootstrap')
+
 KAFKA_LOG_TOPIC = 'logs'
 SERVICE_NAME="Logging"
 DATABASE_NAME = 'logging_db'
 GROUP_ID = 'logging'
 
-BOOTSTRAP_SERVER_IP = '20.219.107.251:9092'
 AZURE_FILESHARE='fileshare'
 AZURE_STORAGE_NAME='hack2storage'
 AZURE_STORAGE_KEY='iVYu1uayUo9p0h3k00IdqMpLRX2rSZJ8kldu3cpA3AK6AZqPTuLxd9fmV9zGEmqSqtON0zrlCOTw+AStjdUEGQ=='

@@ -183,4 +183,4 @@ if __name__ == "__main__":
     sched.start()
     re_sched = ReSchedulingService()
     re_sched.start()
-    app.run(host=HOST,port=PORT, debug=False)
+    app.run(debug=False, port="5000", host='0.0.0.0')

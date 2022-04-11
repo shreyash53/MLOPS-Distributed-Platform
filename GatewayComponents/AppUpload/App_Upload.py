@@ -70,6 +70,26 @@ def extract_file(input_file):
         print("yes..line 50")
     return
 
+def get_sensor_list(tar):
+    sensor_list = []
+    with open(tar+"/"+'contract.json') as f:
+        file_data = json.load(f)
+        for i in file_data['sensors']:
+            sensor_list.append(i['sensorid'])
+    f.close()
+    return sensor_list
+
+
+def create_platform_utility(sensor_list,tar):
+    utility_file = open(PATH1+'Utilities/platform_utility.py', 'r')
+    utility_template = utility_file.read()
+    new_utility_file = open(tar+"/"+'platform_utility.py','w')
+    utility_template = re.sub(r"'<sensor_ids>'",str(sensor_list), utility_template)
+    new_utility_file.write(utility_template)
+    new_utility_file.close()
+    utility_file.close()
+    return 1
+
 def create_docker(input_file,tar):
     docker_file = open(PATH1+'Utilities/Dockerfile', 'r')
     docker_template = docker_file.read()
@@ -123,12 +143,15 @@ def upload_app_file(request):
     else:
         return {"err_msg":"ERR:only zip files allowed."}
     tar=PATH1+"Utilities/ApplicationZip" +"/"+r_zip
+    
     resp=isValid(tar,r_zip)
+
     print(resp,"line 89")
     if 'succ_msg' in resp:
-        if(create_docker(r_zip,tar)):
+        sensor_list = get_sensor_list(tar)
+        print("Sensors: ", sensor_list)
+        if(create_platform_utility(sensor_list,tar)) and (create_docker(r_zip,tar)):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
     else:
         return resp
-#        return {"err_msg":"Invalid Zip"}

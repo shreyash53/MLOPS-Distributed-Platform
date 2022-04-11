@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request
 from Authenticate import *
 #import mongoengine as db
 from AppUpload.App_Upload import *
@@ -11,8 +11,8 @@ dotenv.load_dotenv()
 app = Flask(__name__)
 db=mongodb()
 
-SENSOR_MGR_IP = 'http://0.0.0.0'
-SENSOR_MGR_PORT = 9003
+SENSOR_MGR_IP = os.environ.get('sensor_manager_service_ip')
+SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
 app.config['SECRET_KEY'] = 'root'
 
 from flask import Blueprint
@@ -31,11 +31,18 @@ def example(uid, slug):
         "service_id":uid,
         "slug":slug
     }
+    print("Data: ",data)
     
-    slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
+    slcm_url = os.environ.get('SLCM_service_ip')+":" + os.environ.get('SLCM_service_port') + '/service_lookup'
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
-    res = requests.post(url=slcm_url,json=data).content
-    return res
+    res = requests.post(url=slcm_url,json=data)
+    if(res.status_code==400):
+        return ("Application Not Scheduled!! Please look after sometime!!")
+    else :
+        res = res.json
+        redirect(location=res['url'])
+
+    
     # return "uid: %s, slug: %s" % (uid, slug)
 
 
@@ -106,7 +113,7 @@ def app_developer_view():
     sensor_details = requests.get(url=url).json()
     sensor_details = sensor_details['details']
     model_details = aimodels.objects().all()
-    model_details = [i.modelName for i in model_details]
+    model_details = [[i.modelName,i.modelId] for i in model_details]
     print(sensor_details,model_details)
     return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
 
@@ -167,7 +174,7 @@ def upload_app(current_user):
     # sensor_details = [ [i[0],i[1]] for i in sensor_details ]
     # model_details = ['m1','m2','m3']
     model_details = aimodels.objects().all()
-    model_details = [i.modelName for i in model_details]
+    model_details = [[i.modelName,i.modelId] for i in model_details]
     if 'err_msg' in resp:
         return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
     elif 'succ_msg' in resp:
@@ -205,10 +212,30 @@ def upload_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = requests.post("http://0.0.0.0:9003/Sensor_Bind",json=f).json()
+    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Reg"
+    res = requests.post(url,json=f).json()
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+
+@app.route('/platform_admin/bind_sensor',methods=['POST'])
+@token_required
+def bind_sensor(current_user):
+    if current_user.role != 'platform_admin':
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401 
+
+    if 'file' not in request.files:
+    #if request.files:
+        print("no file")
+        return 'No file found.'
+    f = request.files['file']
+    f = json.load(f)
+    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Bind"
+    res = requests.post(url,json=f).json()
+    print(res)
+    return res
+    # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
+
 
 @app.route('/platform_admin/add_node',methods=['POST'])
 @token_required
@@ -239,7 +266,10 @@ def get_sensor(current_user):
             "sensordatatype": i['sensordatatype']
         }
         to_send.append(temp)
-    return render_template("sensor_form.html",app_name = appName,sensors=to_send)
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+    sensor_details = requests.get(url=url).json()
+    sensor_details = sensor_details['details']
+    return render_template("sensor_form.html",app_name = appName,sensors=to_send,sensor_details=sensor_details)
 
 @app.route('/end_user/sensor_bind',methods=['POST'])
 @token_required
@@ -308,7 +338,8 @@ def sensor_bind(current_user):
             return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
         res['succ_msg']="Sensor binding Done and Application Scheduled!!"
         app_instance_id = res['AII']
-        url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+        url_end_user = 'http://' + os.environ.get('request_manager_service_ip') + ':' + os.environ.get('request_manager_service_port')+'/app/' + app_instance_id + '/'
+        # url_end_user = 'http://localhost:11000/'
         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 
 
@@ -317,4 +348,4 @@ def sensor_bind(current_user):
 
 
 if __name__ == '__main__':
-    app.run(debug=False,host='0.0.0.0')
+    app.run(debug=False, port="5000", host='0.0.0.0')
