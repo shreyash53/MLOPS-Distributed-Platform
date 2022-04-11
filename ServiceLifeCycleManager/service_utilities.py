@@ -8,8 +8,7 @@ mduser = os.getenv('MONGODB_USER')
 mdpass = os.getenv('MONGODB_PASS') 
 cluster = os.getenv('MONGODB_CLUSTER')
 kafka_bootstrap = os.getenv('kafka_bootstrap')
-PORT = os.getenv('PORT')
-HOST = os.getenv('HOST')
+
 DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(mduser,mdpass , cluster,database_name)
 
 print(kafka_bootstrap)
@@ -25,8 +24,8 @@ class slcm(db.Document):
     service_type = db.StringField()
     service_name = db.StringField()
     state = db.StringField()
-    ip = db.StringField()
-    port = db.StringField()
+    service_ip = db.StringField()
+    service_port = db.StringField()
     nodeid = db.StringField()
     def to_json(self):
         return {
@@ -34,8 +33,8 @@ class slcm(db.Document):
             "service_type": self.service_type,
             "service_name" : self.service_name,
             "state":self.state,
-            "ip" : self.ip,
-            "port":self.port,
+            "service_ip" : self.ip,
+            "service_port":self.port,
             "nodeid":self.nodeid
         }
 
@@ -79,15 +78,3 @@ def dec_service(name , stype):
         return cur-1
     except Exception as e:
             return None
-
-'''data =  { "instance_id" : "1234","service_type" : "application","service_name" : "new",
-    "state" : "stopped",
-    "ip" : "0.0.0.0",
-    "port" : "9090",
-    "nodeid" : "45678"}'''
-# data1 = {"service_name" : "service4"}
-# data2 = { "service_name" : "serrvice5"}
-
-# savetodb(data)
-
-# print(updatedb(data1,data2))
