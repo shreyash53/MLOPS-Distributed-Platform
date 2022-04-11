@@ -118,4 +118,3 @@ if __name__ == "__main__":
     threading.Thread(target=flush).start()
     threading.Thread(target=log_reader()).start()
     runflask()
-
