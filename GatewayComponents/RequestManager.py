@@ -33,7 +33,7 @@ def example(uid, slug):
     }
     print("Data: ",data)
     
-    slcm_url = os.environ.get('SLCM_service_ip')+":" + os.environ.get('SLCM_service_port') + '/service_lookup'
+    slcm_url = "http://" + os.environ.get('SLCM_service_ip')+":" + os.environ.get('SLCM_service_port') + '/service_lookup'
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
     res = requests.post(url=slcm_url,json=data)
     if(res.status_code==400):
@@ -248,7 +248,8 @@ def add_node(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = requests.post("http://0.0.0.0:6000/node/add",json=f).json()
+    url = "http://" + os.environ.get('node_manager_service_ip') + ':' + os.environ.get('node_manager_service_port') +'/node/add'
+    res = requests.post(url,json=f).json()
     return res
 
 @app.route('/end_user/get_app_sensor',methods=['POST'])
@@ -266,7 +267,7 @@ def get_sensor(current_user):
             "sensordatatype": i['sensordatatype']
         }
         to_send.append(temp)
-    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+    url = "http://"+SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
     sensor_details = requests.get(url=url).json()
     sensor_details = sensor_details['details']
     return render_template("sensor_form.html",app_name = appName,sensors=to_send,sensor_details=sensor_details)
@@ -298,7 +299,7 @@ def sensor_bind(current_user):
         req_json.append(temp_dict)
     temp_json={"Details":req_json}
     # API call
-    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Check_From_AppRunner'
+    url = "http://" + SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Check_From_AppRunner'
     resp = requests.post(url,json=temp_json).json()
     # resp = resp.decode('utf-8')
     print(resp)
@@ -331,7 +332,7 @@ def sensor_bind(current_user):
         print("Sensor List Line 302 \n",sensor_list)
         
         to_scheduler["sensors"] = sensor_list
-        url = "http://0.0.0.0:8001/schedule_application"
+        url = "http://" + os.environ.get('scheduler_service_ip') + ':' + os.environ.get('scheduler_service_port') + '/schedule_application'
         # url = "http://192.168.96.240:7000/schedule_application"
         res = requests.post(url,json=to_scheduler).json()
         if 'err_msg' in res:
