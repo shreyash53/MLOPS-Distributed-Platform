@@ -11,8 +11,16 @@ dotenv.load_dotenv()
 app = Flask(__name__)
 db=mongodb()
 
-SENSOR_MGR_IP = os.environ.get('sensor_manager_service_ip')
+NODE_MGR_IP = 'http://' + os.environ.get('node_manager_service_ip')
+NODE_MGR_PORT = os.environ.get('node_manager_service_port')
+SLCM_IP="http://" + os.environ.get('SLCM_service_ip')
+SLCM_PORT=os.environ.get('SLCM_service_port')
+SCHEDULER_IP='http://' + os.environ.get('scheduler_service_ip')
+SCHEDULER_PORT=os.environ.get('scheduler_service_port')
+SENSOR_MGR_IP = "http://"+ os.environ.get('sensor_manager_service_ip')
 SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
+
+
 app.config['SECRET_KEY'] = 'root'
 
 from flask import Blueprint
@@ -33,7 +41,8 @@ def example(uid, slug):
     }
     print("Data: ",data)
     
-    slcm_url = "http://" + os.environ.get('SLCM_service_ip')+":" + os.environ.get('SLCM_service_port') + '/service_lookup'
+    slcm_url = SLCM_IP+":" + str(SLCM_PORT) + '/service_lookup'
+
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
     res = requests.post(url=slcm_url,json=data)
     if(res.status_code==400):
@@ -212,8 +221,13 @@ def upload_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Reg"
-    res = requests.post(url,json=f).json()
+# <<<<<<< End_User_Flow_Changes-bhupendra
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Sensor_Reg'
+    res = requests.post(url=url,json=f).json()
+# =======
+#     url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Reg"
+#     res = requests.post(url,json=f).json()
+# >>>>>>> main
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
@@ -230,8 +244,13 @@ def bind_sensor(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Bind"
-    res = requests.post(url,json=f).json()
+# <<<<<<< End_User_Flow_Changes-bhupendra
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Sensor_Bind'
+    res = requests.post(url=url,json=f).json()
+# =======
+#     url="http://"+SENSOR_MGR_IP+"/"+SENSOR_MGR_PORT+"/Sensor_Bind"
+#     res = requests.post(url,json=f).json()
+# >>>>>>> main
     print(res)
     return res
     # return jsonify({"message":"Able to access because token verified", "user":current_user.username , "role":current_user.role}), 200
@@ -248,15 +267,16 @@ def add_node(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    url = "http://" + os.environ.get('node_manager_service_ip') + ':' + os.environ.get('node_manager_service_port') +'/node/add'
-    res = requests.post(url,json=f).json()
+# <<<<<<< End_User_Flow_Changes-bhupendra
+    url = NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/add'
+    res = requests.post(url=url,json=f).json()
+# =======
+#     url = "http://" + os.environ.get('node_manager_service_ip') + ':' + os.environ.get('node_manager_service_port') +'/node/add'
+#     res = requests.post(url,json=f).json()
+# >>>>>>> main
     return res
 
-@app.route('/end_user/get_app_sensor',methods=['POST'])
-@token_required
-def get_sensor(current_user):
-    appName = request.form.get('apps')
-    print("\n\nAPPNAME",appName)
+def get_locations_api(appName):
     temp = applications.objects(appName=appName).first()
     temp = temp['contract']
     temp = json.loads(temp)
@@ -267,10 +287,25 @@ def get_sensor(current_user):
             "sensordatatype": i['sensordatatype']
         }
         to_send.append(temp)
-    url = "http://"+SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
-    sensor_details = requests.get(url=url).json()
-    sensor_details = sensor_details['details']
-    return render_template("sensor_form.html",app_name = appName,sensors=to_send,sensor_details=sensor_details)
+# <<<<<<< End_User_Flow_Changes-bhupendra
+    url = SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Locations'
+    resp = requests.post(url,json={"details":to_send}).json()
+    return resp
+
+@app.route('/end_user/get_app_sensor',methods=['POST'])
+@token_required
+def get_sensor(current_user):
+    appName = request.form.get('apps')
+    # print("\n\nAPPNAME",appName)
+    resp = get_locations_api(appName)
+    print(resp)
+    return render_template("sensor_form.html",app_name = appName,sensors=resp)
+# =======
+#     url = "http://"+SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Get_Data'
+#     sensor_details = requests.get(url=url).json()
+#     sensor_details = sensor_details['details']
+#     return render_template("sensor_form.html",app_name = appName,sensors=to_send,sensor_details=sensor_details)
+# >>>>>>> main
 
 @app.route('/end_user/sensor_bind',methods=['POST'])
 @token_required
@@ -281,67 +316,97 @@ def sensor_bind(current_user):
     temp = temp['contract']
     temp = json.loads(temp)
     count = len(temp['sensors'])
-    to_send = []
-    for i in temp['sensors']:
-        temp = {
-            "sensortype":i['sensortype'],
-            "sensordatatype": i['sensordatatype']
-        }
-        to_send.append(temp)
-    temp = []
-    req_json=list()
-    for i in range (1,int(count)+1):
-        temp_dict={
-            "Sensor_Type":request.form['sensor_type_'+str(i)],
-            "Sensor_loc":request.form['sensor_loc_'+str(i)],
-            "Sensor_DType":request.form['sensor_dtype_'+str(i)]
-        }
-        req_json.append(temp_dict)
-    temp_json={"Details":req_json}
-    # API call
-    url = "http://" + SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Check_From_AppRunner'
-    resp = requests.post(url,json=temp_json).json()
-    # resp = resp.decode('utf-8')
-    print(resp)
-    if "error" in resp:
-        return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors",sensors=to_send,app_name=appName)
-    elif "Success_Message" in resp:
-        print("Got from Sensor Manager")
-        application = applications.objects(appName=appName).first()
-        to_scheduler = {
-            "app_name":appName,
-            "app_id":application._id,
-            "starttime":request.form['starttime'],
-            "repetition": request.form['repetition'],
-            "interval":{
-                "days": request.form['Day'],
-                "hours": request.form['Hour'],
-                "minutes": request.form['Minute'],
-                "seconds": request.form['Second']
-            },
-            "endtime": request.form['endtime']
-        }
 
-        sensor_list=[]
-        for i in resp["Success_Message"]:
-            t = {
-                "sensor_name":i["sensor_name"],
-                "sensor_binding_id": i['sensor_bind_id']
-            }
-            sensor_list.append(t)
-        print("Sensor List Line 302 \n",sensor_list)
+    print("Got from Sensor Manager")
+    application = applications.objects(appName=appName).first()
+    to_scheduler = {
+        "app_name":appName,
+        "app_id":application._id,
+        "starttime":request.form['starttime'],
+        "repetition": request.form['repetition'],
+        "interval":{
+            "days": request.form['Day'],
+            "hours": request.form['Hour'],
+            "minutes": request.form['Minute'],
+            "seconds": request.form['Second']
+        },
+        "endtime": request.form['endtime']
+    }
+    sensor_list=[]
+    idx=0
+    temp = applications.objects(appName=appName).first()
+    temp = temp['contract']
+    temp = json.loads(temp)
+    for i in temp['sensors']:
+        t = {
+            "sensor_id":i["sensorid"],
+            "sensor_binding_id": request.form.get('locations_'+str(idx))
+        }
+# <<<<<<< End_User_Flow_Changes-bhupendra
+        idx=idx+1
+        sensor_list.append(t)
+    print("Sensor List Line 312 \n",sensor_list)
+    
+    to_scheduler["sensors"] = sensor_list
+    url = SCHEDULER_IP+ ':'+ str(SCHEDULER_PORT)+'/schedule_application'
+    # url = "http://192.168.96.240:7000/schedule_application"
+    print("REQ api:",to_scheduler)
+    res = requests.post(url,json=to_scheduler).json()
+    if 'err_msg' in res:
+        return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=get_locations_api(appName),app_name=appName)
+    res['succ_msg']="Sensor binding Done and Application Scheduled!!"
+    app_instance_id = res['AII']
+    url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+    # url_end_user = 'http://localhost:11000/'
+    return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=get_locations_api(appName),app_name=appName,url=url_end_user)
+# =======
+#         req_json.append(temp_dict)
+#     temp_json={"Details":req_json}
+#     # API call
+#     url = "http://" + SENSOR_MGR_IP+ ':'+ str(SENSOR_MGR_PORT)+'/Check_From_AppRunner'
+#     resp = requests.post(url,json=temp_json).json()
+#     # resp = resp.decode('utf-8')
+#     print(resp)
+#     if "error" in resp:
+#         return render_template('sensor_form.html',err_msg="Mismatch for sensor type and sensor location for some sensors",sensors=to_send,app_name=appName)
+#     elif "Success_Message" in resp:
+#         print("Got from Sensor Manager")
+#         application = applications.objects(appName=appName).first()
+#         to_scheduler = {
+#             "app_name":appName,
+#             "app_id":application._id,
+#             "starttime":request.form['starttime'],
+#             "repetition": request.form['repetition'],
+#             "interval":{
+#                 "days": request.form['Day'],
+#                 "hours": request.form['Hour'],
+#                 "minutes": request.form['Minute'],
+#                 "seconds": request.form['Second']
+#             },
+#             "endtime": request.form['endtime']
+#         }
+
+#         sensor_list=[]
+#         for i in resp["Success_Message"]:
+#             t = {
+#                 "sensor_name":i["sensor_name"],
+#                 "sensor_binding_id": i['sensor_bind_id']
+#             }
+#             sensor_list.append(t)
+#         print("Sensor List Line 302 \n",sensor_list)
         
-        to_scheduler["sensors"] = sensor_list
-        url = "http://" + os.environ.get('scheduler_service_ip') + ':' + os.environ.get('scheduler_service_port') + '/schedule_application'
-        # url = "http://192.168.96.240:7000/schedule_application"
-        res = requests.post(url,json=to_scheduler).json()
-        if 'err_msg' in res:
-            return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
-        res['succ_msg']="Sensor binding Done and Application Scheduled!!"
-        app_instance_id = res['AII']
-        url_end_user = 'http://' + os.environ.get('request_manager_service_ip') + ':' + os.environ.get('request_manager_service_port')+'/app/' + app_instance_id + '/'
-        # url_end_user = 'http://localhost:11000/'
-        return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
+#         to_scheduler["sensors"] = sensor_list
+#         url = "http://" + os.environ.get('scheduler_service_ip') + ':' + os.environ.get('scheduler_service_port') + '/schedule_application'
+#         # url = "http://192.168.96.240:7000/schedule_application"
+#         res = requests.post(url,json=to_scheduler).json()
+#         if 'err_msg' in res:
+#             return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=to_send,app_name=appName)
+#         res['succ_msg']="Sensor binding Done and Application Scheduled!!"
+#         app_instance_id = res['AII']
+#         url_end_user = 'http://' + os.environ.get('request_manager_service_ip') + ':' + os.environ.get('request_manager_service_port')+'/app/' + app_instance_id + '/'
+#         # url_end_user = 'http://localhost:11000/'
+#         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
+# >>>>>>> main
 
 
 
@@ -349,4 +414,4 @@ def sensor_bind(current_user):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=True, port="5000", host='0.0.0.0')
