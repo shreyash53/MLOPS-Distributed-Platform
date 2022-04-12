@@ -168,6 +168,7 @@ class ReSchedulingService(threading.Thread):
                 value_deserializer=lambda x: loads(x.decode('utf-8')))
 
             for reschedule in consumer:
+                print('Request to restart!!!')
                 print(reschedule.value)
                 try:
                     reschedule = reschedule.value

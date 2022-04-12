@@ -91,7 +91,7 @@ def dead_service():
 	if(obj.state == "running"):
 		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
-		produce = kafka.KafkaProducer(bootstrap_servers=sv.bootstrap_servers,
+		produce = kafka.KafkaProducer(bootstrap_servers=sv.kafka_bootstrap,
                           value_serializer=lambda v: dumps(v).encode('utf-8'))
 		if obj.service_type == "app":
 			produce.send('service_dead_app', {'instance_id' : obj.instance_id})# to schedular add the request to ususal pipeline
