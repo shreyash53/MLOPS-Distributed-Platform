@@ -198,6 +198,7 @@ def model_restart_consumer():
         )
         print('inside nodemanager consumer thread')
         for data in consumer:
+            print(data.value)
             consumer_logic(data.value)
 
 

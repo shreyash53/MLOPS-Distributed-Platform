@@ -129,20 +129,20 @@ import json
 import os
 import dotenv
 from flask import Flask, render_template, make_response, jsonify, request, Response
-
+import traceback
 
 services =dict()
 
 dotenv.load_dotenv()
 
-PORT_SLCM = os.getenv("SLCMIP")
+# PORT_SLCM = os.environ.get("SLCM_service_ip")
+PORT_SLCM = '192.168.43.74:9002'
 
 app = Flask(__name__)
 
 
 def deregister(message):
     global services
-    print("deregister",message)
     data = {
         "instance_id" : message
     }
@@ -161,30 +161,40 @@ def heartbeat():
     try:
         content_type = request.headers.get('Content-Type')
         topic_name = 'logs'
-        if (content_type == 'application/json'):
-            content = request.json
+        # if (content_type == 'application/json'):
+        content = request.get_json()
+        print(content)
         service_id = content['service_id']
-        service_type = content['service_type']
+        service_type = content['application_type']
         print("heartbeat ",service_id )
         services[service_id] = {'service_type' : service_type , "time" : time.time()}
 
     except Exception as e:
+        print(traceback.format_exc())
         return Response(e,status=400)
     return Response(content,status=200)
 
 def check():
     while(1):
-        keys= services.keys()
+        keys = services.keys()
+        print("Keys: ",keys)
+        # keys = list(keys)
         ct = time.time()
+        dregqueue = []
         for x in keys:
             tv = ct-services[x]["time"]
             if( tv>40):
                 print("last_heartbeat more than {} sec ago ".format(tv))
-                deregister(x)                
+                dregqueue.append(x)
+        for x in dregqueue:
+            print("deregistering ",x)
+            deregister(x)
+        print("We are here!!!!!")                
         time.sleep(10)
+        
 
 def runflask():
-    app.run(host='localhost',port=5000,debug=False)
+    app.run(host='0.0.0.0',port=5001,debug=False)
 
 if __name__ == "__main__":    
     threading.Thread(target=check).start()
