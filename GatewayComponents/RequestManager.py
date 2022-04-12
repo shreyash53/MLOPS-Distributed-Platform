@@ -15,6 +15,14 @@ SENSOR_MGR_IP = 'http://0.0.0.0'
 SENSOR_MGR_PORT = 9003
 # SENSOR_MGR_IP = os.environ.get('SENSOR_MANAGER_IP')
 # SENSOR_MGR_PORT = os.environ.get('SENSOR_MANAGER_PORT')
+NODE_MGR_IP = 'http://0.0.0.0'
+NODE_MGR_PORT = 6000
+# NODE_MGR_IP = os.environ.get('NODE_MANAGER_IP')
+# NODE_MGR_PORT = os.environ.get('NODE_MANAGER_PORT')
+SLCM_IP=os.environ.get('SLCM_HOST')
+SLCM_PORT=os.environ.get('SLCM_PORT')
+SCHEDULER_IP='http://0.0.0.0'
+SCHEDULER_PORT=8001
 app.config['SECRET_KEY'] = 'root'
 
 from flask import Blueprint
@@ -35,7 +43,7 @@ def example(uid, slug):
     }
     print("Data: ",data)
     
-    slcm_url = os.environ.get('SLCM_HOST')+":" + os.environ.get('SLCM_PORT') + '/service_lookup'
+    slcm_url = SLCM_IP+":" + str(SLCM_PORT) + '/service_lookup'
     # slcm_url = "http://192.168.96.201:9002/service_lookup"
     res = requests.post(url=slcm_url,json=data)
     if(res.status_code==400):
@@ -250,7 +258,8 @@ def add_node(current_user):
         return 'No file found.'
     f = request.files['file']
     f = json.load(f)
-    res = requests.post("http://0.0.0.0:6000/node/add",json=f).json()
+    url = NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/add'
+    res = requests.post(url=url,json=f).json()
     return res
 
 def get_locations_api(appName):
@@ -317,7 +326,7 @@ def sensor_bind(current_user):
     print("Sensor List Line 312 \n",sensor_list)
     
     to_scheduler["sensors"] = sensor_list
-    url = "http://0.0.0.0:8001/schedule_application"
+    url = SCHEDULER_IP+ ':'+ str(SCHEDULER_PORT)+'/schedule_application'
     # url = "http://192.168.96.240:7000/schedule_application"
     print("REQ api:",to_scheduler)
     res = requests.post(url,json=to_scheduler).json()
