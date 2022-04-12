@@ -122,24 +122,24 @@ def appdeploy():
         sensors=json.loads(sensors)
         # print(type(sensors))
         # print(sensors)
-        sen_lis=[]
-        for each_sensor in sensors_list:
-            sen={}
-            # print()
-            # print("each sensor")
-            # print(each_sensor)
-            # print(type(sensors))
-            # print(sensors)
-            for each_bindings in sensors:
-                # print("each binding")
-                # print(each_bindings)
-                if each_sensor['sensorname']==\
-                    each_bindings['sensor_name']:
-                    sen["sensor_app_id"]=each_sensor['sensorid']
-                    sen["sensor_name"]=each_sensor['sensorname']
-                    sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
-                    sen_lis.append(sen)
-                    break
+        # sen_lis=[]
+        # for each_sensor in sensors_list:
+        #     sen={}
+        #     # print()
+        #     # print("each sensor")
+        #     # print(each_sensor)
+        #     # print(type(sensors))
+        #     # print(sensors)
+        #     for each_bindings in sensors:
+        #         # print("each binding")
+        #         # print(each_bindings)
+        #         if each_sensor['sensorname']==\
+        #             each_bindings['sensor_name']:
+        #             sen["sensor_app_id"]=each_sensor['sensorid']
+        #             sen["sensor_name"]=each_sensor['sensorname']
+        #             sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
+        #             sen_lis.append(sen)
+        #             break
 
         # print()
         # print()
@@ -152,7 +152,7 @@ def appdeploy():
             "app":app_details,
             "models":models_list,
             "request_type":message.get('request_type'),
-            "sensors":sen_lis
+            "sensors":sensors
        }
         # print(data_app)
         # producer.send('sensor_list', value=data_sensor)
@@ -170,6 +170,7 @@ def consumer_logic(data):
         print('No model found, now exiting')
         return
     model_ = model_.first()
+    print('model found')
     request_data = {
         'model_id' : data['service_id'],
         'model_location' : model_.path,
@@ -179,10 +180,11 @@ def consumer_logic(data):
                         value_serializer=lambda x: 
                         dumps(x).encode('utf-8'))
     print('sending data to node manager')
+    print('Request_data: ', request_data)
     producer.send('model_restart', value=request_data)
-
+    
     sleep(5)
-    print("data sent!!")
+    print("restart request sent!!")
 
 def model_restart_consumer():
     try:

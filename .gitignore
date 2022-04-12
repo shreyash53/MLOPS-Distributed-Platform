@@ -10,3 +10,4 @@ __pycache__
 LogginService/__pycache__/dbconfig.cpython-38.pyc
 .gitignore
 hack
+venv

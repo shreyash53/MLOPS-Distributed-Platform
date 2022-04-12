@@ -9,8 +9,15 @@ from requests import get
 import json
 from flask import Flask, render_template, make_response, jsonify, request, Response
 
-kafka_ip = '20.219.107.251'
-kafka_port = '9092'
+# kafka_ip = '20.219.107.251'
+# kafka_port = '9092'
+
+import os
+import dotenv
+dotenv.load_dotenv()
+
+
+bootstrap_servers = os.getenv("kafka_bootstrap")
 
 
 app = Flask(__name__)
@@ -28,7 +35,7 @@ def heartbeat():
         
     print(content)
     service_id = content['service_id']
-    heart = KafkaProducer(bootstrap_servers='{}:{}'.format(kafka_ip,kafka_port),
+    heart = KafkaProducer(bootstrap_servers=bootstrap_servers,
                           api_version = (0,10,1),
                           value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 

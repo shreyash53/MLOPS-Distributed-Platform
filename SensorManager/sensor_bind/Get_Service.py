@@ -8,6 +8,12 @@ import random
 from time import sleep
 import requests
 
+import os
+import dotenv
+dotenv.load_dotenv()
+
+BOOTSTRAP_SERVERS = os.getenv("kafka_bootstrap")
+
 # topic_name=sys.argv[1]
 # is_sensor = sys.argv[2]
 # ip = sys.argv[3]
@@ -19,7 +25,7 @@ import requests
 #     return randomlist
 
 def fun(topic_name,ip,port,time):
-        producer = KafkaProducer(bootstrap_servers=['20.219.107.251:9092'], value_serializer=lambda x:
+        producer = KafkaProducer(bootstrap_servers=[BOOTSTRAP_SERVERS], value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
         url = "http://"+str(ip)+":"+str(port)+"/"
         while(1):
@@ -39,7 +45,7 @@ def fun(topic_name,ip,port,time):
 def fun2(topic_name, ip, port,time):
     consumer = KafkaConsumer(
         topic_name,
-        bootstrap_servers=['20.219.107.251:9092'],
+        bootstrap_servers=[BOOTSTRAP_SERVERS],
         # auto_offset_reset='earliest',
         enable_auto_commit=True,
         group_id='my-group',
