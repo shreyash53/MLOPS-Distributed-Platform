@@ -4,6 +4,7 @@ import requests
 import dotenv
 dotenv.load_dotenv()
 
+PORT = os.getenv("SERVICE_PORT")
 
 ns = os.getenv("num_sensors") # number of sensors
 nm = os.getenv("num_models") # number of models

@@ -166,7 +166,7 @@ def heartbeat():
         content = request.get_json()
         print(content)
         service_id = content['service_id']
-        service_type = content['application_type']
+        service_type = content['service_type']
         print("heartbeat ",service_id )
         services[service_id] = {'service_type' : service_type , "time" : time.time()}
 

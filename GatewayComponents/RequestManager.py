@@ -427,4 +427,4 @@ def node_monitoring(current_user):
     return render_template('node_monitoring.html',node_data=node_data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=Request_PORT, host='0.0.0.0')
+    app.run(debug=False, port=Request_PORT, host='0.0.0.0')
