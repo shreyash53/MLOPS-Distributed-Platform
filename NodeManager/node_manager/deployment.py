@@ -33,7 +33,7 @@ def send_using_kafka(topic_name, data):
 
 
 def find_appropriate_node(node_type):
-    nodes = NodeDocument.objects.filter(nodeType=node_type)
+    nodes = NodeDocument.objects.filter(nodeType=node_type).order_by('node_cpu_usage')
     if not nodes:
         print('Kindly add some nodes of type', node_type)
         return
