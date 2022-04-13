@@ -21,6 +21,5 @@
 python3 -m venv shra
 source ./shra/bin/activate
 pip install -r requirements.txt
-python child_node_bootstrap.py
 python bootstrap.py
 deactivate
