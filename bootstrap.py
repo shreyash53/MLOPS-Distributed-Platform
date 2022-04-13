@@ -8,6 +8,7 @@ import dotenv
 dotenv.load_dotenv()
 
 monitor_ip = os.environ.get("monitoring_service_ip")
+monitor_port = os.environ.get("monitoring_service_port")
 
 db = mongodb()
 
@@ -17,6 +18,7 @@ class Build_run_service(threading.Thread):
                     tag, host_port, 
                     service_name,
                     monitor_ip,
+                    monitor_port,
                     entry_point_py_file_name):
         threading.Thread.__init__(self)
         self.dockerfile_destination_folder = dockerfile_destination_folder
@@ -24,15 +26,17 @@ class Build_run_service(threading.Thread):
         self.host_port = host_port
         self.service_name = service_name
         self.monitor_ip = monitor_ip
+        self.monitor_port = monitor_port
         self.entry_point_py_file_name = entry_point_py_file_name
 
     def run(self):
         create_docker_file(self.dockerfile_destination_folder,
                     monitor_ip=self.monitor_ip,
+                    monitor_port=monitor_port,
                     entry_point_py_file_name=self.entry_point_py_file_name)
         docker_image = docker.build(self.dockerfile_destination_folder+'/', tags=self.tag)
         container = docker.run(self.tag, detach=True, 
-                            publish=[(self.host_port, 5000)])
+                            publish=[(self.host_port, self.host_port)], networks='host')
         new_service = Bootstrap(service_name=self.service_name,
                                 contrainer_id=str(container))
 
@@ -120,7 +124,7 @@ if __name__ == "__main__":
 
 
 
-
+# 192.168.21.240
 
 
 # import subprocess   
