@@ -32,7 +32,7 @@ class Build_run_service(threading.Thread):
     def run(self):
         create_docker_file(self.dockerfile_destination_folder,
                     monitor_ip=self.monitor_ip,
-                    monitor_port=monitor_port,
+                    monitor_port=self.monitor_port,
                     entry_point_py_file_name=self.entry_point_py_file_name)
         docker_image = docker.build(self.dockerfile_destination_folder+'/', tags=self.tag)
         container = docker.run(self.tag, 
