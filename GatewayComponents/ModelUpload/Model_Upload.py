@@ -34,7 +34,7 @@ def isValid(tar,r_zip):
     if(temp_file_present['status']==1):
         temp_file_present = file_present(tar,"model.pkl")
         if(temp_file_present['status']==1):
-            temp_val_contract ={'status':1,"succ_msg":"Good"} #validate_contract(var1)
+            temp_val_contract = validate_contract(var1)
             if(temp_val_contract['status'] == 1):
                 #if db.applications.find( { "appName": r_zip } ).count() > 0:
                 if aimodels.objects(modelName=r_zip).count()>0:
