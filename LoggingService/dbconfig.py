@@ -9,6 +9,7 @@ DB_URI ='mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority'.format(
 
 
 class Logs(db.Document):
+    log_type = db.StringField()
     service_name = db.StringField()
     msg = db.StringField()
     time = db.StringField()

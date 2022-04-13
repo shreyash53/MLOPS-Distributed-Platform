@@ -28,7 +28,7 @@ class ReadLogs(threading.Thread):
             try:
                 log = log.value
                 if log['type'] != 'heartbeat':
-                    new_log = Logs(service_name=log['service_name'], msg=log['msg'], time=log['time'])
+                    new_log = Logs(log_type=log['type'], service_name=log['service_name'], msg=log['msg'], time=log['time'])
                     new_log.save()
             except Exception as e:
                 print(e)
