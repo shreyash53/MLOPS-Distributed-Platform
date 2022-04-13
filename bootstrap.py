@@ -35,8 +35,10 @@ class Build_run_service(threading.Thread):
                     monitor_port=monitor_port,
                     entry_point_py_file_name=self.entry_point_py_file_name)
         docker_image = docker.build(self.dockerfile_destination_folder+'/', tags=self.tag)
-        container = docker.run(self.tag, detach=True, 
-                            publish=[(self.host_port, self.host_port)], networks='host')
+        container = docker.run(self.tag, 
+                            detach=True, 
+                            publish=[(self.host_port, self.host_port)], 
+                            networks='host')
         new_service = Bootstrap(service_name=self.service_name,
                                 contrainer_id=str(container))
 
@@ -63,6 +65,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('monitoring_service_port'),
                       service_name=os.getenv('monitoring_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                       entry_point_py_file_name="monitor.py").start()
  
     Build_run_service("./ServiceLifeCycleManager",
@@ -70,6 +73,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('SLCM_service_port'),
                       service_name=os.getenv('SLCM_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="ServiceLifecycleManager.py").start()
 
     Build_run_service("./GatewayComponents",
@@ -77,6 +81,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('request_manager_service_port'),
                       service_name=os.getenv('request_manager_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="RequestManager.py").start()
 
     Build_run_service("./LoggingService",
@@ -84,6 +89,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('logging_service_port'),
                       service_name=os.getenv('logging_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="logging_service.py").start()
 
     Build_run_service("./Scheduler",
@@ -91,6 +97,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('scheduler_service_port'),
                       service_name=os.getenv('scheduler_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="scheduler.py").start()                      
 
     Build_run_service("./NotificationManager",
@@ -98,6 +105,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('notification_manager_service_port'),
                       service_name=os.getenv('notification_manager_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="notificationmanager.py").start()                      
 
     Build_run_service("./SensorManager",
@@ -105,6 +113,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('sensor_manager_service_port'),
                       service_name=os.getenv('sensor_manager_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="Sensor_Manager_Driver.py").start()
 
     Build_run_service("./Deployer",
@@ -112,6 +121,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('deployer_service_port'),
                       service_name=os.getenv('deployer_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="app_model_deploy.py").start()                      
 
     Build_run_service("./NodeManager",
@@ -119,6 +129,7 @@ if __name__ == "__main__":
                       host_port=os.getenv('node_manager_service_port'),
                       service_name=os.getenv('node_manager_service_name'),
                       monitor_ip=monitor_ip,
+                      monitor_port=monitor_port,
                     entry_point_py_file_name="driver.py").start()
 
 

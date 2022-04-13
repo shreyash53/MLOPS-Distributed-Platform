@@ -19,15 +19,13 @@ if __name__ == "__main__":
     service_name = os.getenv("child_node_service_name")
     entry_point_py_file_name = "driver.py"
 
-    create_docker_file(dockerfile_destination_folder,
-                    monitor_ip=monitor_ip,
-                    entry_point_py_file_name=entry_point_py_file_name)
     docker_image = docker.build(dockerfile_destination_folder+'/', tags=tag)
     container = docker.run(tag, 
                         detach=True, 
                         envs={"SERVICE_PORT":SERVICE_PORT,
                                 "NODE_ID":NODE_ID},
                         volumes=[("/var/run/docker.sock","/var/run/docker.sock")],
+                        networks='host',
                         publish=[(host_port, host_port)])
     new_service = Bootstrap(service_name=service_name,
                             contrainer_id=str(container))
