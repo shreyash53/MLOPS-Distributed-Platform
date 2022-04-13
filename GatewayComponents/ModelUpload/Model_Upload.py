@@ -91,6 +91,8 @@ def create_docker(input_file,tar):
     docker_template = docker_file.read()
     new_docker_file = open(tar+"/"+'Dockerfile','w')
     docker_template = re.sub(r'<app_name>',"model_api", docker_template)
+    docker_template = re.sub(r'<monitor_ip>',os.environ.get('monitoring_service_ip'), docker_template)
+    docker_template = re.sub(r'<monitor_port>',os.environ.get('monitoring_service_port'), docker_template)
     new_docker_file.write(docker_template)
     new_docker_file.close()
     docker_file.close()
