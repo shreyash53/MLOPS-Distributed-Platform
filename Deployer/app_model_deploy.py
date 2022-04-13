@@ -170,6 +170,7 @@ def consumer_logic(data):
         print('No model found, now exiting')
         return
     model_ = model_.first()
+    print('model found')
     request_data = {
         'model_id' : data['service_id'],
         'model_location' : model_.path,
@@ -179,10 +180,11 @@ def consumer_logic(data):
                         value_serializer=lambda x: 
                         dumps(x).encode('utf-8'))
     print('sending data to node manager')
+    print('Request_data: ', request_data)
     producer.send('model_restart', value=request_data)
-
+    
     sleep(5)
-    print("data sent!!")
+    print("restart request sent!!")
 
 def model_restart_consumer():
     try:
@@ -196,6 +198,7 @@ def model_restart_consumer():
         )
         print('inside nodemanager consumer thread')
         for data in consumer:
+            print(data.value)
             consumer_logic(data.value)
 
 

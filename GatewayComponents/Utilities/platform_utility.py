@@ -28,7 +28,9 @@ def  getsensordata(sensor_id):
 	url_ = url + '/api' + '/sensor' + '/'+ sensors[sensor_id]
 	response = requests.get(url_)
 	# if response.status_code ==200:
-	return response.json()
+	res = response.json()
+
+	return res['data']
 	# else:
 	# 	return "error"
 	
@@ -37,6 +39,7 @@ def getmodeldata(model_id,data):
 	url_ = url + '/api' + '/model' + '/' + model_id
 	response = requests.post(url_ , json = data)
 	# if response.status_code ==200:
-	return response.json()
-	# else:
+	res = response.json()
+	return res['result']
+	# else
 	# 	return "error"

@@ -41,22 +41,29 @@
 
                         {% if app_name %}
                         <input type="text" value="{{ app_name }}" name="app_name" hidden>
-                        <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
                         {% endif %}
 
                         {% if sensors%}
                         {% for i in range(sensors|length) %}
                         <h3>Sensor {{i+1}}</h3>
-                        <label>DataType: {{ sensors[i]['sensordatatype'] }}</label>
-                        <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}"
-                            placeholder="sensor_dypre_{{i+1}}" hidden>
+                        <label>Sensor DataType: {{ sensors[i]['datatype'] }}</label><br>
+                        <label>Sensor Type: {{ sensors[i]['type'] }}</label>
+                        
                         <div class="mb-3">
-                            <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
+                            <label for="locations_{{i}}">Locations: </label>
+                            <!-- <input list="apps" name="app"> -->
+                            <select id="locations_{{i}}" name="locations_{{i}}">
+
+                                {% for j in range(sensors[i]['locations']|length) %}
+                                <option value="{{ sensors[i]['locations'][j]['sensor_bind_id'] }}">{{ sensors[i]['locations'][j]['loc'] }}</option>
+                                {% endfor %}
+
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
-                        </div>
+
+                        <hr>
                         {% endfor %}
+                        
 
                 </div>
                 {% endif %}
@@ -110,33 +117,6 @@
                 </form>
             </div>
 
-                <div class="col-md-6">
-                    <h2 class="text-center text-dark mt-5">Available Sensors</h2>
-                    <div class="card my-5">
-    
-                        {% if sensor_details %}
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Sensor Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-    
-                                {% for i in range(sensor_details|length) %}
-                                <tr>
-                                    <th scope="row">{{ i+1 }}</th>
-                                    <td>{{ sensor_details[i][0] }}</td>
-                                </tr>
-                                {% endfor %}
-    
-                            </tbody>
-                        </table>
-                        {% endif %}
-    
-                    </div>
-                </div>
 
         </div>
         <div class="row">

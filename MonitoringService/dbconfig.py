@@ -1,5 +1,3 @@
-from sqlite3 import Timestamp
-from typing_extensions import Required
 import mongoengine as db
 import os
 import dotenv

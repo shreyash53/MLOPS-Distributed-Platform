@@ -3,7 +3,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-SLCM_URL = "http://"+os.getenv('SLCM_service_ip')+":"+os.getenv('SLCM_service_ip')
+SLCM_URL = "http://"+os.getenv('SLCM_service_ip')+":"+os.getenv('SLCM_service_port')
 
 static_ip = '0.0.0.0'
 static_port = '5000'
