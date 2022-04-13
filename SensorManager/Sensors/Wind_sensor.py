@@ -15,4 +15,4 @@ def hello_world():
     return jsonString
 
 if __name__ == '__main__':
-	app.run(debug=True,port=8006)
+	app.run(debug=True,port=8006, host="0.0.0.0")

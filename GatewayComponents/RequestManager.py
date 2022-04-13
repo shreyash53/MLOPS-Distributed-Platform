@@ -19,7 +19,7 @@ SCHEDULER_IP='http://' + os.environ.get('scheduler_service_ip')
 SCHEDULER_PORT=os.environ.get('scheduler_service_port')
 SENSOR_MGR_IP = "http://"+ os.environ.get('sensor_manager_service_ip')
 SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
-
+Request_PORT = os.environ.get("request_manager_service_port")
 
 app.config['SECRET_KEY'] = 'root'
 
@@ -398,4 +398,4 @@ def sensor_bind(current_user):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port="5000", host='0.0.0.0')
+    app.run(debug=True, port=Request_PORT, host='0.0.0.0')

@@ -5,6 +5,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
+
 if __name__ == "__main__":
     db = mongodb()
 
@@ -22,7 +23,7 @@ if __name__ == "__main__":
     container = docker.run(tag, 
                         detach=True, 
                         volumes=[("/var/run/docker.sock","/var/run/docker.sock")],
-                        publish=[(host_port, 5000)])
+                        publish=[(host_port, host_port)])
     new_service = Bootstrap(service_name=service_name,
                             contrainer_id=str(container))
 

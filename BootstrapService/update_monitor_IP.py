@@ -16,7 +16,7 @@ def generate_env_string(env_file_path):
     except Exception as e:
         return ""
 
-def create_docker_file(destination_folder_path, monitor_ip, entry_point_py_file_name):
+def create_docker_file(destination_folder_path, monitor_ip, monitor_port, entry_point_py_file_name):
     """Creating docker file in root folder"""
 
     docker_file = open(TEMPLATE_PATH, 'r')
@@ -29,6 +29,7 @@ def create_docker_file(destination_folder_path, monitor_ip, entry_point_py_file_
     new_docker_file = open(destination_folder_path+'/Dockerfile', 'w')
 
     docker_template = re.sub(r'<monitor_ip>', monitor_ip, docker_template)
+    docker_template = re.sub(r'<monitor_port>', monitor_port, docker_template)
     # docker_template = re.sub(r'<source_folder>', destination_folder_path, docker_template)
     
     env_str = generate_env_string(".env")

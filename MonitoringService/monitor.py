@@ -136,6 +136,7 @@ services =dict()
 dotenv.load_dotenv()
 
 PORT_SLCM = os.environ.get("SLCM_service_ip")
+PORT = os.environ.get("monitoring_service_port")
 # PORT_SLCM = '192.168.43.74:9002'
 
 app = Flask(__name__)
@@ -194,7 +195,7 @@ def check():
         
 
 def runflask():
-    app.run(host='0.0.0.0',port=5000,debug=False)
+    app.run(host='0.0.0.0',port=PORT,debug=False)
 
 if __name__ == "__main__":    
     threading.Thread(target=check).start()

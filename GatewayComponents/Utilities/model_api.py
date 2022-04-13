@@ -1,6 +1,10 @@
 from flask import Flask, jsonify, request
 import sys
 from util.constants import *
+import os
+import dotenv
+dotenv.load_dotenv() 
+PORT = os.environ.get("SERVICE_PORT")
 # Assuming : Model Class file is included in "dependencies"
 <other_dependencies>
 app = Flask(__name__)
@@ -23,4 +27,4 @@ def get_result():
 
 if __name__ == "__main__":
     port_no = sys.argv[1]
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')

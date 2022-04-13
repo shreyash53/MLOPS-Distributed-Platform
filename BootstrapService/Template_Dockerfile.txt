@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt
 RUN apt-get update -y && \
     apt-get install curl -y
 
-HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"service_type\" : \"Smith\"}" "http://<monitor_ip>:5000/heartbeat" || exit 1
+HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"service_type\" : \"Smith\"}" "http://<monitor_ip>:<monitor_port>/heartbeat" || exit 1
 
 
 CMD ["python","-u","<entry_point>"]

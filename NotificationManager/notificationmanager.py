@@ -11,6 +11,8 @@ from constant import BOOTSTRAP_SERVERS
 
 
 load_dotenv('.env')
+PORT = os.getenv('notification_manager_service_port')
+
 app = Flask(__name__)
 
 db = mongodb()
@@ -86,5 +88,5 @@ def listen_for_notifs():
 if __name__ == "__main__":
     listener = Thread(target=listen_for_notifs)
     listener.start()
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')
 
