@@ -29,7 +29,7 @@ def sending_load():
                 "ram_load":ram_usage,
                 "id":id
             }
-            producer.send('load_balance',value=msg)
+            producer.send('load_balancer',value=msg)
             # sleep(10)
 
         except Exception as e:
