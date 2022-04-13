@@ -7,6 +7,8 @@ WORKDIR /home/app
 COPY . .
 <env_vars>
 
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+
 RUN pip install -r requirements.txt
 RUN apt-get update -y && \
     apt-get install curl -y
