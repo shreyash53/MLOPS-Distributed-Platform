@@ -81,7 +81,7 @@ def send_to_deployment_service(action, services):
         producer.close()
         print("Invalid action :", action)
         return
-    if services is None:
+    if services.count()==0:
         producer.close()
         print("No services to",action)
         return

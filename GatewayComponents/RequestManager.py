@@ -50,7 +50,7 @@ def example(uid, slug):
     else :
         res = res.json()
         print(res['url'])
-        redirect(location=res['url'])
+        return redirect(location=res['url'])
 
     
     # return "uid: %s, slug: %s" % (uid, slug)
