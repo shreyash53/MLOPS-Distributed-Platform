@@ -123,13 +123,19 @@ def register_service_with_slcm(service_type, data, service_ip, service_port):
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 
-def get_env_data(data):
+def get_env_data(data, service_type, port):
     try:
+        d = {
+            "SERVICE_PORT" : port
+        }
+        if service_type != 'app':
+            return d
         num_models = len(data['models_data'])
         num_sensors = len(data['sensor_data'])
         result = {
             "num_models" : num_models,
-            "num_sensors" : num_sensors
+            "num_sensors" : num_sensors,
+            **d
         }
         for data_ in data['models_data']:
             result['M_{}'.format(data_['model_id'])] = data_['model_id']
@@ -168,11 +174,9 @@ def deployment_handler(service_type, data):
         tag_name = get_service_name(service_type, data_)
         docker_image = docker.build(file_loc, tags=tag_name)
         if service_type == 'app':
-            container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data))
-            # container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data), networks='host')
+            container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, APP_PORT_SERVICE)], envs=get_env_data(service_type, data, APP_PORT_SERVICE), networks='host')
         else:
-            container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, 5000)])
-            # container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, 5000)], networks='host')
+            container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, MODEL_PORT_SERVICE)], envs=get_env_data(service_type, data, MODEL_PORT_SERVICE), networks='host')
         
         if not container:
             print('not able to run container')
