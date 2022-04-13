@@ -75,7 +75,7 @@ if __name__ == "__main__":
                       monitor_ip=monitor_ip,
                     entry_point_py_file_name="RequestManager.py").start()
 
-    Build_run_service("./LogginService/",
+    Build_run_service("./LoggingService/",
                       tag="logging",
                       host_port=os.getenv('logging_service_port'),
                       service_name=os.getenv('logging_service_name'),
