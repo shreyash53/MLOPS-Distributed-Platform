@@ -81,7 +81,7 @@ def send_to_deployment_service(action, services):
         producer.close()
         print("Invalid action :", action)
         return
-    if services.count() == 0:
+    if services is None:
         producer.close()
         print("No services to",action)
         return
@@ -168,10 +168,13 @@ class ReSchedulingService(threading.Thread):
                 value_deserializer=lambda x: loads(x.decode('utf-8')))
 
             for reschedule in consumer:
+                print('Request to restart!!!')
                 print(reschedule.value)
                 try:
                     reschedule = reschedule.value
-                    instance = Schedules.objects(_id = reschedule['instance_id'])
+                    
+                    instance = Schedules.objects.with_id(reschedule['instance_id'])
+                    print(instance)
                     instance = [instance]
                     send_to_deployment_service('start', instance)
                 except Exception as e:

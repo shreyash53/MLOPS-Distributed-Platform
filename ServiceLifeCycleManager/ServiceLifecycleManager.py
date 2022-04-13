@@ -3,12 +3,10 @@ import service_utilities as sv
 import kafka
 from json import loads,dumps
 import threading
-import dotenv
-import os
-dotenv.load_dotenv()
 
 app = Flask(__name__)
 
+# thread 
 def consume():
 	consumer = kafka.KafkaConsumer(
     'register',
@@ -40,31 +38,15 @@ def consume():
 		except : 
 			pass
 
-''''
-# expected request from node manager when docker service is started  
-@app.route("/register", methods=["POST"])
-def service_start():
-	data = request.get_json()
-	if data["type"] == "application":
-		models = data["models"]
-		for x in models:
-			sv.inc_service(x.name , x.type)
-
-	return sv.savetodb(data)
-
-# when a serivce is stopped voluntarily
-@app.route("/service_stop",methods =["POST"])
-def service_stop():
-	data = request.get_json()
-	#need to notify monitoring service
-	return sv.updatedb({"instance_id"  : data["instance_id"]} , {"state" :"killed" })
-'''
 
 #hit by service to get port of another service
 @app.route("/service_lookup", methods=["POST"])
 def service_lookup():
 	request_data = request.get_json()
-	ser=request_data["service_id"]
+	try:
+		ser=request_data["service_id"]
+	except:
+		return "key error : service_id not found in request"
 	try:
 		sertype = request_data["service_type"]
 		obj = sv.fetchdb({"instance_id" :ser , "service_type" : sertype })
@@ -80,7 +62,11 @@ def service_lookup():
 	if obj:
 		# obj = obj
 		if(obj!=None and obj["state"] == "running"):
-			url =obj["service_ip"]+":"+obj["service_port"]+slug
+			url =obj["service_ip"]+":"+obj["service_port"]
+			if(url[-1]!='/'):
+				url =url +"/"+slug
+			else:
+				url +=slug
 			print ("success : ",url)
 			return {"msg" : "Runnning" , "url": url ,"kafka" : None ,"node" : obj.nodeid, "instance_id" : obj["instance_id"]},200
 		elif(obj!=None and obj["state"] == "stopped"):
@@ -100,23 +86,19 @@ def dead_service():
 	print("obj ", obj)
 	if obj == None:
 		return "NO such service"
-	print("asd")
+
 
 	if(obj.state == "running"):
 		sv.updatedb({"instance_id" : name }, {"state" : "stopped"})
 	
-		produce = kafka.KafkaProducer(bootstrap_servers=sv.bootstrap_servers,
+		produce = kafka.KafkaProducer(bootstrap_servers=sv.kafka_bootstrap,
                           value_serializer=lambda v: dumps(v).encode('utf-8'))
-		if obj.service_type == "application":
+		if obj.service_type == "app":
 			produce.send('service_dead_app', {'instance_id' : obj.instance_id})# to schedular add the request to ususal pipeline
 		elif obj.service_type == "model":
-			produce.send('service_dead_model',{'instance_id' : obj.instance_id})# to deployer  as deployer has access to the location of the models
+			produce.send('service_dead_model',{'service_id' : obj.instance_id})# to deployer  as deployer has access to the location of the models
 		
 
-	# restart
-	# if obj.service_type ==  "platform_service":
-		
-	# else:
 	return "ok"
 
 @app.route("/get_services/<stype>")
@@ -146,3 +128,4 @@ if __name__ == '__main__':
 	t1.start()
 	print("started")
 	app.run(debug=False, port="5000", host='0.0.0.0' )
+

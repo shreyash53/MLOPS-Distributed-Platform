@@ -4,11 +4,10 @@ dotenv.load_dotenv()
 
 BOOTSTRAP_SERVER_IP = os.getenv('kafka_bootstrap')
 
-KAFKA_SCHEDULE_TOPIC = 'topic_schedule'
-KAFKA_RESCHEDULE_TOPIC = 'service_dead_app'
-SERVICE_NAME="Scheduler"
-DATABASE_NAME = 'scheduler_db'
-GROUP_ID = "scheduler_group_id"
+KAFKA_LOG_TOPIC = 'logs'
+SERVICE_NAME="Logging"
+DATABASE_NAME = 'logging_db'
+GROUP_ID = 'logging'
 
 AZURE_FILESHARE='fileshare'
 AZURE_STORAGE_NAME='hack2storage'
