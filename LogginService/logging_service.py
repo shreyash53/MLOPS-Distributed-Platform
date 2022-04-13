@@ -4,14 +4,8 @@ import threading
 from kafka import KafkaConsumer
 from json import loads
 
-import os
-import dotenv
-dotenv.load_dotenv()
-
 
 app = Flask(__name__)
-HOST = os.getenv('HOST')
-PORT = os.getenv('PORT')
 
 db = mongodb()
 
@@ -56,4 +50,4 @@ def home():
 if __name__ == "__main__":
     th = ReadLogs()
     th.start()
-    app.run(host=HOST,port=PORT, debug=False)
+    app.run(debug=False, port="5000", host='0.0.0.0')

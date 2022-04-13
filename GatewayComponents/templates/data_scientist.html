@@ -22,6 +22,11 @@
         // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
+    function logout(){
+        sessionStorage.removeItem('user_token');
+        sessionStorage.clear();
+        window.location.href='/'
+    }
 </script>
 
 <body onload="append_token()">
@@ -45,6 +50,13 @@
                 </form>
             </div>
 
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                </div>
+            </div>
         </div>
     </div>
 

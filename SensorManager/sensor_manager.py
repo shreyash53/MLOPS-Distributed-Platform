@@ -14,6 +14,16 @@ from dbconfig import *
 app = Flask(__name__)
 db = mongodb()
 
+
+@app.route("/Sensor_Reg", methods=["POST", "GET"])
+def Sensor_Reg():
+    request_data = request.json
+    # print(request_data)
+    ret_value = reg_sensor(request_data)
+    data = {}
+    data["Message"] = ret_value
+    return data
+
 @app.route("/Sensor_Bind", methods=["POST","GET"])
 def Sensor_Bind():
     request_data = request.json
@@ -47,19 +57,14 @@ def Check_Dev():
     return dic
     
 
-@app.route("/Check_From_AppRunner", methods=["POST","GET"])
+@app.route("/Get_Locations", methods=["POST","GET"])
 def Check_Run2():
     request_data = request.json
     print(request_data)
-    i,lis1,lis2 = Check_From_Runner(request_data)
+    i= Get_Location(request_data)
     dic={}
-    if i:
-        dic["error"]=lis1
-    else:
-        dic["Success_Message"]=lis2
-        
-    print(dic)
-    return jsonify(dic)
+    dic["details"]=i
+    return jsonify(i)
 # with app.app_context():
 #     db.create_all()
 

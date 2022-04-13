@@ -23,12 +23,17 @@
         // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
+    function logout(){
+        sessionStorage.removeItem('user_token');
+        sessionStorage.clear();
+        window.location.href='/'
+    }
 </script>
 
 <body onload="append_token()">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Schedule Applications</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" action="/end_user/sensor_bind" id="upload_form"
@@ -36,22 +41,29 @@
 
                         {% if app_name %}
                         <input type="text" value="{{ app_name }}" name="app_name" hidden>
-                        <input type="text" value="{{ range(sensors|length) }}" name="sensor_count" hidden>
                         {% endif %}
 
                         {% if sensors%}
                         {% for i in range(sensors|length) %}
                         <h3>Sensor {{i+1}}</h3>
-                        <label>DataType: {{ sensors[i]['sensordatatype'] }}</label>
-                        <input type="text" name="sensor_dtype_{{i+1}}" value="{{ sensors[i]['sensordatatype'] }}"
-                            placeholder="sensor_dypre_{{i+1}}" hidden>
+                        <label>Sensor DataType: {{ sensors[i]['datatype'] }}</label><br>
+                        <label>Sensor Type: {{ sensors[i]['type'] }}</label>
+                        
                         <div class="mb-3">
-                            <input type="text" name="sensor_type_{{i+1}}" placeholder="sensor_type_{{i+1}}">
+                            <label for="locations_{{i}}">Locations: </label>
+                            <!-- <input list="apps" name="app"> -->
+                            <select id="locations_{{i}}" name="locations_{{i}}">
+
+                                {% for j in range(sensors[i]['locations']|length) %}
+                                <option value="{{ sensors[i]['locations'][j]['sensor_bind_id'] }}">{{ sensors[i]['locations'][j]['loc'] }}</option>
+                                {% endfor %}
+
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <input type="text" name="sensor_loc_{{i+1}}" placeholder="sensor_loc_{{i+1}}">
-                        </div>
+
+                        <hr>
                         {% endfor %}
+                        
 
                 </div>
                 {% endif %}
@@ -103,6 +115,15 @@
                 {% endif %}
 
                 </form>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                </div>
             </div>
         </div>
     </div>

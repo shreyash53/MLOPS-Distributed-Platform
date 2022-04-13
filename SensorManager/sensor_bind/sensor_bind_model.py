@@ -46,6 +46,18 @@ class SensorBindModel(Document):
 #         self.sensor_loc = sensor_loc
 #         self.sensor_type = sensor_type
 
+class SensorRegisterModel(Document):
+    sensor_type = StringField()
+    sensor_data_type = StringField()
+
+    def getObject(self):
+        obj = {
+            "sensor_type": self.sensor_type,
+            "sensor_data_type": self.sensor_data_type,
+        }
+        return obj
+
+
 class Sensor_Used(Document):
     sensor_bind_id = IntField(primary_key=True)
     number = IntField()

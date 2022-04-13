@@ -1,0 +1,17 @@
+FROM python:3.8-slim-buster
+
+RUN mkdir -p /home/app
+WORKDIR /home/app
+
+
+COPY . .
+<env_vars>
+
+RUN pip install -r requirements.txt
+RUN apt-get update -y && \
+    apt-get install curl -y
+
+HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"service_type\" : \"Smith\"}" "http://<monitor_ip>:5000/heartbeat" || exit 1
+
+
+CMD ["python","-u","<entry_point>"]

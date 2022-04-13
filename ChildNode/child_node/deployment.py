@@ -11,6 +11,7 @@ from json import dumps
 from kafka import KafkaProducer
 from utilities.constants import APP_DIR, MODEL_DIR, MY_IP, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
 import traceback
+from utilities.helper import edit_docker_file
 
 file_stub = '{}/{}'
 
@@ -163,6 +164,7 @@ def deployment_handler(service_type, data):
         file_loc, service_address = flag
 
         extract_file(service_address)
+        edit_docker_file(file_loc, get_service_id(service_type, data_), service_type)
         make_dockerignore(file_loc)
         tag_name = get_service_name(service_type, data_)
         docker_image = docker.build(file_loc, tags=tag_name)
