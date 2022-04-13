@@ -16,13 +16,7 @@ for s_id in sensor_ids_list:
 	sname = "S_"+str(s_id)
 	sensors[sname] = os.getenv(sname) #
 
-# models = dict()
-# for x in range(1, int(nm)+1):
-# 	Mname = "M_"+str(x)
-# 	models[Mname] = os.getenv(Mname) #
 	
-	
-
 def  getsensordata(sensor_id):
 	sensor_id = "S_" + str(sensor_id)
 	url_ = url + '/api' + '/sensor' + '/'+ sensors[sensor_id]
@@ -31,8 +25,6 @@ def  getsensordata(sensor_id):
 	res = response.json()
 
 	return res['data']
-	# else:
-	# 	return "error"
 	
 def getmodeldata(model_id,data):
 	# model_id = "M_" + str(model_id)

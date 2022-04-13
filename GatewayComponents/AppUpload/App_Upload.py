@@ -90,6 +90,11 @@ def create_platform_utility(sensor_list,tar):
     utility_file.close()
     return 1
 
+def add_requirements(tar):
+    requirements = ['python-dotenv', 'requests','flask']
+    with open(tar+'requirements.txt', 'a') as f:
+        f.writelines('\n'.join(requirements))
+
 def create_docker(input_file,tar):
     docker_file = open(PATH1+'Utilities/Dockerfile', 'r')
     docker_template = docker_file.read()
@@ -152,6 +157,7 @@ def upload_app_file(request):
     if 'succ_msg' in resp:
         sensor_list = get_sensor_list(tar)
         print("Sensors: ", sensor_list)
+        add_requirements(tar)
         if(create_platform_utility(sensor_list,tar)) and (create_docker(r_zip,tar)):
             create_zip(r_zip,tar)
             return {"succ_msg":"SUCCESS:application data is added sucessfully."}
