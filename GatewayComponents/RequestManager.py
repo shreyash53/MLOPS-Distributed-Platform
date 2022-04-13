@@ -125,7 +125,7 @@ def app_developer_view():
     model_details = aimodels.objects().all()
     model_details = [[i.modelName,i.modelId] for i in model_details]
     print(sensor_details,model_details)
-    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
+    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,my_apps=applications.objects().all())
 
 @app.route('/platform_admin',methods=["GET","POST"])
 # @token_required
@@ -146,7 +146,7 @@ def data_scientist_view(current_user):
     if 'token' in request.args:
         if not validate_token(request.args.get("token")):
             return render_template('login.html',err_msg="Invalid Token.Redirecting to login page")
-    return render_template('data_scientist.html')
+    return render_template('data_scientist.html',my_models=aimodels.objects().all())
     
 
 @app.route('/end_user',methods=["GET","POST"])
@@ -186,10 +186,10 @@ def upload_app(current_user):
     model_details = aimodels.objects().all()
     model_details = [[i.modelName,i.modelId] for i in model_details]
     if 'err_msg' in resp:
-        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'])
+        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,err_msg=resp['err_msg'],my_apps=applications.objects().all())
     elif 'succ_msg' in resp:
-        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,succ_msg=resp['succ_msg'])
-    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details)
+        return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,succ_msg=resp['succ_msg'],my_apps=applications.objects().all())
+    return render_template('app_developer.html',sensor_details=sensor_details,model_details=model_details,my_apps=applications.objects().all())
 
 @app.route('/data_scientist/upload_model',methods=['POST'])
 @token_required
@@ -198,10 +198,10 @@ def upload_model(current_user):
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
     resp =upload_model_file(request)
     if 'err_msg' in resp:
-        return render_template('data_scientist.html',err_msg=resp['err_msg'])
+        return render_template('data_scientist.html',err_msg=resp['err_msg'],my_models=aimodels.objects().all())
     elif 'succ_msg' in resp:
-        return render_template('data_scientist.html',succ_msg=resp['succ_msg'])
-    return render_template('data_scientist.html')
+        return render_template('data_scientist.html',succ_msg=resp['succ_msg'],my_models=aimodels.objects().all())
+    return render_template('data_scientist.html',my_models=aimodels.objects().all())
 
 @app.route('/end_user/use_app',methods=['POST'])
 @token_required
@@ -392,10 +392,39 @@ def sensor_bind(current_user):
 #         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 # >>>>>>> main
 
+@app.route('/platform_admin/notification', methods=['GET'])
+@app.route('/platform_admin/notification/<int:page>', methods=['GET'])
 
+def notification_display(page=1):
+    print("page:",page)
+    print(type(page))
+    per_page = 3
+    if page==1:
+        prev=None
+    else:
+        prev=page-1
+    total_records=Actor.objects.count()
+    if total_records%per_page != 0:
+        last=total_records//per_page + 1
+    else:
+        last=total_records//per_page
+    print(total_records,last)
+    if page==last:
+        next=None
+    else:
+        next=page+1
+    offset = (page - 1) * per_page
+    notifications = Actor.objects.skip(offset).limit(per_page)
+    # print("Result......", notifications)
+    return render_template("notification.html", notifications=notifications,prev=prev,next=next,page=page)
 
-
-
+@app.route('/platform_admin/node_monitoring', methods=['GET'])
+@token_required
+def node_monitoring(current_user):
+    if current_user.role != 'platform_admin':
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
+    node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
+    return render_template('node_monitoring.html',node_data=node_data)
 
 if __name__ == '__main__':
     app.run(debug=True, port=Request_PORT, host='0.0.0.0')
