@@ -35,8 +35,10 @@ class Build_run_service(threading.Thread):
                     monitor_port=monitor_port,
                     entry_point_py_file_name=self.entry_point_py_file_name)
         docker_image = docker.build(self.dockerfile_destination_folder+'/', tags=self.tag)
-        container = docker.run(self.tag, detach=True, 
-                            publish=[(self.host_port, self.host_port)], networks='host')
+        container = docker.run(self.tag, 
+                            detach=True, 
+                            publish=[(self.host_port, self.host_port)], 
+                            networks='host')
         new_service = Bootstrap(service_name=self.service_name,
                                 contrainer_id=str(container))
 

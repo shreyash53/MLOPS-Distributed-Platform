@@ -28,6 +28,7 @@ if __name__ == "__main__":
                         envs={"SERVICE_PORT":SERVICE_PORT,
                                 "NODE_ID":NODE_ID},
                         volumes=[("/var/run/docker.sock","/var/run/docker.sock")],
+                        networks='host',
                         publish=[(host_port, host_port)])
     new_service = Bootstrap(service_name=service_name,
                             contrainer_id=str(container))
