@@ -122,34 +122,6 @@ def appdeploy():
                 # print(models_list)
                 sensors=message.get("sensors")
                 sensors=json.loads(sensors)
-                # print(type(sensors))
-                # print(sensors)
-                # sen_lis=[]
-                # for each_sensor in sensors_list:
-                #     sen={}
-                #     # print()
-                #     # print("each sensor")
-                #     # print(each_sensor)
-                #     # print(type(sensors))
-                #     # print(sensors)
-                #     for each_bindings in sensors:
-                #         # print("each binding")
-                #         # print(each_bindings)
-                #         if each_sensor['sensorname']==\
-                #             each_bindings['sensor_name']:
-                #             sen["sensor_app_id"]=each_sensor['sensorid']
-                #             sen["sensor_name"]=each_sensor['sensorname']
-                #             sen["sensor_binding_id"]=each_bindings['sensor_binding_id']
-                #             sen_lis.append(sen)
-                #             break
-
-                # print()
-                # print()
-                # print("Final_sensor_list")            
-                # print(sen_lis)
-                # data_sensor={
-                #     "sensor_list":sensors
-                # }
                 data_app={
                     "app":app_details,
                     "models":models_list,

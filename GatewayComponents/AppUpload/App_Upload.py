@@ -91,8 +91,8 @@ def create_platform_utility(sensor_list,tar):
     return 1
 
 def add_requirements(tar):
-    requirements = ['python-dotenv', 'requests','flask']
-    with open(tar+'requirements.txt', 'a') as f:
+    requirements = ['','python-dotenv', 'requests','flask']
+    with open(tar+'/requirements.txt', 'a') as f:
         f.writelines('\n'.join(requirements))
 
 def create_docker(input_file,tar):

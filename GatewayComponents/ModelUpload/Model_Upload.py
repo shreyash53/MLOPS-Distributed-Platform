@@ -87,8 +87,8 @@ def extract_file(input_file):
     return
 
 def add_requirements(tar):
-    requirements = ['python-dotenv', 'requests','flask']
-    with open(tar+'requirements.txt', 'a') as f:
+    requirements = ['','python-dotenv', 'requests','flask']
+    with open(tar+'/requirements.txt', 'a') as f:
         f.writelines('\n'.join(requirements))
 
 def create_docker(input_file,tar):
@@ -140,9 +140,10 @@ def generate_model_api(store_path):
               'pickle_file_path': '',
               'predict_fun_name': '',
               }
+    vals = contract['dependencies']
+    for key,val in vals.items():
+        tokens['other_dependencies'] += '\n' + val
 
-    for vals in contract['dependencies']:
-        tokens['other_dependencies'] += '\n' + vals
     tokens['fileName'] = contract['main_py_file_name']
     tokens['predict_fun_parameters'] = ""
     tokens['pickle_file_path'] = contract['pickle_file_name']
