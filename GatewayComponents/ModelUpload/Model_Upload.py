@@ -96,8 +96,6 @@ def create_docker(input_file,tar):
     docker_template = docker_file.read()
     new_docker_file = open(tar+"/"+'Dockerfile','w')
     docker_template = re.sub(r'<app_name>',"model_api", docker_template)
-    docker_template = re.sub(r'<monitor_ip>',os.environ.get('monitoring_service_ip'), docker_template)
-    docker_template = re.sub(r'<monitor_port>',os.environ.get('monitoring_service_port'), docker_template)
     new_docker_file.write(docker_template)
     new_docker_file.close()
     docker_file.close()
@@ -136,13 +134,12 @@ def generate_model_api(store_path):
     contract_file = open(contract_path)
     contract = json.loads(contract_file.read())
 
-    tokens = {'other_dependencies': '',
-              'pickle_file_path': '',
+    tokens = {'pickle_file_path': '',
               'predict_fun_name': '',
               }
-    vals = contract['dependencies']
-    for key,val in vals.items():
-        tokens['other_dependencies'] += '\n' + val
+    # vals = contract['dependencies']
+    # for key,val in vals.items():
+    #     tokens['other_dependencies'] += '\n' + val
 
     tokens['fileName'] = contract['main_py_file_name']
     tokens['predict_fun_parameters'] = ""
@@ -155,8 +152,8 @@ def generate_model_api(store_path):
             tokens['predict_fun_parameters']+= j['name'] + ", "
         tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
 
-    model_api = re.sub(r'<other_dependencies>',
-                       tokens['other_dependencies'], model_api)
+    # model_api = re.sub(r'<other_dependencies>',
+    #                    tokens['other_dependencies'], model_api)
     model_api = re.sub(r'<fileName>',
                        tokens['fileName'], model_api)
     model_api = re.sub(r'<pickle_file_path>',
