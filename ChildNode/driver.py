@@ -3,6 +3,13 @@ from child_node.controller import consumer_thread
 from child_node_app import app
 from utilities.constants import static_ip, static_port
 import sys
+import os
+import dotenv
+dotenv.load_dotenv()
+
+PORT = os.getenv('SERVICE_PORT')
+
+
 class KafkaConsumer(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -14,4 +21,4 @@ if __name__ == '__main__':
     kk = KafkaConsumer()
     kk.start()
     # app.run(debug=False, host=static_ip, port=sys.argv[1])
-    app.run(debug=False, host=static_ip, port=sys.argv[1])
+    app.run(debug=False, host=static_ip, port=PORT)

@@ -4,9 +4,12 @@ from BootstrapService.dbconfig import *
 import os
 import dotenv
 dotenv.load_dotenv()
+import sys
 
 
 if __name__ == "__main__":
+    SERVICE_PORT = sys.argv[1]
+    NODE_ID = sys.argv[2]
     db = mongodb()
 
     monitor_ip = os.environ.get("monitoring_service_ip")
@@ -22,6 +25,8 @@ if __name__ == "__main__":
     docker_image = docker.build(dockerfile_destination_folder+'/', tags=tag)
     container = docker.run(tag, 
                         detach=True, 
+                        envs={"SERVICE_PORT":SERVICE_PORT,
+                                "NODE_ID":NODE_ID},
                         volumes=[("/var/run/docker.sock","/var/run/docker.sock")],
                         publish=[(host_port, host_port)])
     new_service = Bootstrap(service_name=service_name,
