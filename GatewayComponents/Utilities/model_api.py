@@ -6,7 +6,6 @@ dotenv.load_dotenv()
 PORT = os.environ.get("SERVICE_PORT")
 # Assuming : Model Class file is included in "dependencies"
 
-<other_dependencies>
 import <fileName>
 app = Flask(__name__)
 
