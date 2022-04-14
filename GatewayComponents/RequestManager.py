@@ -5,6 +5,7 @@ from AppUpload.App_Upload import *
 from ModelUpload.Model_Upload import *
 from Utilities.dbconfig import *
 import dotenv
+import random
 # from constant import *
 dotenv.load_dotenv() 
 
@@ -425,6 +426,10 @@ def node_monitoring(current_user):
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
     node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
     return render_template('node_monitoring.html',node_data=node_data)
+
+@app.route('/platform_admin/get_cpu_usage', methods=['GET','POST'])
+def get_cpu_usage():
+    return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
 
 if __name__ == '__main__':
     app.run(debug=False, port=Request_PORT, host='0.0.0.0')
