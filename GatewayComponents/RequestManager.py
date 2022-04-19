@@ -396,6 +396,7 @@ def sensor_bind(current_user):
 @app.route('/platform_admin/notification/<int:page>', methods=['GET'])
 
 def notification_display(page=1):
+
     print("page:",page)
     print(type(page))
     per_page = 3

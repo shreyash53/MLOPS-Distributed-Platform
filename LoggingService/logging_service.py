@@ -2,6 +2,7 @@ from flask import Flask, request
 from dbconfig import *
 import threading
 from kafka import KafkaConsumer
+import datetime
 from json import loads
 import os
 import dotenv
@@ -32,22 +33,29 @@ class ReadLogs(threading.Thread):
             print(log.value)
             try:
                 log = log.value
-                if log['type'] != 'heartbeat':
-                    new_log = Logs(log_type=log['type'], service_name=log['service_name'], msg=log['msg'], time=log['time'])
-                    new_log.save()
+                now = datetime.datetime.now()
+                new_log = Logs(log_type=log['type'], service_name=log['service_name'], msg=log['msg'], time=now)
+                new_log.save()
             except Exception as e:
                 print(e)
 
-# {
-#     'type':'not_heartbeat',
-#     'service_name':'node_Manager',
-#     'msg':'this is msg',
-#     'time':'11:51'
-# }
 
-@app.route("/get_logs", methods=['POST'])
+def parsedatetime(date_time_str):
+    return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
+
+def get_logs_bw(starttime, endtime):
+    res = Logs.objects(time__lte=endtime, time__gt=starttime)
+    return res
+
+
+@app.route("/get_logs", methods=['GET','POST'])
 def home():
-    service_name = request.json['service_name']
+    req = request.json
+    service_name = req['service_name']
+    log_type = req['type']
+    logs_from = parsedatetime(req['start_time'])
+    logs_to = parsedatetime(req['end_time'])
+    page_no = int(req['page'])
     logs = Logs.objects(service_name=service_name).to_json()
     return logs
 
