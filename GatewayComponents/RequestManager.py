@@ -5,6 +5,7 @@ from AppUpload.App_Upload import *
 from ModelUpload.Model_Upload import *
 from Utilities.dbconfig import *
 import dotenv
+import random
 # from constant import *
 dotenv.load_dotenv() 
 
@@ -340,7 +341,7 @@ def sensor_bind(current_user):
         return  render_template('sensor_form.html',err_msg=res['err_msg'],sensors=get_locations_api(appName),app_name=appName)
     res['succ_msg']="Sensor binding Done and Application Scheduled!!"
     app_instance_id = res['AII']
-    url_end_user = 'http://' + os.environ.get('REQUEST_MANAGER_HOST') + ':' + os.environ.get('REQUEST_MANAGER_PORT')+'/app/' + app_instance_id + '/'
+    url_end_user = 'http://' + os.environ.get('request_manager_service_ip') + ':' + os.environ.get('request_manager_service_port')+'/app/' + app_instance_id + '/'
     # url_end_user = 'http://localhost:11000/'
     return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=get_locations_api(appName),app_name=appName,url=url_end_user)
 # =======
@@ -427,5 +428,9 @@ def node_monitoring(current_user):
     node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
     return render_template('node_monitoring.html',node_data=node_data)
 
+@app.route('/platform_admin/get_cpu_usage', methods=['GET','POST'])
+def get_cpu_usage():
+    return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
+
 if __name__ == '__main__':
-    app.run(debug=True, port=Request_PORT, host='0.0.0.0')
+    app.run(debug=False, port=Request_PORT, host='0.0.0.0')

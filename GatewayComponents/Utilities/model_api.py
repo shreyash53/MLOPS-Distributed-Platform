@@ -6,14 +6,12 @@ dotenv.load_dotenv()
 PORT = os.environ.get("SERVICE_PORT")
 # Assuming : Model Class file is included in "dependencies"
 
-<other_dependencies>
 import <fileName>
 app = Flask(__name__)
 
 
 @app.route('/get_result', methods=['POST'])
 def get_result():
-    mdict = request.json()
     res = request.get_json()
     return jsonify({"result":<fileName>.<predict_fun_name>(**res)})
 

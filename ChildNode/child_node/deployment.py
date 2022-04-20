@@ -12,7 +12,7 @@ from kafka import KafkaProducer
 from utilities.constants import APP_DIR, MODEL_DIR, MY_IP, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
 import traceback
 from utilities.helper import edit_docker_file
-
+from utilities.constants import MONITOR_IP, MONITOR_PORT
 file_stub = '{}/{}'
 
 APP_PORT_SERVICE = 11000
@@ -129,6 +129,7 @@ def get_env_data(data, service_type, port):
             "SERVICE_PORT" : port
         }
         if service_type != 'app':
+            print('service_type: ',service_type)
             return d
         num_models = len(data['models_data'])
         num_sensors = len(data['sensor_data'])
@@ -169,14 +170,14 @@ def deployment_handler(service_type, data):
         file_loc, service_address = flag
 
         extract_file(service_address)
-        edit_docker_file(file_loc, get_service_id(service_type, data_), service_type)
+        edit_docker_file(file_loc, get_service_id(service_type, data_), service_type, MONITOR_IP, MONITOR_PORT)
         make_dockerignore(file_loc)
         tag_name = get_service_name(service_type, data_)
         docker_image = docker.build(file_loc, tags=tag_name)
         if service_type == 'app':
-            container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, APP_PORT_SERVICE)], envs=get_env_data(service_type, data, APP_PORT_SERVICE), networks='host')
+            container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, APP_PORT_SERVICE)], envs=get_env_data(data, service_type, APP_PORT_SERVICE), networks='host')
         else:
-            container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, MODEL_PORT_SERVICE)], envs=get_env_data(service_type, data, MODEL_PORT_SERVICE), networks='host')
+            container = docker.run(tag_name, detach=True, publish=[(MODEL_PORT_SERVICE, MODEL_PORT_SERVICE)], envs=get_env_data(data, service_type, MODEL_PORT_SERVICE), networks='host')
         
         if not container:
             print('not able to run container')
