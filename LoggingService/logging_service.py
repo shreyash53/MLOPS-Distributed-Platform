@@ -34,7 +34,10 @@ class ReadLogs(threading.Thread):
             try:
                 log = log.value
                 now = datetime.datetime.now()
-                new_log = Logs(log_type=log['type'], service_name=log['service_name'], msg=log['msg'], time=now)
+                new_log = Logs(log_type=log['type'], 
+                                service_name=log['service_name'], 
+                                msg=log['msg'], 
+                                time=now)
                 new_log.save()
             except Exception as e:
                 print(e)
@@ -43,9 +46,19 @@ class ReadLogs(threading.Thread):
 def parsedatetime(date_time_str):
     return datetime.datetime.strptime(date_time_str, '%d/%m/%y %H:%M:%S')
 
-def get_logs_bw(starttime, endtime):
-    res = Logs.objects(time__lte=endtime, time__gt=starttime)
-    return res
+def get_logs_bw(starttime, endtime, service_name, page_no):
+    res = Logs.objects(time__lte=endtime, 
+                        time__gt=starttime, 
+                        service_name=service_name)
+    total_records = res.count()
+    next_page = None
+    last_record = total_records//PER_PAGE_RECORD
+    if next_page < last_record:
+        next_page = page_no + 1
+    offset = (page_no - 1) * PER_PAGE_RECORD
+    res = res.skip(offset).limit(PER_PAGE_RECORD)
+    data = {'result':res, 'next_page':next_page}
+    return data
 
 
 @app.route("/get_logs", methods=['GET','POST'])
@@ -56,8 +69,15 @@ def home():
     logs_from = parsedatetime(req['start_time'])
     logs_to = parsedatetime(req['end_time'])
     page_no = int(req['page'])
-    logs = Logs.objects(service_name=service_name).to_json()
-    return logs
+
+    if log_type == 'ALL':
+        logs = Logs.objects().to_json()
+        return logs
+
+    return get_logs_bw(starttime=logs_from,
+                        endtime=logs_to,
+                        service_name=service_name,
+                        page_no=page_no)
 
 
 if __name__ == "__main__":
