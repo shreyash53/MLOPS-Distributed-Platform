@@ -4,6 +4,7 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 import os
+from fabric import Connection
 
 import dotenv
 
@@ -169,3 +170,18 @@ def createVM(VM_NAME):
     print(f"Provisioned virtual machine {vm_result.name}")
 
     return ip_address_result.ip_address
+
+def setupVM(VM_IP_ADDRESS):
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
+    result = conn.put('/home/azureuser/IAS-Hackathon-2-Team3/setuphostvm.sh', remote='/home/azureuser/')
+    print("Uploaded {0.local} to {0.remote}".format(result))
+    conn.run('chmod +x /home/azureuser/setuphostvm.sh')
+    conn.run('sudo /home/azureuser/setuphostvm.sh')
+
+def copyFolderToVM(VM_IP_ADDRESS, folderPath):
+    pass
+
+def runOnVM(VM_IP_ADDRESS, command):
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
+    result = conn.run(command)
+    return result.stdout
