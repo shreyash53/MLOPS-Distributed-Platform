@@ -11,13 +11,20 @@ if __name__ == "__main__":
     SERVICE_PORT = sys.argv[1]
     NODE_ID = sys.argv[2]
     db = mongodb()
-
+    
     monitor_ip = os.environ.get("monitoring_service_ip")
+    monitor_port = os.getenv('monitoring_service_port')
     dockerfile_destination_folder = "./ChildNode"
     tag = "child_node"
     host_port = os.getenv("child_node_service_port")
     service_name = os.getenv("child_node_service_name")
     entry_point_py_file_name = "driver.py"
+    
+    create_docker_file(dockerfile_destination_folder,
+                monitor_ip=monitor_ip,
+                monitor_port=monitor_port,
+                entry_point_py_file_name=entry_point_py_file_name,
+                for_child_node=True)
 
     docker_image = docker.build(dockerfile_destination_folder+'/', tags=tag)
     container = docker.run(tag, 

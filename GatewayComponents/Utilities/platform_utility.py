@@ -4,6 +4,7 @@ import requests
 import dotenv
 dotenv.load_dotenv()
 
+PORT = os.getenv("SERVICE_PORT")
 
 ns = os.getenv("num_sensors") # number of sensors
 nm = os.getenv("num_models") # number of models
@@ -14,7 +15,7 @@ sensors = dict()
 sensor_ids_list = '<sensor_ids>'
 for s_id in sensor_ids_list:
 	sname = "S_"+str(s_id)
-	sensors[sname] = os.getenv(sname) #
+	sensors[sname] = os.getenv(sname) 
 
 	
 def  getsensordata(sensor_id):

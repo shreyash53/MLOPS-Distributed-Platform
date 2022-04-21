@@ -3,14 +3,12 @@ import os.path
 from os import path
 import requests
 from Utilities.models import aimodels
-
 import dotenv
 
 dotenv.load_dotenv()
 
 SENSOR_PORT = os.environ.get('sensor_manager_service_port')
 SENSOR_IP = os.environ.get('sensor_manager_service_ip')
-
 URL = f'http://{SENSOR_IP}:{SENSOR_PORT}/sensor_validate'
 
 def error(val, error_name):
