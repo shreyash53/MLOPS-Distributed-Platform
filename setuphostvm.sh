@@ -1,8 +1,8 @@
 #!/bin/bash
 
 apt update
-apt install docker
-apt install docker-compose
+apt --yes --force-yes install docker
+apt --yes --force-yes install docker-compose
 
 mkdir -p /lib/docker/cli-plugins
 cd /lib/docker/cli-plugins
