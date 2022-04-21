@@ -9,8 +9,9 @@ import dotenv
 dotenv.load_dotenv()
 
 SENSOR_PORT = os.environ.get('sensor_manager_service_port')
+SENSOR_IP = os.environ.get('sensor_manager_service_ip')
 
-URL = f'http://0.0.0.0:{SENSOR_PORT}/sensor_validate'
+URL = f'http://{SENSOR_IP}:{SENSOR_PORT}/sensor_validate'
 
 def error(val, error_name):
     '''
