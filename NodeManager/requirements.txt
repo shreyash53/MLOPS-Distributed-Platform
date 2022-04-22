@@ -24,3 +24,4 @@ azure-common
 azure-identity
 msrestazure
 fabric
+patchwork

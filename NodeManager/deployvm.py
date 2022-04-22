@@ -5,6 +5,7 @@ from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 import os
 from fabric import Connection
+import patchwork.transfers
 
 import dotenv
 
@@ -26,12 +27,13 @@ def createVM(VM_NAME):
     # Constants we need in multiple places: the resource group name and the region
     # in which we provision resources. You can change these values however you want.
     RESOURCE_GROUP_NAME = "IASPlatform"
-    LOCATION = "southindia"
+    LOCATION1 = "southindia"
+    LOCATION2 = "southindia"
 
     # Provision the resource group.
     rg_result = resource_client.resource_groups.create_or_update(RESOURCE_GROUP_NAME,
         {
-            "location": LOCATION
+            "location": LOCATION1
         }
     )
 
@@ -87,7 +89,7 @@ def createVM(VM_NAME):
     poller = network_client.public_ip_addresses.begin_create_or_update(RESOURCE_GROUP_NAME,
         IP_NAME,
         {
-            "location": LOCATION,
+            "location": LOCATION1,
             "sku": { "name": "Standard" },
             "public_ip_allocation_method": "Static",
             "public_ip_address_version" : "IPV4"
@@ -102,7 +104,7 @@ def createVM(VM_NAME):
     poller = network_client.network_interfaces.begin_create_or_update(RESOURCE_GROUP_NAME,
         NIC_NAME, 
         {
-            "location": LOCATION,
+            "location": LOCATION1,
             "ip_configurations": [ {
                 "name": IP_CONFIG_NAME,
                 "subnet": { "id": subnet_result.id },
@@ -130,7 +132,7 @@ def createVM(VM_NAME):
 
     poller = compute_client.virtual_machines.begin_create_or_update(RESOURCE_GROUP_NAME, VM_NAME,
         {
-            "location": LOCATION,
+            "location": LOCATION2,
             "storage_profile": {
                 "image_reference": {
                     "publisher": 'canonical',
@@ -178,8 +180,9 @@ def setupVM(VM_IP_ADDRESS):
     conn.run('chmod +x /home/azureuser/setuphostvm.sh')
     conn.run('sudo /home/azureuser/setuphostvm.sh')
 
-def copyFolderToVM(VM_IP_ADDRESS, folderPath):
-    pass
+def copyFolderToVM(VM_IP_ADDRESS, sourcePath, targetPath):
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
+    patchwork.transfers.rsync(conn, folderPath, targetPath)
 
 def runOnVM(VM_IP_ADDRESS, command):
     conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
