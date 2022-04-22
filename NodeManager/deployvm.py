@@ -26,9 +26,9 @@ def createVM(VM_NAME):
 
     # Constants we need in multiple places: the resource group name and the region
     # in which we provision resources. You can change these values however you want.
-    RESOURCE_GROUP_NAME = "IASPlatform-AU"
-    LOCATION1 = "australiaeast"
-    LOCATION2 = "australiaeast"
+    RESOURCE_GROUP_NAME = "IASPlatform"
+    LOCATION1 = "southindia"
+    LOCATION2 = "southindia"
 
     # Provision the resource group.
     rg_result = resource_client.resource_groups.create_or_update(RESOURCE_GROUP_NAME,
@@ -52,7 +52,7 @@ def createVM(VM_NAME):
     # can provision the VM.
 
     # Network and IP address names
-    VNET_NAME = "IASPlatformvnet"
+    VNET_NAME = "IASPlatform-vnet"
     SUBNET_NAME = "default"
     IP_NAME = VM_NAME+"-ip"
     IP_CONFIG_NAME = "ipconfig1"
@@ -142,7 +142,7 @@ def createVM(VM_NAME):
                 }
             },
             "hardware_profile": {
-                "vm_size": "Standard_D2s_v3"
+                "vm_size": "Standard_DS1"
             },
             "os_profile": {
                 "computer_name": VM_NAME,
