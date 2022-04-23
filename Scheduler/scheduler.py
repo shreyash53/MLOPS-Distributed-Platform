@@ -16,7 +16,7 @@ import dotenv
 dotenv.load_dotenv()
 
 HOST = os.getenv('SCHEDULER_HOST')
-PORT = os.getenv('SCHEDULER_PORT')
+PORT = os.getenv('scheduler_service_port')
 
 app = Flask(__name__)
 
@@ -81,7 +81,7 @@ def send_to_deployment_service(action, services):
         producer.close()
         print("Invalid action :", action)
         return
-    if services is None:
+    if services.count()==0:
         producer.close()
         print("No services to",action)
         return
@@ -186,4 +186,4 @@ if __name__ == "__main__":
     sched.start()
     re_sched = ReSchedulingService()
     re_sched.start()
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')

@@ -12,7 +12,7 @@ class Logs(db.Document):
     log_type = db.StringField()
     service_name = db.StringField()
     msg = db.StringField()
-    time = db.StringField()
+    time = db.DateTimeField(required=True)
 
     def to_json(self):
         return {

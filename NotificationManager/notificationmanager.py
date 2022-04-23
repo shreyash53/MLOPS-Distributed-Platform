@@ -11,6 +11,8 @@ from constant import BOOTSTRAP_SERVERS
 
 
 load_dotenv('.env')
+PORT = os.getenv('notification_manager_service_port')
+notification_topic = os.getenv('KAFKA_NOTIFICATION_TOPIC')
 app = Flask(__name__)
 
 db = mongodb()
@@ -70,7 +72,8 @@ URL="http://0.0.0.0:8000"
 
 
 def listen_for_notifs():
-    listener = KafkaConsumer('notifications', bootstrap_servers=BOOTSTRAP_SERVERS)
+    listener = KafkaConsumer(notification_topic,
+                            bootstrap_servers=BOOTSTRAP_SERVERS)
     for msg in listener:
         try:
             j = json.loads(msg.value.decode('UTF-8'))
@@ -86,5 +89,5 @@ def listen_for_notifs():
 if __name__ == "__main__":
     listener = Thread(target=listen_for_notifs)
     listener.start()
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')
 
