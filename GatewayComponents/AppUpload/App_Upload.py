@@ -18,7 +18,7 @@ import time
 PATH1 = os.path.dirname(__file__)+"/../"
 p1="Utilities/ApplicationCode"
 PATH=os.path.join(PATH1,p1)
-
+access_rights = 0o777
 def get_app_instance_id():
     id = "AI_"+ str(int(time.time()))
     return id
@@ -149,10 +149,10 @@ def upload_app_file(request):
     r_zip=Path(f.filename).stem
     #print(input_file)
     if not os.path.exists(p1):
-        os.mkdir(p1)
+        os.mkdir(p1,access_rights)
     var_zip=PATH1+"Utilities/ApplicationZip"
     if not os.path.exists(var_zip):
-        os.mkdir(var_zip)
+        os.mkdir(var_zip,access_rights)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:
