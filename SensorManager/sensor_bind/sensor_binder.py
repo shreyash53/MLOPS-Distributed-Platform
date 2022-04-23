@@ -137,6 +137,17 @@ def sensor_add(val):
 
 def Check_Vals():
     auxiliaryList = []
+    for sensor in SensorRegisterModel.objects:
+        print(sensor.sensor_type, sensor.sensor_data_type)
+        if ((sensor.sensor_type, sensor.sensor_data_type)) not in auxiliaryList:
+            auxiliaryList.append((sensor.sensor_type, sensor.sensor_data_type))
+    print(auxiliaryList)
+    return auxiliaryList
+
+    
+
+def Check_Valss():
+    auxiliaryList = []
     for sensor in SensorBindModel.objects:
         a = (sensor.sensor_type, sensor.sensor_data_type,
              sensor.sensor_loc, sensor.sensor_bind_id,sensor.sensor_name)

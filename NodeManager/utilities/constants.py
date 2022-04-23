@@ -6,7 +6,7 @@ dotenv.load_dotenv()
 SLCM_URL = "http://"+os.getenv('SLCM_service_ip')+":"+os.getenv('SLCM_service_port')
 
 static_ip = '0.0.0.0'
-static_port = '5000'
+static_port = os.getenv('node_manager_service_port')
 # kafka_ip = 'localhost'
 # kafka_ip = '20.219.107.251'
 # kafka_port = '9092'

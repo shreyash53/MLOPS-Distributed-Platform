@@ -6,7 +6,11 @@ from utilities.constants import kafka_url
 from .deployment import deployment_handler
 from .terminate import termination_handler
 import sys
+import os
+import dotenv
+dotenv.load_dotenv()
 
+TOPIC_NAME = os.getenv('NODE_ID')
 def consumer_logic(consumer_data):
     print(consumer_data)
     consumer_data = consumer_data.value
@@ -21,7 +25,7 @@ def consumer_thread():
     while True:
         try:
             consumer = KafkaConsumer(
-                sys.argv[2],
+                TOPIC_NAME,
                 bootstrap_servers=[kafka_url],
                 auto_offset_reset='earliest',
                 enable_auto_commit=True,
@@ -31,7 +35,7 @@ def consumer_thread():
             print('inside consumer_thread')
             for data in consumer:
                 consumer_logic(data)
-
+                
             # if consumer_data['requesttype'] == 'start':
             #     deploy_models(consumer_data['models'])
             #     deploy_app(consumer_data['app'])
