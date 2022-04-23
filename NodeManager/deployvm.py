@@ -182,7 +182,7 @@ def setupVM(VM_IP_ADDRESS):
 
 def copyFolderToVM(VM_IP_ADDRESS, sourcePath, targetPath):
     conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
-    patchwork.transfers.rsync(conn, folderPath, targetPath)
+    patchwork.transfers.rsync(conn, sourcePath, targetPath, strict_host_keys=False)
 
 def runOnVM(VM_IP_ADDRESS, command):
     conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
