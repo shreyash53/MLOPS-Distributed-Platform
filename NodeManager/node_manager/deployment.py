@@ -29,7 +29,7 @@ def send_using_kafka(topic_name, data):
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
     producer.send(topic_name, data)
-    sleep(2)
+    # sleep(2)
 
 
 def find_appropriate_node(node_type):

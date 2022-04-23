@@ -5,9 +5,14 @@ from child_node_config import NODE_ID
 from child_node.model import ServicesRunning
 from .deployment import get_service_id, get_service_location, get_service_name, send_using_kafka
 from mongoengine.queryset.visitor import Q
+from python_on_whales import docker 
 
-def terminate_service():
-    pass
+def terminate_service(service_):
+    try:
+        docker.stop(service_.serviceDockerContainerName)
+    except Exception as e:
+        print('error in terminate_service', e)
+    
 
 def unregister_service_with_slcm(service_type, data):
     request_ = {

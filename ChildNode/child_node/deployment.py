@@ -1,4 +1,5 @@
 from python_on_whales import docker
+from python_on_whales.exceptions import NoSuchImage
 from child_node.model import ServicesRunning
 from child_node_config import NODE_ID
 from utilities.azure_config import download_dir
@@ -22,7 +23,7 @@ def send_using_kafka(topic_name, data):
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda x:
                              dumps(x).encode('utf-8'))
     producer.send(topic_name, data)
-    sleep(2)
+    # sleep(2)
 
 
 def make_and_move_in_directory(service_type, service_name):
@@ -31,12 +32,15 @@ def make_and_move_in_directory(service_type, service_name):
         file_loc = file_stub.format(APP_DIR, service_name)
     else:
         file_loc = file_stub.format(MODEL_DIR, service_name)
+
+    file_loc += '/'
     print('file_loc - inside', file_loc)
     try:
         os.listdir(file_loc)
+        return file_loc, True
     except Exception as e:
-        os.makedirs(file_loc)
-    return file_loc + '/'
+        os.makedirs(file_loc), False
+     
 
 
 def get_service_name(service_type, service_details):
@@ -66,16 +70,19 @@ def download_files(service_type, service_details):
         print('service_name', service_name)
         service_location = get_service_location(service_type, service_details)
         print('service_location', service_location)
-        file_loc = make_and_move_in_directory(
-            service_type, service_name)
+        file_loc, dir_exists = make_and_move_in_directory(service_type, service_name)
         print('file_loc', file_loc)
+        if(dir_exists):
+            print('dir already exists')
+            return file_loc
         file_name = os.path.basename(service_location)
         print('file_name', file_name)
         service_address = file_loc + service_name + '.zip'
         print('service_address', service_address)
         download_dir(service_location, file_name, service_address)
-    
-        return file_loc, service_address
+        extract_file(service_address)
+
+        return file_loc
     except Exception as e:
         print('error while downloading files', e)
 
@@ -119,16 +126,17 @@ def register_service_with_slcm(service_type, data, service_ip, service_port):
         "service_type" : service_type,
         "request_type" : "register",
         "service_ip" : service_ip,
-        "service_port": service_port
+        "service_port": service_port,
+        "node" : NODE_ID
     }
     send_using_kafka(SLCM_TOPIC_NAME, request_)
 
 def get_env_data(data):
     try:
-        num_models = len(data['models_data'])
+        # num_models = len(data['models_data'])
         num_sensors = len(data['sensor_data'])
         result = {
-            "num_models" : num_models,
+            # "num_models" : num_models,
             "num_sensors" : num_sensors
         }
         # for data_ in data['models_data']:
@@ -147,6 +155,15 @@ def get_env_data(data):
         print(traceback.format_exc())
         print('error while getting env data', e)
 
+def image_not_available(tag_name):
+    try:
+        docker.image.inspect(tag_name)
+        return False
+    except NoSuchImage:
+        print('Image not available')
+    except Exception as e:
+        print('error in image_not_available', e)
+    return True
 
 def deployment_handler(service_type, data):
     global MODEL_PORT_SERVICE, APP_PORT_SERVICE
@@ -154,20 +171,19 @@ def deployment_handler(service_type, data):
 
         if service_type == 'app':
             data_ = data['app_data']
-            dir_ = APP_DIR
+            # dir_ = APP_DIR
         else:
             data_ = data
-            dir_ = MODEL_DIR
-        flag = download_files(service_type, data_)
-        if not flag:
+            # dir_ = MODEL_DIR
+        file_loc = download_files(service_type, data_)
+        if not file_loc:
+            print('In deployment handler of child node, couldn\'t download files')
             return
-        file_loc, service_address = flag
-
-        extract_file(service_address)
         edit_docker_file(file_loc, get_service_id(service_type, data_), service_type)
         make_dockerignore(file_loc)
         tag_name = get_service_name(service_type, data_)
-        docker_image = docker.build(file_loc, tags=tag_name)
+        if image_not_available(tag_name):
+            docker_image = docker.build(file_loc, tags=tag_name)
         if service_type == 'app':
             container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data))
             # container = docker.run(tag_name, detach=True, publish=[(APP_PORT_SERVICE, 5000)], envs=get_env_data(data), networks='host')

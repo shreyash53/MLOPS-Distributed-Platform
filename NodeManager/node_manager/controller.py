@@ -49,20 +49,21 @@ def consumer_logic(consumer_data):
         terminate_app(consumer_data['app'])
 
 def consumer_thread():
-    try:
-        consumer = KafkaConsumer(
-            'app_deploy2',
-            bootstrap_servers=[kafka_url],
-            auto_offset_reset='earliest',
-            enable_auto_commit=True, 
-            group_id='my-group-2',
-            value_deserializer=lambda x: loads(x.decode('utf-8'))
-        )
-        print('inside nodemanager consumer thread')
-        for data in consumer:
-            consumer_logic(data)
+    while True:
+        try:
+            consumer = KafkaConsumer(
+                'app_deploy2',
+                bootstrap_servers=[kafka_url],
+                auto_offset_reset='earliest',
+                enable_auto_commit=True, 
+                group_id='my-group-2',
+                value_deserializer=lambda x: loads(x.decode('utf-8'))
+            )
+            print('inside nodemanager consumer thread')
+            for data in consumer:
+                consumer_logic(data)
 
 
-    except Exception as e:
-        print(traceback.format_exc())
-        print('Error in node_manager.consumer_thread', e)
+        except Exception as e:
+            print(traceback.format_exc())
+            print('Error in node_manager.consumer_thread', e)
