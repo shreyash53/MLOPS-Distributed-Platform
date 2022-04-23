@@ -12,7 +12,7 @@ from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
 import time
-
+access_rights = 0o777
 # PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
 # mydir=Path.cwd()/'NewZip'
 PATH1 = os.path.dirname(__file__)+"/../"
@@ -34,7 +34,7 @@ def isValid(tar,r_zip):
     if(temp_file_present['status']==1):
         temp_file_present = file_present(tar,"model.pkl")
         if(temp_file_present['status']==1):
-            temp_val_contract ={'status':1,"succ_msg":"Good"} #validate_contract(var1)
+            temp_val_contract = validate_contract(var1)
             if(temp_val_contract['status'] == 1):
                 #if db.applications.find( { "appName": r_zip } ).count() > 0:
                 if aimodels.objects(modelName=r_zip).count()>0:
@@ -86,6 +86,11 @@ def extract_file(input_file):
         print("printed..line 60")
     return
 
+def add_requirements(tar):
+    requirements = ['','python-dotenv', 'requests','flask']
+    with open(tar+'/requirements.txt', 'a') as f:
+        f.writelines('\n'.join(requirements))
+
 def create_docker(input_file,tar):
     docker_file = open(PATH1+'Utilities/Dockerfile', 'r')
     docker_template = docker_file.read()
@@ -129,72 +134,37 @@ def generate_model_api(store_path):
     contract_file = open(contract_path)
     contract = json.loads(contract_file.read())
 
-    tokens = {'other_dependencies': '',
-              'pickle_file_path': '',
-              'preprocess_fun_name': '',
+    tokens = {'pickle_file_path': '',
               'predict_fun_name': '',
-              'postprocess_fun_name': '',
               }
+    # vals = contract['dependencies']
+    # for key,val in vals.items():
+    #     tokens['other_dependencies'] += '\n' + val
 
-    for vals in contract['dependencies']:
-        tokens['other_dependencies'] += '\n' + vals
-    tokens['preprocess_fun_parameters'] = ""
-    tokens['postprocess_fun_parameters'] = ""
+    tokens['fileName'] = contract['main_py_file_name']
     tokens['predict_fun_parameters'] = ""
     tokens['pickle_file_path'] = contract['pickle_file_name']
-    for val in contract["procedures"]:
-        if val['name'] == "preprocessing":
-            tokens['preprocess_fun_name'] = val['name']
-            tokens['preprocess_fun_parameters'] = ""
-            tokens['preprocess_return']=val['return_type']
-            for j in val['parameters']:
-                tokens['preprocess_fun_parameters']+= j['name'] + ", "
-                # tokens['preprocess_fun_parameters']+= j['type'] + ","
-            tokens['preprocess_fun_parameters'] = tokens['preprocess_fun_parameters'][:-2]
-            
+    for val in contract["predict"]:
+        tokens['predict_fun_name'] = val['name']
+        tokens['predict_fun_parameters'] = ""
+        tokens['predict_return']=val['return_type']
+        for j in val['parameters']:
+            tokens['predict_fun_parameters']+= j['name'] + ", "
+        tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
 
-        elif val['name'] == "postprocessing":
-            tokens['postprocess_fun_name'] = val['name']
-            tokens['postprocess_fun_parameters'] = ""
-            tokens['postprocess_return']=val['return_type']
-            for j in val['parameters']:
-                tokens['postprocess_fun_parameters']+= j['name'] + ", "
-                # tokens['postprocess_fun_parameters']+= j['type'] + ","
-            tokens['postprocess_fun_parameters'] = tokens['postprocess_fun_parameters'][:-2]
-
-        elif val['name'] == "predict":
-            tokens['predict_fun_name'] = val['name']
-            tokens['predict_fun_parameters'] = ""
-            tokens['predict_return']=val['return_type']
-            for j in val['parameters']:
-                tokens['predict_fun_parameters']+= j['name'] + ", "
-                # tokens['predict_fun_parameters']+= j['type'] + ","
-            tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
-
-    # tokens['preprocess_fun_name'] = contract['pre_processing_fun']['name']
-    # tokens['postprocess_fun_name'] = contract['post_processing_fun']['name']
-    # tokens['predict_fun_name'] = contract['predict_fun']['name']
-
-    model_api = re.sub(r'<other_dependencies>',
-                       tokens['other_dependencies'], model_api)
+    # model_api = re.sub(r'<other_dependencies>',
+    #                    tokens['other_dependencies'], model_api)
+    model_api = re.sub(r'<fileName>',
+                       tokens['fileName'], model_api)
     model_api = re.sub(r'<pickle_file_path>',
                        tokens['pickle_file_path'], model_api)
     
-    #updating function name
-    model_api = re.sub(r'<preprocess_fun_name>',
-                       tokens['preprocess_fun_name'], model_api)
-    model_api = re.sub(r'<postprocess_fun_name>',
-                       tokens['postprocess_fun_name'], model_api)
+
     model_api = re.sub(r'<predict_fun_name>',
                        tokens['predict_fun_name'], model_api)
     
-    #updating parameters list
-    model_api = re.sub(r'<preprocessing_para_name>',
-                       tokens['preprocess_fun_parameters'], model_api)
     model_api = re.sub(r'<predict_para_name>',
                        tokens['predict_fun_parameters'], model_api)
-    model_api = re.sub(r'<postprocessing_para_name>',
-                       tokens['postprocess_fun_parameters'], model_api)
 
 
     api_file.write(model_api)
@@ -214,6 +184,11 @@ def upload_model_file(request):
     input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH,access_rights)
+    var_zip=PATH1+"Utilities/ModelZip"
+    if not os.path.exists(var_zip):
+        os.mkdir(var_zip,access_rights)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:
@@ -222,7 +197,8 @@ def upload_model_file(request):
     resp=isValid(tar,r_zip)
     print(resp,"line 89")
     if 'succ_msg' in resp:
-        # generate_model_api(tar)
+        generate_model_api(tar)
+        add_requirements(tar)
         if(create_docker(r_zip,tar)):
             print("done create model")
             create_zip(r_zip,tar)
