@@ -148,8 +148,8 @@ def upload_app_file(request):
     input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
-    if not os.path.exists(p1):
-        os.mkdir(p1,access_rights)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH,access_rights)
     var_zip=PATH1+"Utilities/ApplicationZip"
     if not os.path.exists(var_zip):
         os.mkdir(var_zip,access_rights)
