@@ -1,5 +1,5 @@
 from mongoengine.document import Document
-from mongoengine.fields import IntField, ReferenceField, StringField, URLField, ListField, DictField
+from mongoengine.fields import IntField,FloatField, ReferenceField, StringField, URLField, ListField, DictField
 
 class NodeDocument(Document):
     nodeName = StringField(unique=True, required=True)
@@ -9,6 +9,8 @@ class NodeDocument(Document):
     nodeType = StringField(default="platform") #platform, node_app, node_model
     nodeSize = IntField()
     nodeKafkaTopicName = StringField()
+    node_cpu_usage = FloatField()
+    node_ram_usage=FloatField()
 
 # class NodeUtilization(Document):
 #     node = ReferenceField(NodeDocument)
