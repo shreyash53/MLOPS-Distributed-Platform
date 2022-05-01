@@ -8,9 +8,10 @@ import os
 from time import sleep
 import zipfile
 from json import dumps
+import urllib.request
 
 from kafka import KafkaProducer
-from utilities.constants import APP_DIR, MODEL_DIR, MY_IP, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
+from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_URL, kafka_url
 import traceback
 from utilities.helper import edit_docker_file
 from utilities.constants import MONITOR_IP, MONITOR_PORT
@@ -18,6 +19,7 @@ file_stub = '{}/{}'
 
 APP_PORT_SERVICE = 11000
 MODEL_PORT_SERVICE = 12000
+MY_IP = urllib.request.urlopen('https://ifconfig.me').read().decode('utf8')
 
 def send_using_kafka(topic_name, data):
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda x:
