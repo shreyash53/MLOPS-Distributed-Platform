@@ -6,7 +6,7 @@ from json import loads
 # from time import sleep
 from mongoengine.fields import *
 from kafka import KafkaConsumer
-from Deployer.dbconfig import mongodb
+from .dbconfig import mongodb
 from .model import NodeDocument
 
 # class consuming_load_balancing(threading.Thread):
