@@ -3,7 +3,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-
+USER_NAME = os.environ.get('USER')
 static_ip = '0.0.0.0'
 static_port = '5000'
 # kafka_ip = 'localhost'
@@ -19,7 +19,7 @@ GET = ['GET']
 # APP_DIR = '/home/shreyash/data/app'
 # MODEL_DIR = '/home/shreyash/data/model'
 # USER_DIR = expanduser('~/')
-USER_DIR = '/home/user/'
+USER_DIR = f'/home/{USER_NAME}/'
 APP_DIR = join(USER_DIR, 'Downloads', 'data', 'apps')
 MODEL_DIR = join(USER_DIR, 'Downloads', 'data', 'models')
 
