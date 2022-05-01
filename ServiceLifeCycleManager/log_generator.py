@@ -19,7 +19,6 @@ def send_log(log_type, msg ):
     possible_log_type = ['INFO', 'WARN', 'ERR']
     if log_type not in possible_log_type:
         raise Exception('ERR: log_type provided is wrong\n It should be INFO, WARN or ERR')
-    print("sasdsadsadasds")
     data = {"type" : log_type , "service_name" : SERVICE_NAME,"msg" : msg}
     logs.send(log_topic, data)
     return 1
