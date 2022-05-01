@@ -1,6 +1,7 @@
 from .sensor_bind_model import SensorBindModel
 from .sensor_bind_model import SensorRegisterModel
 from .sensor_bind_model import Sensor_Used
+from log_generator import send_log
 from .Get_Service import *
 from dbconfig import *
 from util.constants import *
@@ -27,10 +28,13 @@ def reg_sensor(request_data):
             if not SensorRegisterModel.objects.filter(Q(sensor_type=tp) & Q(sensor_data_type=d_tp)):
                 conference_ = SensorRegisterModel(sensor_type=tp, sensor_data_type=d_tp)
                 conference_.save()
+                send_log("INFO","Sensor Registered Successfully")
                 return "Successful"
             else:
+                send_log("WARN","This type and data type already exists")
                 return "This type and data type already exists"
     except:
+        send_log("ERR","Failed to process")
         return "Failed to process", HTTP_INTERNAL_SERVER
 
 def reg_bind_sensor(request_data):
@@ -61,7 +65,8 @@ def reg_bind_sensor(request_data):
                     IP = find2.sensor_ip
                     Port = find2.sensor_port
                     time= find2.time_in_sec
-                    print(is_sensor, IP, Port, topic_name)
+                    ll=str(is_sensor)+" "+str(IP)+" "+str(Port)+" "+str(topic_name)
+                    send_log("INFO",ll)
                     if(is_sensor):
                         t1 = threading.Thread(target=fun, args=(topic_name, IP, Port,time))
                         threads.append(t1)
@@ -71,14 +76,17 @@ def reg_bind_sensor(request_data):
                         threads.append(t2)
                         t2.start()
                 else:
+                    send_log("WARN","No such sensor type and sensor data type exists on our platform")
                     return "No such sensor type and sensor data type exists on our platform"
             else:
+                send_log("WARN","This IP:PORT Already Exists")
                 return "This IP:PORT Already Exists"
         return "Successful" 
         # return sensor_bind_ids
 
     except Exception as e:
-        print(e)
+        send_log("ERR",e)
+        # print(e)
         return "Failed to process", HTTP_INTERNAL_SERVER
 
 # def Check(r_data):
@@ -105,7 +113,9 @@ def Start_Services():
         IP = find2.sensor_ip
         Port = find2.sensor_port
         time = find2.time_in_sec
-        print(is_sensor, IP, Port, topic_name)
+        ll=str(is_sensor)+" "+str(IP)+" "+str(Port)+" "+str(topic_name)
+        send_log("INFO",ll)
+        # print(is_sensor, IP, Port, topic_name)
         if(is_sensor):
             t1 = threading.Thread(target=fun, args=(topic_name, IP, Port, time))
             threads.append(t1)
@@ -115,7 +125,6 @@ def Start_Services():
             threads.append(t2)
             t2.start()
     return "Success"
-
 
 def start_sensor(find2,x):
     topic_name = "S_"+str(find2.sensor_bind_id)
@@ -141,7 +150,8 @@ def Check_Vals():
         print(sensor.sensor_type, sensor.sensor_data_type)
         if ((sensor.sensor_type, sensor.sensor_data_type)) not in auxiliaryList:
             auxiliaryList.append((sensor.sensor_type, sensor.sensor_data_type))
-    print(auxiliaryList)
+    # send_log("INFO",)
+    # print(auxiliaryList)
     return auxiliaryList
 
     

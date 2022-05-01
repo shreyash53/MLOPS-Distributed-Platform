@@ -3,6 +3,7 @@ from flask import jsonify
 from kafka import KafkaProducer
 from kafka import KafkaConsumer
 import json
+from log_generator import send_log
 from json import loads,dumps
 import random
 from time import sleep
@@ -35,10 +36,12 @@ def fun(topic_name,ip,port,time):
                 dic = {}
                 dic['data'] = jsonResponse
                 producer.send(topic_name, value=dic)
-                print("To Topic:")
-                print(topic_name)
-                print(dic)
+                # send_log("INFO","To Topic: {} /n {}".format(topic_name,dic))
+                # print("To Topic:")
+                # print(topic_name)
+                # print(dic)
             except:
+                send_log("ERR" ,"No Sensor is active right now")
                 pass
             sleep(time)
 
@@ -53,12 +56,14 @@ def fun2(topic_name, ip, port,time):
     while(1):
         try:
             for message in consumer:
-                print("From Topic:")
-                print(topic_name)
+                # print("From Topic:")
+                # print(topic_name)
                 message=message.value
+                # send_log("INFO","From Topic: {} /n {}".format(topic_name,message))
                 url = "http://"+str(ip)+":"+str(port)+"/"
                 requests.post(url, json=message)
         except:
+            send_log("ERR" ,"No Such Controller is active now")
             pass
         sleep(time)
 

@@ -1,6 +1,7 @@
 import mongoengine as db
 import os
 import dotenv
+from log_generator import send_log
 dotenv.load_dotenv()
 
 database_name = 'SLCM_DB'
@@ -42,39 +43,45 @@ def savetodb(kwargs):
     try:
         data = slcm(**kwargs)
         data.save()
+        # send_log("INFO","Successfully saved to database")
         return "success"
     except Exception as e: 
+        send_log("ERR","Failed to save to database")
         return None
 
 
 def fetchdb(kwargs):
     try:
         data = slcm.objects(**kwargs)[0]
+        # send_log("INFO","Successfully fetched from database")
         return data
     except Exception as e:
+        send_log("ERR","Couldn't find item in database")
         return  None
 
 def updatedb(kwargs,kwargs2):
     try:
         data = slcm.objects(**kwargs).update(**kwargs2)
+        # send_log("INFO","Successfully saved to database")
         return "success"
     except Exception as e:
+        send_log("ERR","Couldn't update item in database")
         return  None
     
-def inc_service(name , stype):
-    try :
-        obj = slcm.objects(service_name = name,service_type =stype)
-        cur = obj.usedby
-        obj.update(useddby = cur+1)
-        return "success"
-    except Exception as e:
-            return None
+# def inc_service(name , stype):
+#     try :
+#         obj = slcm.objects(service_name = name,service_type =stype)
+#         cur = obj.usedby
+#         obj.update(useddby = cur+1)
+#         return "success"
+#     except Exception as e:
+#             return None
 
-def dec_service(name , stype):
-    try :
-        obj = slcm.objects(service_name = name,service_type =stype)
-        cur = obj.usedby
-        obj.update(useddby = cur-1)
-        return cur-1
-    except Exception as e:
-            return None
+# def dec_service(name , stype):
+#     try :
+#         obj = slcm.objects(service_name = name,service_type =stype)
+#         cur = obj.usedby
+#         obj.update(useddby = cur-1)
+#         return cur-1
+#     except Exception as e:
+#             return None

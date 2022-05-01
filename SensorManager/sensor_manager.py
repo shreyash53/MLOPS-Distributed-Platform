@@ -1,5 +1,6 @@
 from fileinput import filename
 from flask import Flask,request
+from log_generator import send_log
 # from flask_sqlalchemy import SQLAlchemy
 from sensor_bind.sensor_binder import *
 from flask import jsonify, make_response, render_template
@@ -22,6 +23,7 @@ def Sensor_Reg():
     ret_value = reg_sensor(request_data)
     data = {}
     data["Message"] = ret_value
+    send_log("INFO","Regestered Successfully")
     return data
 
 @app.route("/Sensor_Bind", methods=["POST","GET"])
@@ -31,6 +33,7 @@ def Sensor_Bind():
     ret_value = reg_bind_sensor(request_data)
     data={}
     data["Message"]=ret_value
+    send_log("INFO","Sensor Binded Successfully")   
     return data
 
 @app.route("/Get_Data", methods=["GET"])
@@ -38,8 +41,8 @@ def Get_Data():
     a=Check_Vals()
     D={}
     D["details"]=a
+    send_log("INFO","Data Sent")
     return D
-
 
 @app.route("/sensor_validate", methods=["POST","GET"])
 def Check_Dev():
@@ -53,7 +56,7 @@ def Check_Dev():
     else:
             dic["msg"] = "Success"
             dic["status"]=1
-
+    send_log("INFO","Regestered Successfully") 
     return dic
     
 
