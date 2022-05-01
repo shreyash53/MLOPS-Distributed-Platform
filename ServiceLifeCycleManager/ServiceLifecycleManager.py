@@ -133,6 +133,28 @@ def dead_service():
 		send_log("ERR","ERROR in dead_service")
 
 
+@app.route("/change_count")
+def change_count():
+	data = request.json
+	instanceid = data['service_id']
+	if data['type'] == "increment":
+		try:
+			fd = sv.fetchdb({"instance_id" : instanceid})
+			sv.updatedb({"instance_id" : instanceid} ,{"usedby" : fd['usedby'] + 1} )
+			return "success",200
+		except:
+			send_log("ERR" , "error incrementing "+ instanceid)
+			return "failure",500
+	elif data['type'] == "decrement":
+		try:
+			fd = sv.fetchdb({"instance_id" : instanceid})
+			sv.updatedb({"instance_id" : instanceid} ,{"usedby" : fd['usedby'] - 1} )
+			return {"result" : fd['usedby']-1},200
+		except:
+			send_log("ERR", "error decrementing")
+			return "failure",500
+
+	
 @app.route("/get_services/<stype>")
 def get_services(stype):
 	if stype == "running":
@@ -156,6 +178,7 @@ def fun():
 if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
+	print(sv.savetodb({"instance_id" : "dummy1"}))
 	send_log("INFO","SLCM started")
 	print("SLCM started")
 	app.run(debug=False, port=PORT, host='0.0.0.0' )

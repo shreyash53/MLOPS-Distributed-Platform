@@ -1,3 +1,4 @@
+from email.policy import default
 import mongoengine as db
 import os
 import dotenv
@@ -28,15 +29,17 @@ class slcm(db.Document):
     service_ip = db.StringField()
     service_port = db.StringField()
     nodeid = db.StringField()
+    usedby = db.IntField(default = 1)
     def to_json(self):
         return {
             "instance_id":self.instance_id,
             "service_type": self.service_type,
             "service_name" : self.service_name,
             "state":self.state,
-            "service_ip" : self.ip,
-            "service_port":self.port,
-            "nodeid":self.nodeid
+            "service_ip" : self.service_ip,
+            "service_port":self.service_port,
+            "nodeid":self.nodeid,
+            "usedby":self.usedby
         }
 
 def savetodb(kwargs):
