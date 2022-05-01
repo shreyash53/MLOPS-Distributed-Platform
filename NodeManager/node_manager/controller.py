@@ -5,25 +5,12 @@ from flask import jsonify
 
 from kafka import KafkaConsumer
 from mongoengine.queryset.visitor import Q
-from node_manager.deployment import deploy_app, deploy_models
+from node_manager.deployment import deploy_app, deploy_models, add_node, node_validated
 from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url
 from node_manager.terminate import terminate_app, terminate_all_models
 from .model import NodeDocument
 
 
-def node_validated(node_data):
-    if (node_data['nodePortNo'] and node_data['nodeIpAddress'] and (not NodeDocument.objects.filter(Q(nodePortNo=node_data['nodePortNo']) & Q(nodeIpAddress=node_data['nodeIpAddress'])))) \
-        or (node_data['nodeUrl'] and (not NodeDocument.objects.filter(Q(nodeUrl=node_data['NodeUrl'])))):
-        return True
-    return False
-
-def add_node(node_data):
-    try:
-        if node_validated(node_data):
-            node_ = NodeDocument(**node_data)
-            node_.save()
-    except Exception as e:
-        print('error while adding node in node_manager.add_node', e)
 
 def get_node_by_id(id):
     try:
