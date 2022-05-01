@@ -22,25 +22,26 @@ def consumer_logic(consumer_data):
 
 
 def consumer_thread():
-    try:
-        consumer = KafkaConsumer(
-            TOPIC_NAME,
-            bootstrap_servers=[kafka_url],
-            auto_offset_reset='earliest',
-            enable_auto_commit=True,
-            group_id='my-group',
-            value_deserializer=lambda x: loads(x.decode('utf-8'))
-        )
-        print('inside consumer_thread')
-        for data in consumer:
-            consumer_logic(data)
+    while True:
+        try:
+            consumer = KafkaConsumer(
+                TOPIC_NAME,
+                bootstrap_servers=[kafka_url],
+                auto_offset_reset='earliest',
+                enable_auto_commit=True,
+                group_id='my-group',
+                value_deserializer=lambda x: loads(x.decode('utf-8'))
+            )
+            print('inside consumer_thread')
+            for data in consumer:
+                consumer_logic(data)
+                
+            # if consumer_data['requesttype'] == 'start':
+            #     deploy_models(consumer_data['models'])
+            #     deploy_app(consumer_data['app'])
+            # else:
+            #     terminate_models(consumer_data['models'])
+            #     terminate_app(consumer_data['app'])
 
-        # if consumer_data['requesttype'] == 'start':
-        #     deploy_models(consumer_data['models'])
-        #     deploy_app(consumer_data['app'])
-        # else:
-        #     terminate_models(consumer_data['models'])
-        #     terminate_app(consumer_data['app'])
-
-    except Exception as e:
-        print('Error in node_manager.consumer_thread', e)
+        except Exception as e:
+            print('Error in node_manager.consumer_thread', e)
