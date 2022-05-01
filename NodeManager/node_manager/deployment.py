@@ -31,6 +31,9 @@ def send_using_kafka(topic_name, data):
     producer.send(topic_name, data)
     # sleep(2)
 
+def start_new_node(node_type):
+    print('start new node type:', node_type)
+    
 
 def find_appropriate_node(node_type):
     nodes = NodeDocument.objects.filter(nodeType=node_type).order_by('node_cpu_usage')
@@ -38,6 +41,10 @@ def find_appropriate_node(node_type):
         print('Kindly add some nodes of type', node_type)
         return
     node = nodes.first()
+    if node.node_cpu_usage > 70 and node.node_ram_usage > 65:
+        #send request to start node of same type
+        start_new_node(node_type)
+    
     return node
 
 
