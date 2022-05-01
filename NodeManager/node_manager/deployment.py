@@ -4,7 +4,7 @@ from json import dumps
 from time import sleep
 
 from node_manager.model import NodeDocument
-from utilities.constants import kafka_url, node_app, node_model, SLCM_URL
+from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url, node_app, node_model, SLCM_URL
 from kafka import KafkaProducer
 from requests import post
 
@@ -33,7 +33,7 @@ def send_using_kafka(topic_name, data):
 
 def start_new_node(node_type):
     print('start new node type:', node_type)
-    
+
 
 def find_appropriate_node(node_type):
     nodes = NodeDocument.objects.filter(nodeType=node_type).order_by('node_cpu_usage')
@@ -70,7 +70,13 @@ def check_for_running(service_, service_type):
         "service_type" : service_type
     })
 
-    if response.status_code == 200:
+    if response.status_code == HTTP_OK_STATUS_CODE:
+        res = post(SLCM_URL+'/change_count', json={
+            "service_id" : service_id,
+            "type" : "increment"
+        })
+        if res.status_code != HTTP_OK_STATUS_CODE:
+            print('Did not get proper response from slcm for increment of model usage')
         return True
     return False
 
