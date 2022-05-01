@@ -12,6 +12,12 @@ class NodeDocument(Document):
     node_cpu_usage = FloatField()
     node_ram_usage=FloatField()
 
+    def get_usage(self):
+        return {
+            "node_cpu_usage" : int(self.node_cpu_usage),
+            "node_ram_usage" : int(self.node_ram_usage),
+        }
+
 # class NodeUtilization(Document):
 #     node = ReferenceField(NodeDocument)
 #     cpu_utilization

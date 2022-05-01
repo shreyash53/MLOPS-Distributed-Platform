@@ -1,11 +1,12 @@
-from json import loads
+from json import loads, dumps
 from time import sleep
 import traceback
+from flask import jsonify
 
 from kafka import KafkaConsumer
 from mongoengine.queryset.visitor import Q
 from node_manager.deployment import deploy_app, deploy_models
-from utilities.constants import kafka_url
+from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url
 from node_manager.terminate import terminate_app, terminate_all_models
 from .model import NodeDocument
 
@@ -67,3 +68,24 @@ def consumer_thread():
         except Exception as e:
             print(traceback.format_exc())
             print('Error in node_manager.consumer_thread', e)
+
+
+def get_node_list():
+    try:
+        node_list = [
+            node.nodeName for node in NodeDocument.objects()
+        ]
+        return jsonify(*node_list), HTTP_OK_STATUS_CODE
+    except Exception as e:
+        print('error in node_manager.get_node_list', e)
+        return
+
+def get_node_performance_data():
+    try:
+        stats = [
+            node.get_usage() for node in NodeDocument.objects()
+        ]
+        return dumps(stats), HTTP_OK_STATUS_CODE
+    except Exception as e:
+        print('error in node_manager.get_node_performance_data', e)
+        return 
