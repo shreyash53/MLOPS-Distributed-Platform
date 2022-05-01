@@ -5,7 +5,7 @@ from node_manager.model import NodeDocument
 from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url, node_app, node_model, SLCM_URL
 from kafka import KafkaProducer
 from requests import post
-from vm_manager import *
+from .vm_manager import *
 
 
 def build_request_data(request_type, service_type, data, all_data=None):
