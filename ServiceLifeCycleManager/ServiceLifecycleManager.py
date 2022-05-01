@@ -3,6 +3,11 @@ import service_utilities as sv
 import kafka
 from json import loads,dumps
 import threading
+import os
+import dotenv
+dotenv.load_dotenv()
+
+PORT = os.getenv('SLCM_service_port')
 
 app = Flask(__name__)
 
@@ -127,5 +132,5 @@ if __name__ == '__main__':
 	t1 = threading.Thread(target =consume)
 	t1.start()
 	print("started")
-	app.run(debug=False, port="5000", host='0.0.0.0' )
+	app.run(debug=False, port=PORT, host='0.0.0.0' )
 

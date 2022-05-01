@@ -22,17 +22,17 @@
         // document.getElementById("upload_form").setAttribute=curr_api+"?token="+sessionStorage.getItem("token")
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
-    function logout(){
+    function logout() {
         sessionStorage.removeItem('user_token');
         sessionStorage.clear();
-        window.location.href='/'
+        window.location.href = '/'
     }
 </script>
 
 <body onload="append_token()">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Upload Model</h2>
                 <div class="card my-5">
 
@@ -46,15 +46,45 @@
 
                         <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Upload
                                 Model</button></div>
+                    </form>
                 </div>
-                </form>
             </div>
+
+            {% if my_models.count()>0 %}
+            <div class="col-md-6">
+                <h2 class="text-center text-dark mt-5">My Models</h2>
+                <div class="card my-5">
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Model Name</th>
+                                <th scope="col">Model ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% for model in my_models %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ model.modelName }}</td>
+                                <td>{{ model.modelId }}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
 
         </div>
         <div class="row">
             <div class="col">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
+                        value="LogIn">LogOut</button>
                 </div>
             </div>
         </div>

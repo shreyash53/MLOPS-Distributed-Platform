@@ -28,8 +28,11 @@ AZURE_MODEL_PATH = 'root/UserData/Models'
 SLCM_TOPIC_NAME = 'register'
 
 # CHILD_NODE_IP = 'http://192.168.178.153'
-CHILD_NODE_IP = 'http://192.168.43.74'
-CHILD_NODE_URL = '{}:6000'.format(CHILD_NODE_IP)
+CHILD_NODE_IP = f"http://{os.environ.get('node_manager_service_ip')}"
+CHILD_NODE_URL = f"{CHILD_NODE_IP}:{os.environ.get('node_manager_service_port')}"
 
 # MY_IP = 'http://192.168.178.153:6201'
-MY_IP = 'http://localhost'
+MY_IP = f'http://{os.environ.get("child_node_service_ip")}'
+
+MONITOR_IP = f'http://{os.environ.get("monitoring_service_ip")}'
+MONITOR_PORT = os.environ.get("monitoring_service_port")

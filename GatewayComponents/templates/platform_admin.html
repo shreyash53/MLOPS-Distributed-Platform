@@ -30,10 +30,16 @@
             console.log(sessionStorage.getItem("user_token"))
             $('#node').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
         }
-        function logout(){
+        function logout() {
             sessionStorage.removeItem('user_token');
             sessionStorage.clear();
-            window.location.href='/'
+            window.location.href = '/'
+        }
+        function logs_page() {
+            window.location.href = '/platform_admin/logs?token='+sessionStorage.getItem('user_token')
+        }
+        function node_monitoring() {
+            window.location.href = '/platform_admin/node_monitoring?token='+sessionStorage.getItem('user_token')
         }
     </script>
 
@@ -42,7 +48,7 @@
 <body onload="append_token()">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Add Sensor</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" form action="/platform_admin/upload_sensor"
@@ -56,12 +62,7 @@
                 </div>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Bind Sensor</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" form action="/platform_admin/bind_sensor"
@@ -80,7 +81,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6">
                 <h2 class="text-center text-dark mt-5">Add Node</h2>
                 <div class="card my-5">
                     <form class="card-body cardbody-color p-lg-5" id="node" method="post"
@@ -97,11 +98,20 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
+                        value="LogIn">LogOut</button>
                 </div>
-            </div>
+                
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100"
+                        value="logs" onclick="logs_page()">Logs</button>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100"
+                        value="node_monitoring" onclick="node_monitoring()">Node Monitoring</button>
+                </div>
         </div>
     </div>
 
