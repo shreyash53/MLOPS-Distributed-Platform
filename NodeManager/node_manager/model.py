@@ -9,13 +9,14 @@ class NodeDocument(Document):
     nodeType = StringField(default="platform") #platform, node_app, node_model
     nodeSize = IntField()
     nodeKafkaTopicName = StringField()
-    node_cpu_usage = FloatField()
-    node_ram_usage=FloatField()
+    node_cpu_usage = FloatField(default=0)
+    node_ram_usage=FloatField(default=0)
 
     def get_usage(self):
         return {
-            "node_cpu_usage" : int(self.node_cpu_usage),
-            "node_ram_usage" : int(self.node_ram_usage),
+            "node_name" : self.nodeName,
+            "cpu" : int(self.node_cpu_usage),
+            "memory" : int(self.node_ram_usage),
         }
 
 # class NodeUtilization(Document):
