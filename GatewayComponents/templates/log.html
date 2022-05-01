@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/default.css">
+    <title>Logs</title>
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination li {
+            display: block;
+        }
+    </style>
+    <script>
+        function loaded(){
+        document.getElementById('log_type_2').value = sessionStorage.getItem('log_type') == null ? 'ALL' : sessionStorage.getItem('log_type')
+        document.getElementById('service_type_2').value = sessionStorage.getItem('service_type') == null ? 'ALL' : sessionStorage.getItem('service_type')
+        document.getElementById('starttime_2').value = sessionStorage.getItem('starttime') == null ? 'ALL' : sessionStorage.getItem('starttime')
+        document.getElementById('endtime_2').value = sessionStorage.getItem('endtime') == null ? 'ALL' : sessionStorage.getItem('endtime')
+
+        document.getElementById('log_type_3').value = sessionStorage.getItem('log_type') == null ? 'ALL' : sessionStorage.getItem('log_type')
+        document.getElementById('service_type_3').value = sessionStorage.getItem('service_type') == null ? 'ALL' : sessionStorage.getItem('service_type')
+        document.getElementById('starttime_3').value = sessionStorage.getItem('starttime') == null ? 'ALL' : sessionStorage.getItem('starttime')
+        document.getElementById('endtime_3').value = sessionStorage.getItem('endtime') == null ? 'ALL' : sessionStorage.getItem('endtime')
+
+        console.log('LOADED')
+        }
+        function logout() {
+            sessionStorage.removeItem('user_token');
+            sessionStorage.removeItem('log_type');
+            sessionStorage.removeItem('service_type');
+            sessionStorage.removeItem('starttime');
+            sessionStorage.removeItem('endtime');
+            sessionStorage.clear();
+            window.location.href = '/'
+        }
+        function platform_admin_homepage() {
+            window.location.href = '/platform_admin?token=' + sessionStorage.getItem('user_token')
+        }
+        function update_attributes(){
+            sessionStorage.setItem("log_type", document.getElementById('log_type').value)
+            sessionStorage.setItem("service_type", document.getElementById('service_type').value)
+            sessionStorage.setItem("starttime", document.getElementById('starttime').value)
+            sessionStorage.setItem("endtime", document.getElementById('endtime').value)
+            //log_type=document.getElementById('log_type').value
+            //service_name=document.getElementById('service_type').value
+            //start_time=document.getElementById('starttime').value
+            //end_time=document.getElementById('endtime').value
+
+            document.getElementById('log_type_2').value = sessionStorage.getItem('log_type')
+            document.getElementById('service_type_2').value = sessionStorage.getItem('service_type')
+            document.getElementById('starttime_2').value = sessionStorage.getItem('starttime')
+            document.getElementById('endtime_2').value = sessionStorage.getItem('endtime')
+
+            document.getElementById('log_type_3').value = sessionStorage.getItem('log_type')
+            document.getElementById('service_type_3').value = sessionStorage.getItem('service_type')
+            document.getElementById('starttime_3').value = sessionStorage.getItem('starttime')
+            document.getElementById('endtime_3').value = sessionStorage.getItem('endtime')
+
+            console.log(document.getElementById('log_type_3').value)
+        }
+    </script>
+
+</head>
+
+<body onload="loaded()">
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9 offset-md-1">
+
+                <h2 class="text-center text-dark mt-5">Logs</h2>
+                <div class="card my-5">
+                    <nav aria-label="filters">
+
+                        <!-- <ul class="pagination">
+                            <li class="page-item"> <a class="page-link" href="/platform_admin/notification/1/ALL">All</a>
+                            </li>
+                            <li class="page-item"> <a class="page-link" href="/platform_admin/notification/1/INFO">Info</a>
+                            </li>
+                            <li class="page-item"> <a class="page-link" href="/platform_admin/notification/1/WARN">Warning</a>
+                            </li>
+                            <li class="page-item"> <a class="page-link" href="/platform_admin/notification/1/ERR">Error</a>
+                            </li>                            
+                        </ul> -->
+
+                        <form class="card-body cardbody-color p-lg-5" action="/platform_admin/update_logs_attributes" method="POST"
+                            enctype="multipart/form-data" onclick="update_attributes()">
+                            <input type="text" name="page" id="page" value="1" hidden>
+                            <label for="log_type" class="form-label">Log Type</label>
+                            <select class="form-select" name="log_type" id="log_type">
+                                <option selected value="ALL">All</option>
+                                <option value="INFO">Info</option>
+                                <option value="WARN">Warning</option>
+                                <option value="ERR">Error</option>
+                            </select>
+
+                            <label for="service_type" class="form-label">Service</label>
+                            <select class="form-select" name="service_type" id="service_type">
+                                <option selected value="ALL">All</option>
+                                {% for service in services %}
+                                <option value="{{service}}">{{service}}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label for="endtime">Start DateTime:</label>
+                            <input type="datetime-local" id="starttime" name="starttime" placeholder="DD/MM/YY HH:MM:SS" value="ALL">
+                            <hr>
+                            <label for="endtime">End DateTime:</label>
+                            <input type="datetime-local" id="endtime" name="endtime" placeholder="DD/MM/YY HH:MM:SS" value="ALL">
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-color px-5 mb-5 w-100">Get Logs</button>
+                            </div>
+
+                        </form>
+                    </nav>
+
+                    {% if logs %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Service</th>
+                                <th scope="col">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ log['msg'] }}</td>
+                                <td>
+                                    <div style="padding:0%" class="alert alert-{% if log['type']=='INFO' %}info{% elif log['type']=='ERR' %}danger{% elif log['type']=='WARN' %}warning{% endif %}" role="alert">
+                                        {{ log['type'] }}
+                                      </div>                            
+                                </td>
+                                <td>{{ log['service_name'] }}</td>
+                                <td>{{ log['time'] }}</td>                    
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">No Logs Found.</div>
+                    {% endif %}
+
+                    <nav aria-label="logs">
+                        <ul class="pagination">
+                            <li class="page-item" > 
+                                <form  action="/platform_admin/update_logs_attributes_2" method="POST"
+                            enctype="multipart/form-data" style="padding: 0%;">
+                                <input type="text" name="page_2" id="page_2" value="{{prev}}" hidden>
+                                <input type="text" name="service_type_2" id="service_type_2" value="ALL" hidden>
+                                <input type="text" name="log_type_2" id="log_type_2" value="ALL" hidden>
+                                <input type="text" name="starttime_2" id="starttime_2" value="ALL" hidden>
+                                <input type="text" name="endtime_2" id="endtime_2" value="ALL" hidden>   
+                                {% if prev %}                             
+                                <button type="submit" class="page-link">Previous</button>
+                                {% else %}
+                                <a class="page-link btn disabled" href="#">Previous</a>
+                                {% endif %}
+                                <!-- <a class="page-link" href="/platform_admin/logs/{{prev}}">Previous</a> -->
+                                </form>                                
+                            </li>                            
+
+
+                            
+                            <li class="page-item" > 
+                                <form  action="/platform_admin/update_logs_attributes_3" method="POST"
+                            enctype="multipart/form-data" style="padding: 0%;">
+                                <input type="text" name="page_3" id="page_3" value="{{next}}" hidden>
+                                <input type="text" name="service_type_3" id="service_type_3" value="ALL" hidden>
+                                <input type="text" name="log_type_3" id="log_type_3" value="ALL" hidden>
+                                <input type="text" name="starttime_3" id="starttime_3" value="ALL" hidden>
+                                <input type="text" name="endtime_3" id="endtime_3" value="ALL" hidden>    
+                                {% if next %}                            
+                                <button type="submit" class="page-link">Next</button>
+                                {% else %}
+                                <a class="page-link btn disabled" href="#">Next</a>
+                                {% endif %}
+                                <!-- <a class="page-link" href="/platform_admin/logs/{{prev}}">Previous</a> -->
+                                </form>                                
+                            </li>
+                            <!-- <li class="page-item"> <a class="page-link" href="/platform_admin/logs/{{next}}">Next</a></li> -->
+
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
+                    value="LogIn">LogOut</button>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" onclick="platform_admin_homepage()" class="btn btn-color px-5 mb-5 w-100"
+                    value="back">Back</button>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+</body>
+
+</html>
