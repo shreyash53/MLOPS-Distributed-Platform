@@ -18,6 +18,8 @@
 #   . ./shra/bin/activate
 # }
 
+chmod 400 NodeManager/node_manager/azurekeys.pem
+
 python3 -m venv shra
 source ./shra/bin/activate
 pip install -r requirements.txt
