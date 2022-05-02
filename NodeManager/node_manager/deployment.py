@@ -1,4 +1,5 @@
 from json import dumps
+from socket import AF_INET, SOCK_STREAM, socket
 from time import sleep, time_ns
 from NodeManager.utilities.log_generator import send_log
 
@@ -54,6 +55,27 @@ def start_new_node(node_type):
     suffix = str(time_ns())
     node_name = suffix
     node_ip = createVM(node_name)
+    is_node_up = False
+    check_socket = socket(AF_INET, SOCK_STREAM)
+    print("Machine not started", end='')
+    while not is_node_up:
+        if check_socket.connect_ex((node_ip, 22)) == 0:
+            is_node_up = True
+        sleep(1)
+        print(".", end='')
+    print("Machine started!")
+    setupVM(node_ip)
+    sleep(10)
+    is_node_up = False
+    check_socket = socket(AF_INET, SOCK_STREAM)
+    print("Machine not started", end='')
+    while not is_node_up:
+        if check_socket.connect_ex((node_ip, 22)) == 0:
+            is_node_up = True
+        sleep(1)
+        print(".", end='')
+    copyFolderToVM(node_ip, 'ChildNode', '/home/azureuser/')
+    print(runOnVM(node_ip, f'/home/azureuser/ChildNode/child_node_bootstrap.sh {5000} {node_name}'))
     if node_ip is None:
         print("Failed to create new node!")
         return None
@@ -61,9 +83,10 @@ def start_new_node(node_type):
         node_data = {
             "nodeName": node_name,
             "nodeIpAddress": node_ip,
-            "nodePortNo": 5000,
-            "nodeUrl": f'{node_ip}:{5000}',
+            "nodePortNo": "5000",
+            "nodeUrl": f'https://{node_ip}:{5000}',
             "nodeType": node_type,  # platform, node_app, node_model
+            "nodeKafkaTopicName" : node_name,
         }
 
         add_node(node_data)
@@ -141,6 +164,7 @@ def deploy_app(app_to_deploy, all_data):
             node.nodeKafkaTopicName,
             build_request_data("start", "app", app_to_deploy, all_data),
         )
+        print("data sent to node: ", node.nodeName)
     except Exception as e:
         send_log("ERR", "ERROR in node_manager.deploy_app, " + str(e))
         print("exception in node_manager.deploy_app", e)
