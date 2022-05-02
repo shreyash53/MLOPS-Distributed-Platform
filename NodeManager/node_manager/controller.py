@@ -10,7 +10,7 @@ from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url
 from node_manager.terminate import terminate_app, terminate_all_models
 from .model import NodeDocument
 
-
+from utilities.log_generator import send_log
 
 def get_node_by_id(id):
     try:
@@ -53,7 +53,8 @@ def consumer_thread():
 
 
         except Exception as e:
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
+            send_log("ERR", "ERROR in node_manager.consumer thread, " + str(e))
             print('Error in node_manager.consumer_thread', e)
 
 
@@ -65,7 +66,7 @@ def get_node_list():
         return jsonify(*node_list), HTTP_OK_STATUS_CODE
     except Exception as e:
         print('error in node_manager.get_node_list', e)
-        return
+        return {"msg" : "error occured"}, 500
 
 def get_node_performance_data():
     try:
@@ -75,4 +76,4 @@ def get_node_performance_data():
         return dumps(stats), HTTP_OK_STATUS_CODE
     except Exception as e:
         print('error in node_manager.get_node_performance_data', e)
-        return 
+        return {"msg" : "error occured"}, 500
