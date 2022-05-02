@@ -23,6 +23,8 @@ SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
 Request_PORT = os.environ.get("request_manager_service_port")
 LOGGING_SERVICE_IP = "http://"+ os.environ.get('logging_service_ip')
 LOGGING_SERVICE_PORT = os.environ.get('logging_service_port')
+NODE_MGR_IP = os.environ.get('node_manager_service_ip')
+NODE_MGR_PORT = os.environ.get('node_manager_service_port')
 
 app.config['SECRET_KEY'] = 'root'
 
@@ -482,7 +484,9 @@ def logs_display(page=1,log_type=log_type,service_name=service_name,start_time=s
 def node_monitoring_cpu(current_user):
     if current_user.role != 'platform_admin':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_node'
+    node_data = requests.get(url=url).json()
+    # node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
     return render_template('node_monitoring_cpu.html',node_data=node_data)
 
 @app.route('/platform_admin/node_monitoring_memory', methods=['GET'])
@@ -490,12 +494,19 @@ def node_monitoring_cpu(current_user):
 def node_monitoring_memory(current_user):
     if current_user.role != 'platform_admin':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_node'
+    node_data = requests.get(url=url).json()
+    # print("GET_NODE:",node_data)
+    # node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
     return render_template('node_monitoring_memory.html',node_data=node_data)
 True
-@app.route('/platform_admin/get_cpu_usage', methods=['GET','POST'])
-def get_cpu_usage():
-    return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
+@app.route('/platform_admin/get_performance_usage', methods=['GET','POST'])
+def get_performance_usage():
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_usage'
+    usage_data = requests.get(url=url).json()
+    print(usage_data)
+    # return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
+    return {"res":usage_data}
 
 if __name__ == '__main__':
     app.run(debug=False, port=Request_PORT, host='0.0.0.0')

@@ -55,6 +55,8 @@
         <button type="submit" onclick="platform_admin_homepage()" class="btn"
             value="back" style="float: right;">Back</button>
     </div>
+
+    {% if node_data %}
     <div class="container">
         <div class="d-flex flex-row">
             <label for="node" class="form-label w-25 h-25 p-2">
@@ -62,7 +64,7 @@
             </label>
             <select class="form-select w-25 h-25 p-2" name="node" id="node">
                 {% for node in node_data %}
-                <option value="plot_segment{{loop.index}}">{{node.node_name}}</option>
+                <option value="plot_segment{{loop.index}}">{{node}}</option>
                 {% endfor %}
             </select>
             <button class="btn btn-color w-25 h-25 p-2" onclick="show_node_data()">Show CPU Usage</button>
@@ -106,6 +108,15 @@
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="alert alert-danger" role="alert" style="display: block;">No Nodes Found</div>
+            </div>
+        </div>
+        {% endif %}
+
+        
     </div>
 
 
@@ -132,18 +143,18 @@
         $.ajax({
             type: "GET",
 
-            url: "/platform_admin/get_cpu_usage",
+            url: "/platform_admin/get_performance_usage",
             data: 'dummy',
             success: function (data) {
                 //console.log(cnt)
                 for (var i = 0; i < data['res'].length; i++) {
                     // console.log(data['res'][i])
                     var e = document.getElementById("bar" + String(i + 1))
-                    e.setAttribute('aria-valuenow', data['res'][i])
-                    e.style.width = data['res'][i] + "%"
-                    e.innerHTML = data['res'][i] + "%"
+                    e.setAttribute('aria-valuenow', data['res'][i]['cpu'])
+                    e.style.width = data['res'][i]['cpu'] + "%"
+                    e.innerHTML = data['res'][i]['cpu'] + "%"
 
-                    Plotly.extendTraces('plot' + String(i + 1), { y: [[data['res'][i]]] }, [0]);
+                    Plotly.extendTraces('plot' + String(i + 1), { y: [[ data['res'][i]['cpu'] ]] }, [0]);
                     cnt++;
                     if (cnt/4 > 20) {
                         Plotly.relayout('plot' + String(i + 1), {

@@ -11,7 +11,7 @@ def addNode():
 
 
 @blueprint.route('/get_node', methods = GET)
-def getPerformanceData():
+def getNode():
     return get_node_list()
 
 
