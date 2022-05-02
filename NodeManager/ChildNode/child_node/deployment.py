@@ -15,6 +15,8 @@ from utilities.constants import APP_DIR, MODEL_DIR, SLCM_TOPIC_NAME, CHILD_NODE_
 import traceback
 from utilities.helper import edit_docker_file
 from utilities.constants import MONITOR_IP, MONITOR_PORT
+from utilities.constants import kafka_url
+
 file_stub = '{}/{}'
 
 APP_PORT_SERVICE = 11000
@@ -157,6 +159,7 @@ def get_env_data(data, service_type, port):
             result['S_{}'.format(data['sensor_app_id'])] = data['sensor_binding_id']
         
         result['url'] = CHILD_NODE_URL
+        result['kafkaurl'] = kafka_url
         print('all env variables')
         print(result)
         return result
