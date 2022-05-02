@@ -12,18 +12,22 @@ import numpy as np
 
 app = Flask(__name__)
 
+
 def get_data():
-    return(np.random.choice(np.arange(25, 35), p=[0.05, 0.05, 0.05, 0.20, 0.20, 0.20, 0.10, 0.05,0.05,0.05]))
+    return(np.random.choice(np.arange(0, 2), p=[0.95,0.05]))
+    # return round(random.uniform(2.0, 5.0), 3)
 
 
 producer = KafkaProducer(bootstrap_servers=['52.140.63.83:9092'], value_serializer=lambda x:
                          dumps(x).encode('utf-8'))
 while(1):
+
     val = get_data()
     val =val.item()
+    # print(type(val))
     print(val)
     producer.send("S_1", value=val)
-    sleep(20)
+    sleep(1)
 
 if __name__ == '__main__':
 	app.run(debug=True, port=8008, host="0.0.0.0")
