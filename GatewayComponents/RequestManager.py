@@ -232,7 +232,8 @@ def upload_sensor(current_user):
     res = requests.post(url=url,json=f).json()
 
     print(res)
-    return res
+    return render_template('platform_admin.html',succ_msg=res)
+    # return res
    
 @app.route('/platform_admin/bind_sensor',methods=['POST'])
 @token_required
@@ -251,7 +252,8 @@ def bind_sensor(current_user):
     res = requests.post(url=url,json=f).json()
 
     print(res)
-    return res
+    return render_template('platform_admin.html',succ_msg=res['Message'])
+    # return res
     
 
 @app.route('/platform_admin/add_node',methods=['POST'])
@@ -267,8 +269,8 @@ def add_node(current_user):
     f = json.load(f)
     url = NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/add'
     res = requests.post(url=url,json=f).json()
-
-    return res
+    return render_template('platform_admin.html',succ_msg=res)
+    # return res
 
 def get_locations_api(appName):
     temp = applications.objects(appName=appName).first()
