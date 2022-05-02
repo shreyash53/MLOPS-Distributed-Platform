@@ -1,5 +1,5 @@
 # Import the needed credential and management objects from the libraries.
-from azure.identity import AzureCliCredential, DefaultAzureCredential
+from azure.identity import EnvironmentCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
@@ -14,7 +14,7 @@ dotenv.load_dotenv()
 def createVM(VM_NAME):
     try:
         # Acquire a credential object using CLI-based authentication.
-        credential = DefaultAzureCredential()
+        credential = EnvironmentCredential()
 
         # Retrieve subscription ID from environment variable.
         subscription_id = os.environ["AZURE_SUBSCRIPTION_ID"]
@@ -178,17 +178,17 @@ def createVM(VM_NAME):
         return None
 
 def setupVM(VM_IP_ADDRESS):
-    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
-    result = conn.put('/home/azureuser/IAS-Hackathon-2-Team3/setuphostvm.sh', remote='/home/azureuser/')
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/app/node_manager/azurekeys.pem'})
+    result = conn.put('/home/app/setuphostvm.sh', remote='/home/azureuser/')
     print("Uploaded {0.local} to {0.remote}".format(result))
     conn.run('chmod +x /home/azureuser/setuphostvm.sh')
     conn.run('sudo /home/azureuser/setuphostvm.sh')
 
 def copyFolderToVM(VM_IP_ADDRESS, sourcePath, targetPath):
-    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/app/node_manager/azurekeys.pem'})
     patchwork.transfers.rsync(conn, sourcePath, targetPath, strict_host_keys=False)
 
 def runOnVM(VM_IP_ADDRESS, command):
-    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/azureuser/azurekeys.pem'})
+    conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/app/node_manager/azurekeys.pem'})
     result = conn.run(command)
     return result.stdout
