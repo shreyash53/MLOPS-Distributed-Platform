@@ -1,7 +1,7 @@
 from json import dumps
 from socket import AF_INET, SOCK_STREAM, socket
 from time import sleep, time_ns
-from NodeManager.utilities.log_generator import send_log
+from utilities.log_generator import send_log
 
 from node_manager.model import NodeDocument
 from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url, node_app, node_model, SLCM_URL
