@@ -2,6 +2,7 @@ certifi==2021.10.8
 charset-normalizer==2.0.12
 click==8.1.2
 Flask==2.1.1
+Flask-SQLAlchemy==2.5.1
 idna==3.3
 dnspython
 importlib-metadata==4.11.3
@@ -17,3 +18,11 @@ urllib3==1.26.9
 Werkzeug==2.1.0
 zipp==3.7.0
 dnspython
+azure-mgmt-resource
+azure-mgmt-network
+azure-mgmt-compute
+azure-common
+azure-identity
+msrestazure
+fabric
+patchwork

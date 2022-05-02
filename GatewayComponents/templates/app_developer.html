@@ -27,8 +27,45 @@
         window.location.href = '/'
     }
 </script>
-
+<style>
+    .scrolling-wrapper{
+        overflow-x: auto;
+    }
+    
+</style>
 <body onload="append_token()">
+    <div class="topnav">
+        <a class="active">Hello, App Developer</a>
+        <button type="submit" class="btn" onclick="logout()"
+            value="LogIn" style="float: right;">LogOut</button>
+    </div>
+<<<<<<< HEAD
+
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">Available Models</h2>
+    
+        {% if model_details %}
+        <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+            {% for j in range(model_details|length) %}    
+            {% for i in range(model_details|length) %}
+
+            <div class="col-2">
+                <div class="card card-block card-1">
+                    <p class="text-center">Model Name:{{model_details[i][0]}}</p>
+                    <p class="text-center">Model ID:{{model_details[i][1]}}</p>
+                </div>
+            </div>
+
+            {% endfor %}
+            {% endfor %}
+
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Models found in Database.</p>
+        {% endif %}
+    </div>
+
+
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -57,44 +94,84 @@
                         </tbody>
                     </table>
                     {% endif %}
+=======
+>>>>>>> aaradhya
 
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">Available Models</h2>
+    
+        {% if model_details %}
+        <div class="container">
+            <div class="slider">    
+                {% for i in range(model_details|length) %}
+
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/model.jpeg" alt="Avatar" style="width:100%">       
+                        <p class="text-center">Model Name:{{model_details[i][0]}}</p>
+                        <p class="text-center">Model ID:{{model_details[i][1]}}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <h2 class="text-center text-dark mt-5">Available Models</h2>
-                <div class="card my-5">
 
-                    {% if model_details %}
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Model Name</th>
-                                <th scope="col">Model ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            {% for i in range(model_details|length) %}
-                            <tr>
-                                <th scope="row">{{ i + 1 }}</th>
-                                <td>{{ model_details[i][0] }}</td>
-                                <td>{{ model_details[i][1] }}</td>
-                            </tr>
-                            {% endfor %}
-
-                        </tbody>
-                    </table>
-                    {% endif %}
-
-                </div>
+                {% endfor %}
             </div>
         </div>
+        {% else %}
+        <p class="subtitle text-center">No Models found in Database.</p>
+        {% endif %}
+    </div>
+
+
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">Available Sensors</h2>
+    
+        {% if sensor_details %}
+        <div class="container">
+            <div class="slider">
+                {% for i in rrange(sensor_details|length) %}
+
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/model.png" alt="Avatar" style="width:100%; height: 95%;">       
+                        <p class="text-center">Sensor Name:{{sensor_details[i][0]}}</p>
+                        <p class="text-center">Sensor ID:{{sensor_details[i][1]}}</p>
+                    </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Sensors found in Database.</p>
+        {% endif %}
+    </div>
+
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">My Applications</h2>
+    
+        {% if my_apps.count()>0 %}
+        <div class="container">
+            <div class="slider">
+                {% for app in my_apps %}
+
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/app.png" alt="Avatar" style="width:100%; height: 95%;">       
+                        <p class="text-center">App Name:{{ app.appName }}</p>
+                        <p class="text-center">App ID:{{loop.index}}</p>
+                    </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Sensors found in Database.</p>
+        {% endif %}
     </div>
 
     <div class="container">
         <div class="row">
-            
                 <div class="col-md-6">
                     <h2 class="text-center text-dark mt-5">Add Application</h2>
                     <div class="card my-5">
@@ -122,42 +199,15 @@
 
                     </div>
                 </div>
-                {% if my_apps.count()>0 %}
-                <div class="col-md-6">
-                    <h2 class="text-center text-dark mt-5">My Applications</h2>
-                    <div class="card my-5">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Application Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                {% for app in my_apps %}
-                                <tr>
-                                    <th scope="row">{{ loop.index }}</th>
-                                    <td>{{ app.appName }}</td>
-                                </tr>
-                                {% endfor %}
-
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-                {% endif %}
-            
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col">
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
                         value="LogIn">LogOut</button>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 

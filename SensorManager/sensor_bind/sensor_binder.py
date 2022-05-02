@@ -1,6 +1,7 @@
 from .sensor_bind_model import SensorBindModel
 from .sensor_bind_model import SensorRegisterModel
 from .sensor_bind_model import Sensor_Used
+# from log_generator import send_log
 from .Get_Service import *
 from dbconfig import *
 from util.constants import *
@@ -27,15 +28,19 @@ def reg_sensor(request_data):
             if not SensorRegisterModel.objects.filter(Q(sensor_type=tp) & Q(sensor_data_type=d_tp)):
                 conference_ = SensorRegisterModel(sensor_type=tp, sensor_data_type=d_tp)
                 conference_.save()
+                # send_log("INFO","Sensor Registered Successfully")
                 return "Successful"
             else:
+                # send_log("WARN","This type and data type already exists")
                 return "This type and data type already exists"
     except:
+        # send_log("ERR","Failed to process")
         return "Failed to process", HTTP_INTERNAL_SERVER
 
 def reg_bind_sensor(request_data):
     try:  
         # sensor_bind_ids = {}
+        Topic_Names=[]
         for sensor_data in request_data['Details']:
             sp = sensor_data['port']
             sip= sensor_data['ip']
@@ -61,24 +66,31 @@ def reg_bind_sensor(request_data):
                     IP = find2.sensor_ip
                     Port = find2.sensor_port
                     time= find2.time_in_sec
-                    print(is_sensor, IP, Port, topic_name)
-                    if(is_sensor):
-                        t1 = threading.Thread(target=fun, args=(topic_name, IP, Port,time))
-                        threads.append(t1)
-                        t1.start()
-                    else:
-                        t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port,time))
-                        threads.append(t2)
-                        t2.start()
+                    ll=str(is_sensor)+" "+str(IP)+" "+str(Port)+" "+str(topic_name)
+                    # send_log("INFO",ll)
+                    Topic_Names.append(topic_name)
+                    # if(is_sensor):
+                    #     t1 = threading.Thread(target=fun, args=(topic_name, IP, Port,time))
+                    #     threads.append(t1)
+                    #     t1.start()
+                    # else:
+                    #     t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port,time))
+                    #     threads.append(t2)
+                    #     t2.start()
                 else:
+                    # send_log("WARN","No such sensor type and sensor data type exists on our platform")
                     return "No such sensor type and sensor data type exists on our platform"
             else:
+                # send_log("WARN","This IP:PORT Already Exists")
                 return "This IP:PORT Already Exists"
-        return "Successful" 
+        IP = Get_ip()
+        Topic_Names.append(IP)
+        return Topic_Names
+        # return Topic_Names 
         # return sensor_bind_ids
 
     except Exception as e:
-        print(e)
+                # print(e)
         return "Failed to process", HTTP_INTERNAL_SERVER
 
 # def Check(r_data):
@@ -96,8 +108,12 @@ def reg_bind_sensor(request_data):
 
 #     return checked_sensor
 
+def Get_ip():
+    BS = os.getenv("kafka_bootstrap")
+    return BS
 
 def Start_Services():
+    Topic_names=[]
     Ob=SensorBindModel.objects.all()
     for find2 in Ob:
         is_sensor = find2.is_sensor
@@ -105,27 +121,30 @@ def Start_Services():
         IP = find2.sensor_ip
         Port = find2.sensor_port
         time = find2.time_in_sec
-        print(is_sensor, IP, Port, topic_name)
-        if(is_sensor):
-            t1 = threading.Thread(target=fun, args=(topic_name, IP, Port, time))
-            threads.append(t1)
-            t1.start()
-        else:
-            t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port, time))
-            threads.append(t2)
-            t2.start()
-    return "Success"
+        ll=str(is_sensor)+" "+str(IP)+" "+str(Port)+" "+str(topic_name)
+        # send_log("INFO",ll)
+        Topic_names.append(topic_name)
+        # print(is_sensor, IP, Port, topic_name)
+        # if(is_sensor):
+        #     t1 = threading.Thread(target=fun, args=(topic_name, IP, Port, time))
+        #     threads.append(t1)
+        #     t1.start()
+        # else:
+        #     t2 = threading.Thread(target=fun2, args=(topic_name, IP, Port, time))
+        #     threads.append(t2)
+        #     t2.start()
+    IP=Get_ip()
+    return Topic_names,IP
 
-
-def start_sensor(find2,x):
-    topic_name = "S_"+str(find2.sensor_bind_id)
-    IP = find2.sensor_ip
-    Port=find2.sensor_port
-    is_sensor = find2.is_sensor
-    if(is_sensor):
-        fun(topic_name,IP,Port)
-    else:
-        fun2(topic_name, IP, Port)
+# def start_sensor(find2,x):
+#     topic_name = "S_"+str(find2.sensor_bind_id)
+#     IP = find2.sensor_ip
+#     Port=find2.sensor_port
+#     is_sensor = find2.is_sensor
+#     if(is_sensor):
+#         fun(topic_name,IP,Port)
+#     else:
+#         fun2(topic_name, IP, Port)
 
 def sensor_add_db(val):
     conference_ = Sensor_Used(sensor_bind_id=val, number=1)
@@ -141,7 +160,8 @@ def Check_Vals():
         print(sensor.sensor_type, sensor.sensor_data_type)
         if ((sensor.sensor_type, sensor.sensor_data_type)) not in auxiliaryList:
             auxiliaryList.append((sensor.sensor_type, sensor.sensor_data_type))
-    print(auxiliaryList)
+    # send_log("INFO",)
+    # print(auxiliaryList)
     return auxiliaryList
 
     

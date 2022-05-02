@@ -12,7 +12,7 @@ from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
 import time
-
+access_rights = 0o777
 # PATH = Path.cwd()/'Utilities/ModelCode' #Mandatory folder
 # mydir=Path.cwd()/'NewZip'
 PATH1 = os.path.dirname(__file__)+"/../"
@@ -214,6 +214,11 @@ def upload_model_file(request):
     input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH,access_rights)
+    var_zip=PATH1+"Utilities/ModelZip"
+    if not os.path.exists(var_zip):
+        os.mkdir(var_zip,access_rights)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:

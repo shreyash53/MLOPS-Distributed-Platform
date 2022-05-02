@@ -21,6 +21,10 @@ SCHEDULER_PORT=os.environ.get('scheduler_service_port')
 SENSOR_MGR_IP = "http://"+ os.environ.get('sensor_manager_service_ip')
 SENSOR_MGR_PORT = os.environ.get('sensor_manager_service_port')
 Request_PORT = os.environ.get("request_manager_service_port")
+LOGGING_SERVICE_IP = "http://"+ os.environ.get('logging_service_ip')
+LOGGING_SERVICE_PORT = os.environ.get('logging_service_port')
+NODE_MGR_IP = os.environ.get('node_manager_service_ip')
+NODE_MGR_PORT = os.environ.get('node_manager_service_port')
 
 app.config['SECRET_KEY'] = 'root'
 
@@ -228,7 +232,8 @@ def upload_sensor(current_user):
     res = requests.post(url=url,json=f).json()
 
     print(res)
-    return res
+    return render_template('platform_admin.html',succ_msg=res)
+    # return res
    
 @app.route('/platform_admin/bind_sensor',methods=['POST'])
 @token_required
@@ -247,7 +252,8 @@ def bind_sensor(current_user):
     res = requests.post(url=url,json=f).json()
 
     print(res)
-    return res
+    return render_template('platform_admin.html',succ_msg=res['Message'])
+    # return res
     
 
 @app.route('/platform_admin/add_node',methods=['POST'])
@@ -263,8 +269,8 @@ def add_node(current_user):
     f = json.load(f)
     url = NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/add'
     res = requests.post(url=url,json=f).json()
-
-    return res
+    return render_template('platform_admin.html',succ_msg=res)
+    # return res
 
 def get_locations_api(appName):
     temp = applications.objects(appName=appName).first()
@@ -392,45 +398,117 @@ def sensor_bind(current_user):
 #         # url_end_user = 'http://localhost:11000/'
 #         return render_template('sensor_form.html',succ_msg=res['succ_msg'],sensors=to_send,app_name=appName,url=url_end_user)
 # >>>>>>> main
+def get_services_name():
+    services=[]
+    services.append(os.environ.get('monitoring_service_name'))
+    services.append(os.environ.get('SLCM_service_name'))
+    services.append(os.environ.get('node_manager_service_name'))
+    services.append(os.environ.get('sensor_manager_service_name'))
+    services.append(os.environ.get('request_manager_service_name'))
+    services.append(os.environ.get('scheduler_service_name'))
+    services.append(os.environ.get('logging_service_name'))
+    services.append(os.environ.get('notification_manager_service_name'))
+    services.append(os.environ.get('deployer_service_name'))
+    services.append(os.environ.get('child_node_service_name'))
+    return services
 
-@app.route('/platform_admin/notification', methods=['GET'])
-@app.route('/platform_admin/notification/<int:page>', methods=['GET'])
+log_type='ALL'
+service_name='ALL'
+start_time='ALL'
+end_time='ALL'
 
-def notification_display(page=1):
+@app.route('/platform_admin/update_logs_attributes', methods=['POST'])
+def update_logs_attributes():
+    log_type=request.form.get('log_type')
+    service_name=request.form.get('service_type')
+    start_time=request.form.get('starttime')
+    end_time=request.form.get('endtime')
+    return logs_display(page=1,log_type=log_type,service_name=service_name,start_time=start_time,end_time=end_time)
 
-    print("page:",page)
-    print(type(page))
-    per_page = 3
-    if page==1:
-        prev=None
-    else:
-        prev=page-1
-    total_records=Actor.objects.count()
-    if total_records%per_page != 0:
-        last=total_records//per_page + 1
-    else:
-        last=total_records//per_page
-    print(total_records,last)
-    if page==last:
-        next=None
-    else:
-        next=page+1
-    offset = (page - 1) * per_page
-    notifications = Actor.objects.skip(offset).limit(per_page)
-    # print("Result......", notifications)
-    return render_template("notification.html", notifications=notifications,prev=prev,next=next,page=page)
+@app.route('/platform_admin/update_logs_attributes_2', methods=['POST'])
+def update_logs_attributes_2():
+    log_type=request.form.get('log_type_2')
+    service_name=request.form.get('service_type_2')
+    start_time=request.form.get('starttime_2')
+    end_time=request.form.get('endtime_2')
+    page=int(request.form.get('page_2'))
+    return logs_display(page=page,log_type=log_type,service_name=service_name,start_time=start_time,end_time=end_time)
 
-@app.route('/platform_admin/node_monitoring', methods=['GET'])
+@app.route('/platform_admin/update_logs_attributes_3', methods=['POST'])
+def update_logs_attributes_3():
+    log_type=request.form.get('log_type_3')
+    service_name=request.form.get('service_type_3')
+    start_time=request.form.get('starttime_3')
+    end_time=request.form.get('endtime_3')
+    page=int(request.form.get('page_3'))
+    print("LOG_3:",log_type)
+    return logs_display(page=page,log_type=log_type,service_name=service_name,start_time=start_time,end_time=end_time)
+
+@app.route('/platform_admin/logs', methods=['GET'])
+@app.route('/platform_admin/logs/<int:page>', methods=['GET'])
+def logs_display(page=1,log_type=log_type,service_name=service_name,start_time=start_time,end_time=end_time):
+    # per_page = 3
+    # if page==1:
+    #     prev=None
+    # else:
+    #     prev=page-1
+    # total_records=Actor.objects.count()
+    # if total_records%per_page != 0:
+    #     last=total_records//per_page + 1
+    # else:
+    #     last=total_records//per_page
+    # print(total_records,last)
+    # if page==last:
+    #     next=None
+    # else:
+    #     next=page+1
+    # offset = (page - 1) * per_page
+    # logs = Actor.objects.skip(offset).limit(per_page)
+    # print("Result......", logs)
+    url = LOGGING_SERVICE_IP+ ':'+ str(LOGGING_SERVICE_PORT)+'/get_logs'
+    req = {
+        'page' : page,
+        'service_name' : service_name,
+        'type' : log_type,
+        'start_time' : start_time,
+        'end_time' : end_time
+    }
+    print("REQ:",req)
+    resp = requests.post(url=url,json=req).json()
+    # print("GET_LOGS.RESP:",resp)
+    logs = resp['result']
+    next = resp['next']
+    prev = resp['prev']
+    return render_template("log.html", logs=logs,prev=prev,next=next,page=page,services=get_services_name())
+
+@app.route('/platform_admin/node_monitoring_cpu', methods=['GET'])
 @token_required
-def node_monitoring(current_user):
+def node_monitoring_cpu(current_user):
     if current_user.role != 'platform_admin':
         return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
-    node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
-    return render_template('node_monitoring.html',node_data=node_data)
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_node'
+    node_data = requests.get(url=url).json()
+    # node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
+    return render_template('node_monitoring_cpu.html',node_data=node_data)
 
-@app.route('/platform_admin/get_cpu_usage', methods=['GET','POST'])
-def get_cpu_usage():
-    return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
+@app.route('/platform_admin/node_monitoring_memory', methods=['GET'])
+@token_required
+def node_monitoring_memory(current_user):
+    if current_user.role != 'platform_admin':
+        return jsonify({"message":"Invalid Role("+current_user.role+") for user:"+current_user.username, "user":current_user.username , "role":current_user.role}), 401    
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_node'
+    node_data = requests.get(url=url).json()
+    # print("GET_NODE:",node_data)
+    # node_data=[{'node_name':'N1','cpu_usage':'72'},{'node_name':'N2','cpu_usage':'61'},{'node_name':'N3','cpu_usage':'82'},{'node_name':'N4','cpu_usage':'46'}]
+    return render_template('node_monitoring_memory.html',node_data=node_data)
+True
+@app.route('/platform_admin/get_performance_usage', methods=['GET','POST'])
+def get_performance_usage():
+    url = "http://"+NODE_MGR_IP+ ':'+ str(NODE_MGR_PORT)+'/node/get_usage'
+    usage_data = requests.get(url=url).json()
+    print(usage_data)
+    # return {"res":[random.randint(40,80),random.randint(40,80),random.randint(40,80),random.randint(40,80)]}
+    return {"res":usage_data}
 
 if __name__ == '__main__':
     app.run(debug=False, port=Request_PORT, host='0.0.0.0')

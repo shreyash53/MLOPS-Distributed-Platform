@@ -12,13 +12,13 @@ from mongoengine.queryset.visitor import Q
 from pathlib import Path
 from Utilities.azure_config import *
 import time
-
+#import log_generator
 #PATH = os.path.dirname(__file__)/'Utilities/ApplicationCode' #Mandatory folder
 
 PATH1 = os.path.dirname(__file__)+"/../"
 p1="Utilities/ApplicationCode"
 PATH=os.path.join(PATH1,p1)
-
+access_rights = 0o777
 def get_app_instance_id():
     id = "AI_"+ str(int(time.time()))
     return id
@@ -40,6 +40,8 @@ def isValid(tar,r_zip):
                     with open(tar+"/"+'contract.json') as f:
                         file_data = json.load(f)
                     if file_data:
+                        #log_d="\n\n\FIle Read...................\n\n\n", type(file_data)
+                        #log_generator.send_log('INFO',log_d)
                         print("\n\n\FIle Read...................\n\n\n", type(file_data))
                     new_app = applications(
                     _id=get_app_instance_id(),
@@ -50,8 +52,10 @@ def isValid(tar,r_zip):
                     
                     new_app.save()
                 except Exception as e:
+                    #log_generator.send_log('INFO',"||||||||\n\n\n |||||||||||||")
                     print("||||||||\n\n\n |||||||||||||")
                     return {"err_msg":e}
+                #log_generator.send_log('INFO',new_app)
                 print(new_app)
                 #return render_template('index.html',suc_msg="SUCCESS:application data is added sucessfully.")
                 return {"succ_msg":"Valid Zip"}
@@ -65,6 +69,7 @@ def isValid(tar,r_zip):
 def extract_file(input_file):
     with zipfile.ZipFile(input_file,"r") as zip_ref:
         Path_out = PATH1+'Utilities/ApplicationZip'
+        #log_generator.send_log('INFO',Path_out)
         print(Path_out)
         zip_ref.extractall(Path_out)
         print("yes..line 50")
@@ -143,6 +148,11 @@ def upload_app_file(request):
     input_file=PATH +"/"+f.filename
     r_zip=Path(f.filename).stem
     #print(input_file)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH,access_rights)
+    var_zip=PATH1+"Utilities/ApplicationZip"
+    if not os.path.exists(var_zip):
+        os.mkdir(var_zip,access_rights)
     if(zipfile.is_zipfile(input_file)):
         extract_file(input_file)
     else:

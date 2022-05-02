@@ -8,6 +8,7 @@ from kafka import KafkaConsumer
 from json import loads
 from dbconfig import *
 import os
+from log_generator import send_log
 
 class applications(db.Document):
     _id = db.StringField(primary_key=True)
@@ -60,8 +61,8 @@ def appdeploy():
                 appName=message.get("app_name")
                 # print()
                 # print()
-
-                print(message)
+                send_log("INFO","Data Recieved:") 
+                # print(message)
 
                 app= applications.objects(appName=appName).first()
                 # print()
@@ -131,21 +132,27 @@ def appdeploy():
                 # print(data_app)
                 # producer.send('sensor_list', value=data_sensor)
                 # sleep(5)
-                print(data_app)
+                send_log("INFO","Data Sent: "+ appId) 
+
+                # print(data_app)
                 producer.send('app_deploy2', value=data_app)
-                print("data sent!!")
+                send_log("INFO","Data Sent!!") 
+                # print("data sent!!")
     
         except Exception as e:
-            print('Error in scheduler.consumer_thread', e)
+            send_log("ERR","Error in scheduler.consumer_thread: "+ e)
+            # print('Error in scheduler.consumer_thread', e)
         
 
 def consumer_logic(data):
     model_ = aimodels.objects.filter(modelId = data['service_id'])
     if not model_:
-        print('No model found, now exiting')
+        send_log("INFO",'No model found, now exiting')
+        # print('No model found, now exiting')
         return
     model_ = model_.first()
-    print('model found')
+    send_log("INFO",'model found')
+    # print('model found')
     request_data = {
         'node' : data['node'],
         'model_id' : data['service_id'],
@@ -155,12 +162,13 @@ def consumer_logic(data):
     producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
                         value_serializer=lambda x: 
                         dumps(x).encode('utf-8'))
-    print('sending data to node manager')
-    print('Request_data: ', request_data)
+    # print('sending data to node manager')
+    # print('Request_data: ', request_data)
     producer.send('model_restart', value=request_data)
     
     # sleep(5)
-    print("restart request sent!!")
+    send_log("INFO",'Restart request sent!!')
+    # print("restart request sent!!")
 
 def model_restart_consumer():
     while(1):
@@ -173,14 +181,15 @@ def model_restart_consumer():
                 group_id='my-group',
                 value_deserializer=lambda x: loads(x.decode('utf-8'))
             )
-            print('inside nodemanager consumer thread')
+            # print('inside nodemanager consumer thread')
             for data in consumer:
-                print(data.value)
+                send_log("INFO",'Model Data Recieved')
+                # print(data.value)
                 consumer_logic(data.value)
 
-
         except Exception as e:
-            print('Error in node_manager.consumer_thread', e)
+            send_log("ERR","Error in node_manager.consumer_thread"+e)
+            # print('Error in node_manager.consumer_thread', e)
 
 
 class DeploymentConsumer(Thread):
@@ -195,5 +204,6 @@ if __name__ == '__main__':
     db = mongodb()
     dc = DeploymentConsumer()
     dc.start()
+    send_log("INFO","Inside Deployment Service")
     appdeploy()
 
