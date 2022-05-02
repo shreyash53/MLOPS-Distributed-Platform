@@ -1,11 +1,87 @@
 .btn-color{
   background-color: #0e1c36;
   color: #fff;
-  
+   
 }
 .btn-color:hover {
 background-color: #ddd;
 color: black;
+}
+
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+.slider {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  margin: auto;
+  overflow-x: auto;
+  /* -webkit-overflow-scrolling: touch; */
+
+  /* scroll-snap-type: x mandatory; */
+}
+.slide {
+  width: 400px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
+  .prev, .next,.text {font-size: 11px}
 }
 
 .table{
@@ -20,7 +96,11 @@ margin-top: 60px;
 .cardbody-color{
   background-color: #ebf2fa;
 }
+.card{
 
+  height: 380px;
+
+}
 a{
   text-decoration: none;
   color: green;
@@ -35,6 +115,9 @@ body {
 }
 .container {
 margin-top: 60px;
+margin: auto;
+width: 60%;
+padding: 10px;
 }
 .topnav {
   overflow: hidden;
