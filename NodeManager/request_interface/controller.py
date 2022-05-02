@@ -24,12 +24,12 @@ def build_url(model_):
         return model_.node.nodeUrl
     return '{}:{}'.format(model_.node.nodeIpAddress, model_.node.nodePortNo)
 
-def get_model_data(modelId, data):
+def get_model_data(modelId, data, route):
     print("ModelId: ", modelId)
-    model_ = RunningServices.objects.filter(
-        Q(serviceId = modelId) &
-        Q(serviceType = 'model')
-    )
+    # model_ = RunningServices.objects.filter(
+    #     Q(serviceId = modelId) &
+    #     Q(serviceType = 'model')
+    # )
     response = post(SLCM_URL+'/service_lookup', json={
         "service_id" : modelId,
         "service_type" : "model"
@@ -42,7 +42,7 @@ def get_model_data(modelId, data):
     url = response['url']
     # url = 'http://localhost:12000'
     print("URL: ",url)
-    res = post(url='{}/get_result'.format(url), json=data).json()
+    res = post(url='{}/{}'.format(url, route), json=data).json()
     print("Res ", res)
     return res
 
