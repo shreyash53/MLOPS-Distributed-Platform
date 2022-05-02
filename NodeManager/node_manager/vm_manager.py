@@ -179,7 +179,7 @@ def createVM(VM_NAME):
 
 def setupVM(VM_IP_ADDRESS):
     conn = Connection(VM_IP_ADDRESS, user='azureuser', connect_kwargs={'key_filename' : '/home/app/node_manager/azurekeys.pem'})
-    result = conn.put('/home/app/setuphostvm.sh', remote='/home/azureuser/')
+    result = conn.put('/home/app/ChildNode/setuphostvm.sh', remote='/home/azureuser/')
     print("Uploaded {0.local} to {0.remote}".format(result))
     conn.run('chmod +x /home/azureuser/setuphostvm.sh')
     conn.run('sudo /home/azureuser/setuphostvm.sh')
