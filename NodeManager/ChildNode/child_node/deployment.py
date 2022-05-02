@@ -41,7 +41,8 @@ def make_and_move_in_directory(service_type, service_name):
         os.listdir(file_loc)
         return file_loc, True
     except Exception as e:
-        os.makedirs(file_loc), False
+        os.makedirs(file_loc)
+        return file_loc, False
      
 
 
