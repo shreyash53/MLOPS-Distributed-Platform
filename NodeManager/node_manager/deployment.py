@@ -1,11 +1,13 @@
 from json import dumps
 from time import sleep, time_ns
+from NodeManager.utilities.log_generator import send_log
 
 from node_manager.model import NodeDocument
 from utilities.constants import HTTP_OK_STATUS_CODE, kafka_url, node_app, node_model, SLCM_URL
 from kafka import KafkaProducer
 from requests import post
 from .vm_manager import *
+from mongoengine.queryset.visitor import Q
 
 
 def build_request_data(request_type, service_type, data, all_data=None):
@@ -95,6 +97,7 @@ def deploy_model(model_to_deploy):
         )
         print("data sent to node: ", node.nodeName)
     except Exception as e:
+        send_log("ERR", "ERROR in node_manager.deploy_model, " + str(e))
         print("exception in node_manager.deploy_model", e)
 
 
@@ -139,4 +142,5 @@ def deploy_app(app_to_deploy, all_data):
             build_request_data("start", "app", app_to_deploy, all_data),
         )
     except Exception as e:
+        send_log("ERR", "ERROR in node_manager.deploy_app, " + str(e))
         print("exception in node_manager.deploy_app", e)
