@@ -54,7 +54,8 @@ def start_new_node(node_type):
     print("start new node type:", node_type)
     suffix = str(time_ns())
     node_name = suffix
-    node_ip = createVM(node_name)
+    # node_ip = createVM(node_name)
+    node_ip = '104.211.207.67'
     is_node_up = False
     check_socket = socket(AF_INET, SOCK_STREAM)
     print("Machine not started", end='')
