@@ -48,13 +48,13 @@ def scheduleapplication():
         print("Sensor List: ",all_details['sensors'])
 
         new_schedule.save()
-        send_log('INFO', f"Scheduled application {app_name}:{app_id}. Next start at {first_start}")
+        send_log('INFO', f"Scheduled application {all_details['app_name']}:{all_details['app_id']}. Next start at {first_start}")
     except Exception as e:
         msg= "err_msg : " + str(e)
         rep ={
             "err_msg":msg
         }
-        send_log('ERR', f"Could not scheduled application {app_name}:{app_id}. Reason: {msg}")
+        send_log('ERR', f"Could not scheduled application {all_details['app_name']}:{all_details['app_id']}. Reason: {msg}")
         return rep
     
     msg= "Scheduled!"

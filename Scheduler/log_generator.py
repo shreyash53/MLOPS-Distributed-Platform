@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import json
 from kafka import KafkaProducer
 
-from Scheduler.utilities.constant import SERVICE_NAME
+from utilities.constant import SERVICE_NAME
 
 
 load_dotenv()

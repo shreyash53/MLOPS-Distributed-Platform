@@ -24,7 +24,10 @@
     </style>
 
     <script>
-
+        function init(){
+            $('#plots').find('tr').not('#table_header').hide();
+            $('#plots').find('#plot_segment1').show();
+        }
         function logout() {
             sessionStorage.removeItem('user_token');
             sessionStorage.clear();
@@ -33,34 +36,55 @@
         function platform_admin_homepage() {
             window.location.href = '/platform_admin?token=' + sessionStorage.getItem('user_token')
         }
-
+        function show_node_data(){
+            console.log('Selected Node Value:',document.getElementById('node').value)
+            $('#plots').find('tr').not('#table_header').hide();
+            $('#plots').find('#'+document.getElementById('node').value).show();
+        }
     </script>
 
 </head>
 
-<body>
+<body onload="init()">
 
+    <div class="topnav">
+        <a class="active">Hello, Admin</a>
 
+        <button type="submit" class="btn" onclick="logout()"
+            value="LogIn" style="float: right;">LogOut</button>
+        <button type="submit" onclick="platform_admin_homepage()" class="btn"
+            value="back" style="float: right;">Back</button>
+    </div>
     <div class="container">
+        <div class="d-flex flex-row">
+            <label for="node" class="form-label w-25 h-25 p-2">
+                <h3 class="text-center text-dark">Select Node</h3>
+            </label>
+            <select class="form-select w-25 h-25 p-2" name="node" id="node">
+                {% for node in node_data %}
+                <option value="plot_segment{{loop.index}}">{{node.node_name}}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-color w-25 h-25 p-2" onclick="show_node_data()">Show Memory Usage</button>
+        </div>
+        
         <div class="row">
-            <div class="col-md-12">
-
-                <h2 class="text-center text-dark mt-5">Node Usage</h2>
+                <h2 class="text-center text-dark mt-5">Node Memory Usage</h2>
                 <div class="card my-5">
 
 
-                    <table class="table">
+                    <table class="table" id='plots'>
                         <thead>
-                            <tr>
+                            <tr id='table_header'>
                                 <th scope="col">#</th>
                                 <th scope="col">Node Name</th>
-                                <th scope="col">CPU Usage Realtime</th>
+                                <th scope="col">Memory Usage Realtime</th>
                                 <th scope="col">Graph</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for node in node_data %}
-                            <tr>
+                            <tr id="plot_segment{{loop.index}}">
                                 <th scope="row">{{ loop.index }}</th>
                                 <td>{{ node['node_name'] }}</td>
                                 <td>
@@ -82,24 +106,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="row">
-
-
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
-                    value="LogIn">LogOut</button>
-            </div>
-
-            <div class="col-md-2">
-                <button type="submit" onclick="platform_admin_homepage()" class="btn btn-color px-5 mb-5 w-100"
-                    value="back">Back</button>
-            </div>
-
-        </div>
-
-
-
     </div>
 
 
@@ -129,7 +135,7 @@
             url: "/platform_admin/get_cpu_usage",
             data: 'dummy',
             success: function (data) {
-                //console.log(data)
+                //console.log(cnt)
                 for (var i = 0; i < data['res'].length; i++) {
                     // console.log(data['res'][i])
                     var e = document.getElementById("bar" + String(i + 1))
@@ -139,10 +145,11 @@
 
                     Plotly.extendTraces('plot' + String(i + 1), { y: [[data['res'][i]]] }, [0]);
                     cnt++;
-                    if (cnt > 500) {
+                    if (cnt/4 > 20) {
                         Plotly.relayout('plot' + String(i + 1), {
                             xaxis: {
-                                range: [cnt - 500, cnt]
+                                //range: [cnt - 500, cnt]
+                                range: [cnt/4 - 20, cnt/4]
                             }
                         });
                     }
@@ -154,7 +161,7 @@
     get_usage(); // This will run on page load
     setInterval(function () {
         get_usage() // this will run after every 5 seconds
-    }, 1000);
+    }, 5000);
 </script>
 
 </html>

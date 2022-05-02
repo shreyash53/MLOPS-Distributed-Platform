@@ -38,14 +38,30 @@
         function logs_page() {
             window.location.href = '/platform_admin/logs?token='+sessionStorage.getItem('user_token')
         }
-        function node_monitoring() {
-            window.location.href = '/platform_admin/node_monitoring?token='+sessionStorage.getItem('user_token')
+        function node_monitoring_cpu() {
+            window.location.href = '/platform_admin/node_monitoring_cpu?token='+sessionStorage.getItem('user_token')
+        }
+        function node_monitoring_memory() {
+            window.location.href = '/platform_admin/node_monitoring_memory?token='+sessionStorage.getItem('user_token')
         }
     </script>
 
 </head>
 
 <body onload="append_token()">
+    <div class="topnav">
+        <a class="active">Hello, Admin</a>
+
+        <button type="submit" class="btn"
+                        value="Logs" onclick="logs_page()">Logs</button>
+
+        <button type="submit" class="btn"
+                        value="node_monitoring_cpu" onclick="node_monitoring_cpu()">Node Monitoring-CPU</button>
+        <button type="submit" class="btn"
+                        value="node_monitoring_memory" onclick="node_monitoring_memory()">Node Monitoring-Memory</button>
+        <button type="submit" class="btn" onclick="logout()"
+            value="LogIn" style="float: right;">LogOut</button>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -96,22 +112,6 @@
                 </div>
                 </form>
             </div>
-        </div>
-        <div class="row">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
-                        value="LogIn">LogOut</button>
-                </div>
-                
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100"
-                        value="logs" onclick="logs_page()">Logs</button>
-                </div>
-
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100"
-                        value="node_monitoring" onclick="node_monitoring()">Node Monitoring</button>
-                </div>
         </div>
     </div>
 
