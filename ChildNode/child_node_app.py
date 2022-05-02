@@ -1,6 +1,6 @@
 from flask import Flask
 from mongoengine.connection import connect
-from child_node_config import DB_URI, database_name, DB_USER_NAME, DB_PASSwORD
+from child_node.child_node_config import DB_URI, database_name, DB_USER_NAME, DB_PASSwORD
 
 from dotenv import load_dotenv
 

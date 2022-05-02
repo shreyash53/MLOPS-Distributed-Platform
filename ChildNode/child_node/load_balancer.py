@@ -6,7 +6,7 @@ from flask import Flask
 from json import dumps
 from json import loads
 from time import sleep
-from ChildNode.child_node_config import NODE_ID
+from .child_node_config import NODE_ID
 
 from kafka import KafkaProducer
 

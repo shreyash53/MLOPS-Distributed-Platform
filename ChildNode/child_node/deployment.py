@@ -1,7 +1,7 @@
 from python_on_whales import docker
 from python_on_whales.exceptions import NoSuchImage
 from child_node.model import ServicesRunning
-from child_node_config import NODE_ID
+from .child_node_config import NODE_ID
 from utilities.azure_config import download_dir
 
 import os

@@ -1,7 +1,7 @@
 
 from webbrowser import get
 from utilities.constants import SLCM_TOPIC_NAME
-from child_node_config import NODE_ID
+from .child_node_config import NODE_ID
 from child_node.model import ServicesRunning
 from .deployment import get_service_id, get_service_location, get_service_name, send_using_kafka
 from mongoengine.queryset.visitor import Q
