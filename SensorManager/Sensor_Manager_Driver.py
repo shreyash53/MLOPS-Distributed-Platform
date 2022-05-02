@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import threading
 
-load_dotenv()
+load_dotenv('../.env')
 
 PORT = os.getenv('sensor_manager_service_port')
 

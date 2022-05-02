@@ -126,16 +126,20 @@ def create_zip(r_zip,tar):
     return
 
 def generate_model_api(store_path):
+    to_write = "@app.route('<endpoint_name>', methods=['POST','GET'])\ndef <fun_name>():\n\tres = request.get_json()\n\treturn jsonify({'result':<fileName>.<fun_name>(**res)})"
+
+    main_write = 'if __name__ == "__main__":\n\tapp.run(debug=False, port=PORT, host="0.0.0.0")"'
     template_file = open('Utilities/model_api.py', 'r')
     model_api = template_file.read()
-    api_file = open(os.path.join(store_path, 'model_api.py'), 'w')
+    api_file = open(os.path.join(store_path, 'model_api.py'), 'a')
 
     contract_path = os.path.join(store_path, 'contract.json')
     contract_file = open(contract_path)
     contract = json.loads(contract_file.read())
 
     tokens = {'pickle_file_path': '',
-              'predict_fun_name': '',
+              'fun_name': '',
+              'endpoint_name':''
               }
     # vals = contract['dependencies']
     # for key,val in vals.items():
@@ -144,30 +148,56 @@ def generate_model_api(store_path):
     tokens['fileName'] = contract['main_py_file_name']
     tokens['predict_fun_parameters'] = ""
     tokens['pickle_file_path'] = contract['pickle_file_name']
-    for val in contract["predict"]:
-        tokens['predict_fun_name'] = val['name']
-        tokens['predict_fun_parameters'] = ""
-        tokens['predict_return']=val['return_type']
-        for j in val['parameters']:
-            tokens['predict_fun_parameters']+= j['name'] + ", "
-        tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
 
-    # model_api = re.sub(r'<other_dependencies>',
-    #                    tokens['other_dependencies'], model_api)
+    api_file.write("\n")
+
+
     model_api = re.sub(r'<fileName>',
                        tokens['fileName'], model_api)
     model_api = re.sub(r'<pickle_file_path>',
                        tokens['pickle_file_path'], model_api)
-    
-
-    model_api = re.sub(r'<predict_fun_name>',
-                       tokens['predict_fun_name'], model_api)
-    
-    model_api = re.sub(r'<predict_para_name>',
-                       tokens['predict_fun_parameters'], model_api)
-
-
     api_file.write(model_api)
+    # for val in contract["predict"]:
+    #     tokens['predict_fun_name'] = val['name']
+    #     tokens['predict_fun_parameters'] = ""
+    #     tokens['predict_return']=val['return_type']
+    #     for j in val['parameters']:
+    #         tokens['predict_fun_parameters']+= j['name'] + ", "
+    #     tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
+
+    for val in contract["endpoints"]:
+        tokens['endpoint_name'] = val['endpoint_name']
+        tokens['fun_name'] = val['func_name']
+        tokens['predict_fun_parameters'] = ""
+        tokens['predict_return']=val['return_type']
+        for j in val['func_parameters']:
+            tokens['predict_fun_parameters']+= j['name'] + ", "
+        tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
+        temp_write = to_write
+        temp_write = re.sub(r'<endpoint_name>',tokens['endpoint_name'],temp_write)
+        temp_write = re.sub(r'<fun_name>', tokens['fun_name'],temp_write)
+        temp_write = re.sub(r'<fileName>', tokens['fileName'], temp_write)
+        api_file.write(temp_write)
+        print("Here!! 179")
+        api_file.write("\n")
+
+
+    # model_api = re.sub(r'<other_dependencies>',
+    #                    tokens['other_dependencies'], model_api)
+    # model_api = re.sub(r'<fileName>',
+    #                    tokens['fileName'], model_api)
+    # model_api = re.sub(r'<pickle_file_path>',
+    #                    tokens['pickle_file_path'], model_api)
+    
+
+    # model_api = re.sub(r'<predict_fun_name>',
+    #                    tokens['predict_fun_name'], model_api)
+    
+    # model_api = re.sub(r'<predict_para_name>',
+    #                    tokens['predict_fun_parameters'], model_api)
+
+
+    api_file.write(main_write)
     api_file.close()
 
 def upload_model_file(request):
