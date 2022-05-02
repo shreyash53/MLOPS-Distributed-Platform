@@ -188,9 +188,9 @@ def deployment_handler(service_type, data):
         if not file_loc:
             print('In deployment handler of child node, couldn\'t download files')
             return
-        file_loc, service_address = flag
+        # file_loc, service_address = flag
 
-        extract_file(service_address)
+        # extract_file(service_address)
         edit_docker_file(file_loc, get_service_id(service_type, data_), service_type, MONITOR_IP, MONITOR_PORT)
         make_dockerignore(file_loc)
         tag_name = get_service_name(service_type, data_)
