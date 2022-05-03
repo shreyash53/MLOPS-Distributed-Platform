@@ -32,7 +32,8 @@ def isValid(tar,r_zip):
     var1=tar+"/"+"contract.json"
     temp_file_present = file_present(tar,"contract.json")
     if(temp_file_present['status']==1):
-        temp_file_present = file_present(tar,"model.pkl")
+        # temp_file_present = file_present(tar,"model.pkl")
+        temp_file_present['status']=1
         if(temp_file_present['status']==1):
             temp_val_contract = validate_contract(var1)
             if(temp_val_contract['status'] == 1):
@@ -128,7 +129,7 @@ def create_zip(r_zip,tar):
 def generate_model_api(store_path):
     to_write = "@app.route('<endpoint_name>', methods=['POST','GET'])\ndef <fun_name>():\n\tres = request.get_json()\n\treturn jsonify({'result':<fileName>.<fun_name>(**res)})"
 
-    main_write = 'if __name__ == "__main__":\n\tapp.run(debug=False, port=PORT, host="0.0.0.0")"'
+    main_write = 'if __name__ == "__main__":\n\tapp.run(debug=False, port=PORT, host="0.0.0.0")'
     template_file = open('Utilities/model_api.py', 'r')
     model_api = template_file.read()
     api_file = open(os.path.join(store_path, 'model_api.py'), 'a')
@@ -164,7 +165,7 @@ def generate_model_api(store_path):
     #     for j in val['parameters']:
     #         tokens['predict_fun_parameters']+= j['name'] + ", "
     #     tokens['predict_fun_parameters'] = tokens['predict_fun_parameters'][:-2]
-
+    api_file.write("\n")
     for val in contract["endpoints"]:
         tokens['endpoint_name'] = val['endpoint_name']
         tokens['fun_name'] = val['func_name']
