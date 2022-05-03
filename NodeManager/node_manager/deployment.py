@@ -119,7 +119,7 @@ def deploy_model(model_to_deploy):
             node.nodeKafkaTopicName,
             build_request_data("start", "model", model_to_deploy),
         )
-        print("data sent to node: ", node.nodeName)
+        print("Model data sent to node: ", node.nodeName)
     except Exception as e:
         send_log("ERR", "ERROR in node_manager.deploy_model, " + str(e))
         print("exception in node_manager.deploy_model", e)
@@ -165,7 +165,7 @@ def deploy_app(app_to_deploy, all_data):
             node.nodeKafkaTopicName,
             build_request_data("start", "app", app_to_deploy, all_data),
         )
-        print("data sent to node: ", node.nodeName)
+        print("App data sent to node: ", node.nodeName)
     except Exception as e:
         send_log("ERR", "ERROR in node_manager.deploy_app, " + str(e))
         print("exception in node_manager.deploy_app", e)

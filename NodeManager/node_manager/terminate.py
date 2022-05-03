@@ -22,6 +22,7 @@ def find_node_with_service(service_type, service_id):
     if not node_:
         print('node not found with id', response['node'])
         return
+    print(f"node {node_.first().nodeName} found with id {response['node']}")
     return node_.first()
 
 def terminate_model(model):
@@ -61,6 +62,7 @@ def terminate_app(app):
         if not node:
             print('no running app found with id', app['appInstanceId'])
             return 
+        print('running app found with id', app['appInstanceId'])
         send_using_kafka(node.nodeKafkaTopicName, build_request_data('stop', 'app', app))
     except Exception as e:
         print('error while terminating app in node_manager.terminate_app',e)

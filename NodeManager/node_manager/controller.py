@@ -28,6 +28,9 @@ def add_all_nodes(nodes_data):
 
 def consumer_logic(consumer_data):
     consumer_data = consumer_data.value
+    print('===============================================')
+    print(f"            {consumer_data.get('request_type')} REQUEST   ")
+    print('===============================================')
     print('data: ', consumer_data)
     if consumer_data['request_type'] == 'start':
         deploy_models(consumer_data['models'])
