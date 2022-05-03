@@ -11,7 +11,7 @@ def find_node_with_service(service_type, service_id):
     # service_ = RunningServices.objects.filter(Q(serviceType = service_type) & Q(serviceId = service_id))
     # if service_:
     #     return service_.first().node
-    response = post(SLCM_URL, json={
+    response = post(SLCM_URL+'/service_lookup', json={
         "service_id" : service_id,
         "service_type" : service_type
     })
