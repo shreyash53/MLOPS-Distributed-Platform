@@ -39,6 +39,7 @@ class Build_run_service(threading.Thread):
                             detach=True, 
                             publish=[(self.host_port, self.host_port)], 
                             networks='host')
+        docker.stats()
         new_service = Bootstrap(service_name=self.service_name,
                                 contrainer_id=str(container))
 
