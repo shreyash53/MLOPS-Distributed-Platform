@@ -7,7 +7,7 @@ from Utilities.dbconfig import *
 import dotenv
 import random
 # from constant import *
-dotenv.load_dotenv('../.env') 
+dotenv.load_dotenv() 
 
 app = Flask(__name__)
 db=mongodb()
