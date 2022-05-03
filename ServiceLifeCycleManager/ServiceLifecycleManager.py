@@ -39,6 +39,7 @@ def consume():
                     data.pop("request_type")
                     # print(data)
                     msg = sv.savetodb(data)
+                    print("Registered : ", data)
                     if msg == None:
                         msg = "Failed"
                         send_log("ERR", "registration status : {}".format(msg))
@@ -84,10 +85,12 @@ def service_lookup():
         obj = sv.fetchdb({"instance_id": ser, "service_type": sertype})
     except:
         obj = sv.fetchdb({"instance_id": ser})
+    
+    print(obj)
 
     try:
-        if obj:
-            if(obj != None and obj["state"] == "running"):
+        if obj is not None:
+            if(obj["state"] == "running"):
                 url = obj["service_ip"]+":"+obj["service_port"]
                 if(url[-1] != '/'):
                     url = url + "/"+slug
@@ -95,15 +98,15 @@ def service_lookup():
                     url += slug
 
                 send_log("INFO", "returned : {}".format(url))
-                return {"msg": "Runnning", "url": url, "kafka": None, "node": obj.nodeid, "instance_id": obj["instance_id"]}, 200
-            elif(obj != None and obj["state"] == "stopped"):
+                return {"msg": "Runnning", "url": url, "kafka": None, "node": obj.node, "instance_id": obj["instance_id"]}, 200
+            elif(obj["state"] == "stopped"):
                 send_log("WARN", "Service not running : {}".format(
                     obj["instance_id"]))
                 return {"msg": "NotRunning"}, 400
         else:
             print(ser, " NOt found")
             send_log("WARN", "Service not found : {}".format(
-                obj["instance_id"]))
+                request_data["service_id"]))
             return {"msg": "NotFound"}, 400
     except Exception as e:
         send_log("ERR", "ERROR in Servicelookup ")
