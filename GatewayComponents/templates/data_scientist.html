@@ -36,9 +36,9 @@
         <button type="submit" class="btn" onclick="logout()"
             value="LogIn" style="float: right;">LogOut</button>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
+
+        <div class="container-fluid" style="padding-left: 450px; padding-right: 450px;">
+            <!-- <div class="col-md-6"> -->
                 <h2 class="text-center text-dark mt-5">Upload Model</h2>
                 <div class="card my-5">
 
@@ -54,9 +54,10 @@
                                 Model</button></div>
                     </form>
                 </div>
-            </div>
-
-            <div class="container-fluid">
+            <!-- </div> -->
+        </div>
+        <div class="container-fluid">
+            <!-- <div class="col-md-6"> -->
                 <h2 class="mt-5 text-center">My Models</h2>
             
                 {% if model_details %}
@@ -78,7 +79,7 @@
                 {% else %}
                 <p class="subtitle text-center">No Models found in Database.</p>
                 {% endif %}
-            </div>
+            <!-- </div> -->
 
         </div>
         <!-- <div class="row">
@@ -89,7 +90,7 @@
                 </div>
             </div>
         </div> -->
-    </div>
+
 
     {% if err_msg %}
     <div class="alert alert-danger" role="alert" id="login_err_msg" style="display: block;">{{ err_msg }}</div>
