@@ -15,6 +15,9 @@
 </head>
 
 <script>
+    function myFunction() {
+        document.getElementById("SampleApp").data = "../static/app_contract.json";
+    }
     function append_token() {
         curr_api = $('#upload_form').attr('action');
         console.log(curr_api)
@@ -139,7 +142,12 @@
                         <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{
                             succ_msg }}</div>
                         {% endif %}
-
+                        <div class="mb-3" id="SampleContract">
+                            <object id="SampleApp" data="" width="500" height="500">
+                                <!-- Not supported -->
+                            </object>
+                            <button class="btn btn-color px-5 mb-5 w-50" onclick="myFunction()">Display Sample Contract</button> 
+                        </div>
                     </div>
                 </div>
         </div>

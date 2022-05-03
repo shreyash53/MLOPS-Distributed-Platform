@@ -14,6 +14,9 @@
     <title>Data Scientist Homepage</title>
 </head>
 <script>
+    function myFunction() {
+        document.getElementById("SampleApp").data = "../static/model_contract.json";
+    }
     function append_token() {
         // var curr_api=document.getElementById("upload_form").getAttribute("action")
         curr_api = $('#upload_form').attr('action');
@@ -53,6 +56,14 @@
                         <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Upload
                                 Model</button></div>
                     </form>
+                   
+                </div>
+                <div class="mb-3" id="SampleContract">
+                    <object id="SampleApp" data="" width="500" height="500">
+                        <!-- Not supported -->
+                    </object>
+                    <br/>
+                    <button class="btn btn-color px-5 mb-5 w-50" onclick="myFunction()">Display Sample Contract</button> 
                 </div>
             <!-- </div> -->
         </div>
