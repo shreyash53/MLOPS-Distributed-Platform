@@ -42,106 +42,105 @@ class aimodels(db.Document):
         }
 
 def appdeploy():
-    while(1):
-        try:    
-            consumer = KafkaConsumer(
-            'topic_schedule',
-            bootstrap_servers=[os.getenv('kafka_bootstrap')],
-            auto_offset_reset='earliest', 
-            enable_auto_commit=True,
-            group_id='group_my',
-            value_deserializer=lambda x: loads(x.decode('utf-8')))
-            
-            producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
-                                value_serializer=lambda x: 
-                                dumps(x).encode('utf-8'))
+    try:    
+        consumer = KafkaConsumer(
+        'topic_schedule',
+        bootstrap_servers=[os.getenv('kafka_bootstrap')],
+        auto_offset_reset='earliest', 
+        enable_auto_commit=True,
+        group_id='group_my',
+        value_deserializer=lambda x: loads(x.decode('utf-8')))
+        
+        producer = KafkaProducer(bootstrap_servers=[os.getenv('kafka_bootstrap')],
+                            value_serializer=lambda x: 
+                            dumps(x).encode('utf-8'))
 
-            for message in consumer:
-                message = message.value
-                appName=message.get("app_name")
-                # print()
-                # print()
-                send_log("INFO","Data Recieved:") 
-                # print(message)
+        for message in consumer:
+            message = message.value
+            appName=message.get("app_name")
+            # print()
+            # print()
+            send_log("INFO","Data Recieved:") 
+            # print(message)
 
-                app= applications.objects(appName=appName).first()
-                # print()
-                # print()
-                # print(app)
-                # print("b n")
-                if(app==None):
+            app= applications.objects(appName=appName).first()
+            # print()
+            # print()
+            # print(app)
+            # print("b n")
+            if(app==None):
+                continue
+            # print("a n")
+            # print()
+            # print()
+            # print()
+            # print(app.to_json())
+            app=app.to_json()
+            loc=app.get('path')
+            appId=message.get("app_id")
+            contract=app.get('contract')
+            contract=json.loads(contract)
+            # print()
+            # print()
+            # print()
+            # print(contract)
+            appInstanceId=message.get('app_instance_id')
+            app_details={}
+            app_details["appId"]=appId
+            app_details["appName"]=appName
+            app_details["appLoc"]=loc
+            app_details["appInstanceId"]=appInstanceId
+            # print()
+            # print()
+            # print(app_details)
+            models = contract["models"]
+            sensors_list=contract["sensors"]
+            models_list=[]
+            # print()
+            # print()
+            # print(models)
+            # print()
+            # print()
+            # print(sensors_list)
+            for model in models:
+                model_details={}
+                modelId=model.get("modelid")
+                modelname=model.get("modelname")
+                # print(modelId)
+                # print(modelname)
+                model_app= aimodels.objects(modelName=modelname).first()
+                if(model_app==None):
                     continue
-                # print("a n")
-                # print()
-                # print()
-                # print()
-                # print(app.to_json())
-                app=app.to_json()
-                loc=app.get('path')
-                appId=message.get("app_id")
-                contract=app.get('contract')
-                contract=json.loads(contract)
-                # print()
-                # print()
-                # print()
-                # print(contract)
-                appInstanceId=message.get('app_instance_id')
-                app_details={}
-                app_details["appId"]=appId
-                app_details["appName"]=appName
-                app_details["appLoc"]=loc
-                app_details["appInstanceId"]=appInstanceId
-                # print()
-                # print()
-                # print(app_details)
-                models = contract["models"]
-                sensors_list=contract["sensors"]
-                models_list=[]
-                # print()
-                # print()
-                # print(models)
-                # print()
-                # print()
-                # print(sensors_list)
-                for model in models:
-                    model_details={}
-                    modelId=model.get("modelid")
-                    modelname=model.get("modelname")
-                    # print(modelId)
-                    # print(modelname)
-                    model_app= aimodels.objects(modelName=modelname).first()
-                    if(model_app==None):
-                        continue
-                    model_app=model_app.to_json()
-                    # print(model_app)
-                    model_location=model_app.get("path")
-                    model_details["model_id"]=modelId
-                    model_details["model_name"]=modelname
-                    model_details["model_location"]=model_location
-                    models_list.append(model_details)
-                # print("Model list")
-                # print(models_list)
-                sensors=message.get("sensors")
-                sensors=json.loads(sensors)
-                data_app={
-                    "app":app_details,
-                    "models":models_list,
-                    "request_type":message.get('request_type'),
-                    "sensors":sensors
-                }
-                # print(data_app)
-                # producer.send('sensor_list', value=data_sensor)
-                # sleep(5)
-                send_log("INFO","Data Sent: "+ appId) 
+                model_app=model_app.to_json()
+                # print(model_app)
+                model_location=model_app.get("path")
+                model_details["model_id"]=modelId
+                model_details["model_name"]=modelname
+                model_details["model_location"]=model_location
+                models_list.append(model_details)
+            # print("Model list")
+            # print(models_list)
+            sensors=message.get("sensors")
+            sensors=json.loads(sensors)
+            data_app={
+                "app":app_details,
+                "models":models_list,
+                "request_type":message.get('request_type'),
+                "sensors":sensors
+            }
+            # print(data_app)
+            # producer.send('sensor_list', value=data_sensor)
+            # sleep(5)
+            send_log("INFO","Data Sent: "+ appId) 
 
-                # print(data_app)
-                producer.send('app_deploy2', value=data_app)
-                send_log("INFO","Data Sent!!") 
-                # print("data sent!!")
-    
-        except Exception as e:
-            send_log("ERR","Error in scheduler.consumer_thread: "+ e)
-            # print('Error in scheduler.consumer_thread', e)
+            # print(data_app)
+            producer.send('app_deploy2', value=data_app)
+            send_log("INFO","Data Sent!!") 
+            # print("data sent!!")
+
+    except Exception as e:
+        send_log("ERR","Error in scheduler.consumer_thread: "+ e)
+        # print('Error in scheduler.consumer_thread', e)
         
 
 def consumer_logic(data):
