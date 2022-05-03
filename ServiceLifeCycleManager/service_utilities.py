@@ -28,7 +28,7 @@ class slcm(db.Document):
     state = db.StringField()
     service_ip = db.StringField()
     service_port = db.StringField()
-    nodeid = db.StringField()
+    node = db.StringField()
     usedby = db.IntField(default = 1)
     def to_json(self):
         return {
@@ -38,7 +38,7 @@ class slcm(db.Document):
             "state":self.state,
             "service_ip" : self.service_ip,
             "service_port":self.service_port,
-            "nodeid":self.nodeid,
+            "node":self.node,
             "usedby":self.usedby
         }
 
@@ -49,13 +49,13 @@ def savetodb(kwargs):
         # send_log("INFO","Successfully saved to database")
         return "success"
     except Exception as e: 
-        send_log("ERR","Failed to save to database")
+        send_log("ERR","Failed to save to database" + str(e))
         return None
 
 
 def fetchdb(kwargs):
     try:
-        data = slcm.objects(**kwargs)[0]
+        data = slcm.objects(**kwargs).first()
         # send_log("INFO","Successfully fetched from database")
         return data
     except Exception as e:
