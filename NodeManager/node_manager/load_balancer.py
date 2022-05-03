@@ -25,6 +25,7 @@ def min_load_balance():
             value_deserializer=lambda x: loads(x.decode('utf-8'))
         )
         for message in consumer:
+            message = message.value
             cpu_usage=message.get("cpu_load")
             ram_usage=message.get("ram_load")
             nodeid=message.get("id")
