@@ -12,25 +12,23 @@ import threading
 from requests import get,post
 import json
 import os
-import mongoengine as db
 import dotenv
 from flask import Flask, render_template, make_response, jsonify, request, Response
+import traceback
 
-
+services =dict()
 
 dotenv.load_dotenv()
 
-# db = mongodb()
+PORT_SLCM = os.environ.get("SLCM_service_ip")
+PORT = os.environ.get("monitoring_service_port")
+# PORT_SLCM = '192.168.43.74:9002'
 
-PORT_SLCM = os.getenv("SLCMIP")
-
-kafka_ip = '127.0.0.1'
-kafka_port = '9092'
+app = Flask(__name__)
 
 
 def deregister(message):
-    global registered_services
-    print("deregister",message)
+    global services
     data = {
         "instance_id" : message
     }

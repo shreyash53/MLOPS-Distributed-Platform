@@ -37,7 +37,7 @@ def key_exist(data, key):
     '''
     for i in key:
         if data.get(i) is not None:
-            if(i == "procedures"):
+            if(i == "endpoints"):
                 for j in data[i]:
                     procedure_temp = procedures_validate(j)
                     if procedure_temp['status'] == 0:
@@ -66,7 +66,7 @@ def data_exist(data, key):
     Fuction  to check wheter data is present in keys
     '''
     for i in key:
-        if data[i]:
+        if data[i] or i=="dependencies":
             pass
         else:
             return error(i, "has no Data")
@@ -77,10 +77,10 @@ def procedures_validate(data):
     '''
     function to validate all the function related keys
     '''
-    key = ["parameters", "return_type"]
+    key = ["endpoint_name","func_name","func_parameters", "return_type"]
     check_key = key_exist_2(data, key)
     if check_key['status'] == 1:
-        check_data = data_exist(data, ["name"])
+        check_data = data_exist(data, ["func_name"])
         return check_data
     else:
         return check_key
@@ -94,7 +94,7 @@ def validate_contract(contract):
     contract_file = open(contract)
     contract_data = json.load(contract_file)
 
-    key = ["model_name", "pickle_file_name", "procedures", "dependencies"]
+    key = ["model_name", "pickle_file_name", "endpoints"]
     contract_key = key_exist(contract_data, key)
     if contract_key['status'] == 1:
         contract_data = data_exist(contract_data, key)

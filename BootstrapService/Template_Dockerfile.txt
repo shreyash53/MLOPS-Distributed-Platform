@@ -7,11 +7,15 @@ WORKDIR /home/app
 COPY . .
 <env_vars>
 
+<docker_install>
+
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+
 RUN pip install -r requirements.txt
 RUN apt-get update -y && \
     apt-get install curl -y
 
-HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"application_type\" : \"Smith\"}" "http://<monitor_ip>:5000/heartbeat" || exit 1
+HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"service_type\" : \"Smith\"}" "http://<monitor_ip>:<monitor_port>/heartbeat" || exit 1
 
 
-CMD ["python","<entry_point>"]
+CMD ["python","-u","<entry_point>"]
