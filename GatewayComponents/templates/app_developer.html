@@ -15,88 +15,110 @@
 </head>
 
 <script>
+    function myFunction() {
+        document.getElementById("SampleApp").data = "../static/app_contract.json";
+    }
     function append_token() {
         curr_api = $('#upload_form').attr('action');
         console.log(curr_api)
         console.log(sessionStorage.getItem("user_token"))
         $('#upload_form').attr('action', curr_api + "?token=" + sessionStorage.getItem("user_token"));
     }
-    function logout(){
+    function logout() {
         sessionStorage.removeItem('user_token');
         sessionStorage.clear();
-        window.location.href='/'
+        window.location.href = '/'
     }
 </script>
-
+<style>
+    .scrolling-wrapper{
+        overflow-x: auto;
+    }
+    
+</style>
 <body onload="append_token()">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <h2 class="text-center text-dark mt-5">Available Sensors</h2>
-                <div class="card my-5">
-
-                    {% if sensor_details %}
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Sensor Type</th>
-                                <th scope="col">Sensor Data Type</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            {% for i in range(sensor_details|length) %}
-                            <tr>
-                                <th scope="row">{{ i+1 }}</th>
-                                <td>{{ sensor_details[i][0] }}</td>
-                                <td>{{ sensor_details[i][1] }}</td>
-                            </tr>
-                            {% endfor %}
-
-                        </tbody>
-                    </table>
-                    {% endif %}
-
-                </div>
-            </div>
-        </div>
+    <div class="topnav">
+        <a class="active">Hello, App Developer</a>
+        <button type="submit" class="btn" onclick="logout()"
+            value="LogIn" style="float: right;">LogOut</button>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <div class="col-md-12">
-                    <h2 class="text-center text-dark mt-5">Available Models</h2>
-                    <div class="card my-5">
 
-                        {% if model_details %}
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Model Name</th>
-                                    <th scope="col">Model ID</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">Available Models</h2>
+    
+        {% if model_details %}
+        <div class="container">
+            <div class="slider">    
+                {% for i in range(model_details|length) %}
 
-                                {% for i in range(model_details|length) %}
-                                <tr>
-                                    <th scope="row">{{ i + 1 }}</th>
-                                    <td>{{ model_details[i][0] }}</td>
-                                    <td>{{ model_details[i][1] }}</td>
-                                </tr>
-                                {% endfor %}
-
-                            </tbody>
-                        </table>
-                        {% endif %}
-
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/model.jpeg" alt="Avatar" style="width:100%">       
+                        <p class="text-center">Model Name:{{model_details[i][0]}}</p>
+                        <p class="text-center">Model ID:{{model_details[i][1]}}</p>
                     </div>
                 </div>
+
+                {% endfor %}
             </div>
-            <div class="col">
-                <div class="col-md-12">
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Models found in Database.</p>
+        {% endif %}
+    </div>
+
+
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">Available Sensors</h2>
+    
+        {% if sensor_details %}
+        <div class="container">
+            <div class="slider">
+                {% for i in range(sensor_details|length) %}
+
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/model.png" alt="Avatar" style="width:100%; height: 95%;">       
+                        <p class="text-center">Sensor Name:{{sensor_details[i][0]}}</p>
+                        <p class="text-center">Sensor ID:{{sensor_details[i][1]}}</p>
+                    </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Sensors found in Database.</p>
+        {% endif %}
+    </div>
+
+    <div class="container-fluid">
+        <h2 class="mt-5 text-center">My Applications</h2>
+    
+        {% if my_apps.count()>0 %}
+        <div class="container">
+            <div class="slider">
+                {% for app in my_apps %}
+
+                <div class=slide>
+                    <div class="card">
+                        <img src="../static/app.png" alt="Avatar" style="width:100%; height: 95%;">       
+                        <p class="text-center">App Name:{{ app.appName }}</p>
+                        <p class="text-center">App ID:{{loop.index}}</p>
+                    </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="subtitle text-center">No Sensors found in Database.</p>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="row">
+                <div class="col-md-6">
                     <h2 class="text-center text-dark mt-5">Add Application</h2>
                     <div class="card my-5">
 
@@ -120,18 +142,23 @@
                         <div class="alert alert-success" role="alert" id="login_succ_msg" style="display: block;">{{
                             succ_msg }}</div>
                         {% endif %}
-
+                        <div class="mb-3" id="SampleContract">
+                            <object id="SampleApp" data="" width="500" height="500">
+                                <!-- Not supported -->
+                            </object>
+                            <button class="btn btn-color px-5 mb-5 w-50" onclick="myFunction()">Display Sample Contract</button> 
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()" value="LogIn">LogOut</button>
+                    <button type="submit" class="btn btn-color px-5 mb-5 w-100" onclick="logout()"
+                        value="LogIn">LogOut</button>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 

@@ -1,5 +1,6 @@
 from fileinput import filename
 from flask import Flask,request
+# from log_generator import send_log
 # from flask_sqlalchemy import SQLAlchemy
 from sensor_bind.sensor_binder import *
 from flask import jsonify, make_response, render_template
@@ -22,15 +23,19 @@ def Sensor_Reg():
     ret_value = reg_sensor(request_data)
     data = {}
     data["Message"] = ret_value
+    # send_log("INFO","Regestered Successfully")
     return data
 
 @app.route("/Sensor_Bind", methods=["POST","GET"])
 def Sensor_Bind():
     request_data = request.json
     # print(request_data)
-    ret_value = reg_bind_sensor(request_data)
+    ret_value1 = reg_bind_sensor(request_data)
     data={}
-    data["Message"]=ret_value
+    data["Message"]=ret_value1[0:-1]
+    data["Kafka_IP"] = ret_value1[-1]
+    print()
+    # send_log("INFO","Sensor Binded Successfully")   
     return data
 
 @app.route("/Get_Data", methods=["GET"])
@@ -38,8 +43,8 @@ def Get_Data():
     a=Check_Vals()
     D={}
     D["details"]=a
+    # send_log("INFO","Data Sent")
     return D
-
 
 @app.route("/sensor_validate", methods=["POST","GET"])
 def Check_Dev():
@@ -53,23 +58,18 @@ def Check_Dev():
     else:
             dic["msg"] = "Success"
             dic["status"]=1
-
+    # send_log("INFO","Regestered Successfully") 
     return dic
     
 
-@app.route("/Check_From_AppRunner", methods=["POST","GET"])
+@app.route("/Get_Locations", methods=["POST","GET"])
 def Check_Run2():
     request_data = request.json
     print(request_data)
-    i,lis1,lis2 = Check_From_Runner(request_data)
+    i= Get_Location(request_data)
     dic={}
-    if i:
-        dic["error"]=lis1
-    else:
-        dic["Success_Message"]=lis2
-        
-    print(dic)
-    return jsonify(dic)
+    dic["details"]=i
+    return jsonify(i)
 # with app.app_context():
 #     db.create_all()
 

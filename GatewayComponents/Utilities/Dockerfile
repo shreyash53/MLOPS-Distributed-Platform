@@ -6,6 +6,7 @@ WORKDIR /home/app
 COPY . .
 
 # RUN source /home/app/shra/bin/activate
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 RUN pip install -r requirements.txt
 RUN apt-get update -y && \
     apt-get install curl -y
@@ -15,6 +16,3 @@ HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-ty
 
 
 CMD ["python","-u" ,"<app_name>.py"]
-
-
-

@@ -1,0 +1,12 @@
+SLCMIP="192.168.21.240"
+LOG_TOPIC="logs"
+kafka_bootstrap="104.211.224.155:9092"
+service_name="service_name"
+
+AZURE_FILESHARE=fileshare
+AZURE_STORAGE_NAME=hack2storage
+AZURE_STORAGE_KEY=iVYu1uayUo9p0h3k00IdqMpLRX2rSZJ8kldu3cpA3AK6AZqPTuLxd9fmV9zGEmqSqtON0zrlCOTw+AStjdUEGQ==
+MONGODB_USER="kamal"
+MONGODB_PASS=kamal123
+MONGODB_CLUSTER=cluster0.lzygp.mongodb.net
+

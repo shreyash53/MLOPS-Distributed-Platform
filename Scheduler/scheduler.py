@@ -7,6 +7,7 @@ import datetime
 from kafka import KafkaProducer, KafkaConsumer
 from json import loads
 
+from log_generator import send_log
 from utilities.constant import *
 from dbconfig import *
 import time
@@ -16,7 +17,7 @@ import dotenv
 dotenv.load_dotenv()
 
 HOST = os.getenv('SCHEDULER_HOST')
-PORT = os.getenv('SCHEDULER_PORT')
+PORT = os.getenv('scheduler_service_port')
 
 app = Flask(__name__)
 
@@ -47,11 +48,13 @@ def scheduleapplication():
         print("Sensor List: ",all_details['sensors'])
 
         new_schedule.save()
+        send_log('INFO', f"Scheduled application {all_details['app_name']}:{all_details['app_id']}. Next start at {first_start}")
     except Exception as e:
         msg= "err_msg : " + str(e)
         rep ={
             "err_msg":msg
         }
+        send_log('ERR', f"Could not scheduled application {all_details['app_name']}:{all_details['app_id']}. Reason: {msg}")
         return rep
     
     msg= "Scheduled!"
@@ -80,8 +83,9 @@ def send_to_deployment_service(action, services):
     if action not in ['start', 'stop']:
         producer.close()
         print("Invalid action :", action)
+        send_log('WARN', f"Unknown action : {action}.")
         return
-    if services.count() == 0:
+    if services.count()==0:
         producer.close()
         print("No services to",action)
         return
@@ -114,7 +118,7 @@ def send_to_deployment_service(action, services):
             
             else:
                 service.delete()
-
+        send_log('INFO', f"Trying to {action} instance: {service._id} of app: {service.app_name}({service.app_id}).")
         producer.send(KAFKA_SCHEDULE_TOPIC, json.dumps(msg).encode('utf-8'))
     
     producer.close()
@@ -168,13 +172,17 @@ class ReSchedulingService(threading.Thread):
                 value_deserializer=lambda x: loads(x.decode('utf-8')))
 
             for reschedule in consumer:
+                print('Request to restart!!!')
                 print(reschedule.value)
                 try:
                     reschedule = reschedule.value
-                    instance = Schedules.objects(_id = reschedule['instance_id'])
+                    
+                    instance = Schedules.objects.with_id(reschedule['instance_id'])
+                    print(instance)
                     instance = [instance]
                     send_to_deployment_service('start', instance)
                 except Exception as e:
+                    send_log('ERR', str(e))
                     print(e)
 
 
@@ -183,4 +191,4 @@ if __name__ == "__main__":
     sched.start()
     re_sched = ReSchedulingService()
     re_sched.start()
-    app.run(debug=False, port="5000", host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')

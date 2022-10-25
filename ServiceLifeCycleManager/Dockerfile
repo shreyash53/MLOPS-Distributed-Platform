@@ -12,7 +12,18 @@ AZURE_STORAGE_KEY="iVYu1uayUo9p0h3k00IdqMpLRX2rSZJ8kldu3cpA3AK6AZqPTuLxd9fmV9zGE
 MONGODB_USER="kamal" \   
 MONGODB_PASS="kamal123" \   
 MONGODB_CLUSTER="cluster0.lzygp.mongodb.net" \   
+REQUEST_MANAGER_PORT=5000 \   
+REQUEST_MANAGER_HOST='0.0.0.0' \   
+SLCM_PORT=9002 \   
+# SCLM_HOST='http://192.168.96.74' \   
+SLCM_HOST='http://0.0.0.0' \   
+LOG_TOPIC="logs" \   
+PORT="9002" \   
 kafka_bootstrap='20.219.107.251:9092' \   
+service_name="service_name" \   
+HOST="0.0.0.0" \   
+SCHEDULER_PORT=8001 \   
+SCHEDULER_HOST='0.0.0.0' \   
  \   
 monitoring_service_name="Monitoring" \   
 SLCM_service_name="SLCM" \   
@@ -52,4 +63,4 @@ RUN apt-get update -y && \
 HEALTHCHECK --interval=20s --timeout=10s  CMD curl --fail -X POST -H "Content-type: application/json" -d "{\"service_id\" : \"John\", \"application_type\" : \"Smith\"}" "http://192.168.21.240:5000/heartbeat" || exit 1
 
 
-CMD ["python","ServiceLifecycleManager.py"]
+CMD ["python","ServiceLifeCycleManager.py"]
