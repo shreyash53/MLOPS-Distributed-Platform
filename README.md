@@ -1,9 +1,12 @@
 # ML Ops-Distributed-Platform
 
-We have built an AI/IOT platform wherein data scientists upload models and application developers will use them to build web applications and upload them to our platform. Our platform consists of many actors, namely Platform Admin, Data Scientist, Application Developer, and End User (Application Runner).
+This is an AI/IOT platform wherein Data Scientists can upload ML Models and Application Developers to build AI Applications and deploy them to the platform. 
 
 The platform implements a micro-service based architecture with features like scaling, fault tolerance, scheduling,
-centralized logging and monitoring. It is developed using several components like Service Lifecycle Manager, Node
+centralized logging and monitoring. 
+
+The platform consists of many actors, namely Platform Admin, Data Scientist, Application Developer, and End User (Application Runner).
+It consists of several components like Service Lifecycle Manager, Node
 Manager, Scheduler, Monitoring Service, Deployment Manager and Sensor Manager.
 
 ## Application Diagram
